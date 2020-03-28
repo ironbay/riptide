@@ -1,0 +1,4 @@
+{
+    "elixirLS.projectDir": "packages/elixir",
+    "elixirLS.dialyzerEnabled": false
+}

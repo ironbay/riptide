@@ -1,0 +1,29 @@
+{
+  "name": "@ironbay/riptide",
+  "version": "0.0.1",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "rollup -c",
+    "test": "tsdx test"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/jest": "^25.1.4",
+    "husky": "^4.2.3",
+    "rollup": "^2.0.2",
+    "rollup-plugin-typescript2": "^0.26.0",
+    "tsdx": "^0.12.3",
+    "typescript": "^3.8.3"
+  },
+  "dependencies": {
+    "@ironbay/dynamic": "^1.0.10",
+    "universal-websocket-client": "^1.0.2"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run build; git add dist"
+    }
+  }
+}
