@@ -27,9 +27,16 @@ defmodule Riptide.Subscribe do
   def broadcast_mutation(mut) do
     mut
     |> Riptide.Mutation.layers()
+    |> Stream.flat_map(fn {path, value} ->
+      Stream.concat([
+        [{path, Riptide.Mutation.inflate(path, value)}],
+        value.delete
+        |> Stream.map(fn {key, _} ->
+          {path ++ [key], Riptide.Mutation.delete(path ++ [key])}
+        end)
+      ])
+    end)
     |> Enum.each(fn {path, value} ->
-      inflated = Riptide.Mutation.inflate(path, value)
-
       path
       |> group()
       |> :pg2.get_members()
@@ -38,7 +45,7 @@ defmodule Riptide.Subscribe do
           :skip
 
         members ->
-          Enum.map(members, fn pid -> send(pid, {:mutation, inflated}) end)
+          Enum.map(members, fn pid -> send(pid, {:mutation, value}) end)
       end
     end)
   end
