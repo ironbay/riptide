@@ -1,19 +1,19 @@
 defmodule Riptide.Test.Store do
   use ExUnit.Case
 
-  test Riptide.Store.Postgres do
-    # Application.ensure_all_started(:postgrex)
+  # test Riptide.Store.Postgres do
+  #   Application.ensure_all_started(:postgrex)
 
-    # {:ok, pid} =
-    #   Postgrex.start_link(
-    #     username: "postgres",
-    #     hostname: "localhost",
-    #     password: "password",
-    #     database: "postgres"
-    #   )
+  #   {:ok, pid} =
+  #     Postgrex.start_link(
+  #       username: "postgres",
+  #       hostname: "localhost",
+  #       password: "password",
+  #       database: "postgres"
+  #     )
 
-    # test_store(Riptide.Store.Postgres, name: pid)
-  end
+  #   test_store(Riptide.Store.Postgres, name: pid)
+  # end
 
   test Riptide.Store.LMDB do
     File.rm_rf("lmdb")
