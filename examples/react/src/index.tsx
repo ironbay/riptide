@@ -24,19 +24,19 @@ local.onChange.add(mut => {
 // When the connection status changes, save the state just to the local store
 connection.transport.onStatus.add(status => local.merge(['connection', 'status'], status))
 
-// Create interceptor to fetch creatures whenever connection becomes ready
+// Create interceptor to fetch todos whenever connection becomes ready
 local.interceptor.before_mutation(['connection'], async (mut) => {
     if (mut.merge.status !== 'ready') return
 
-    // Refresh creatures path from remote and subscribe to any future changes
+    // Refresh todos path from remote and subscribe to any future changes
     await remote.query({
-        'creatures': {
+        'todos': {
             subscribe: true
         }
     })
 })
 
-interface Creature {
+interface Todo {
     name?: string
     key?: string
     created?: number
@@ -49,36 +49,39 @@ function App() {
         local.onChange.add(() => render(val => val + 1))
     }, [])
 
-    async function create_creature() {
-        const name = prompt('Name of new creature?')
+    async function create_todo() {
+        const name = prompt('Name of new todo?')
         if (!name) return
         const key = Riptide.UUID.ascending()
         try {
-            await sync.merge(['creatures', key], {
+            await sync.merge(['todos', key], {
                 key,
                 name
             })
         } catch (ex) {
             alert(ex)
-            await local.delete(['creatures', key])
+            await local.delete(['todos', key])
         }
     }
 
     return (
-        <div >
-            {
-                local
-                    .query_values<Creature>(['creatures'])
-                    .map(item => {
-                        return (
-                            <div key={item.key} onClick={async () => await sync.delete(['creatures', item.key])}>
-                                {item.name} - {item.created && `Created ${new Date(item.created).toLocaleTimeString()}`}
-                            </div>
-                        )
-                    })
-            }
-            <button onClick={create_creature}>Create New</button>
-        </div>
+        <div>
+            <h3>Ocean Todos</h3>
+            <ul>
+                {
+                    local
+                        .query_values<Todo>(['todos'])
+                        .map(item => {
+                            return (
+                                <li key={item.key} onClick={async () => await sync.delete(['todos', item.key])}>
+                                    {item.name} - {item.created && `Created ${new Date(item.created).toLocaleTimeString()}`}
+                                </li>
+                            )
+                        })
+                }
+            </ul>
+            <button onClick={create_todo}>Create New</button>
+        </div >
     )
 }
 

@@ -7,6 +7,6 @@ config :riptide,
   },
   interceptors: [
     Ocean.Permissions,
-    Ocean.Creature.Created,
-    Ocean.Creature.Alert
+    Ocean.Todo.Created,
+    Ocean.Todo.Alert
   ]

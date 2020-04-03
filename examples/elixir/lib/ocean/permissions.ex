@@ -7,7 +7,7 @@ defmodule Ocean.Permissions do
     # mut
     # |> Riptide.Mutation.layers()
     # |> Enum.any?(fn
-    #   {["creatures" | _], _} -> false
+    #   {["todos" | _], _} -> false
     #   {path, layer} -> false
     # end)
     # |> case do
