@@ -31,6 +31,7 @@ defmodule Riptide.Subscribe do
       Stream.concat([
         [{path, Riptide.Mutation.inflate(path, value)}],
         value.delete
+        |> Stream.filter(fn {_, value} -> value === 1 end)
         |> Stream.map(fn {key, _} ->
           {path ++ [key], Riptide.Mutation.delete(path ++ [key])}
         end)
