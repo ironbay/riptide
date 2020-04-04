@@ -9,7 +9,7 @@ import {
     Link
 } from 'react-router-dom'
 
-import Home from '/pages/home'
+import Overview from './pages/overview'
 
 function App() {
     // Tell React to rerender the application when there's a change to the local store
@@ -19,7 +19,7 @@ function App() {
         <Router>
             <div className="font-poppins leading-none">
                 <Switch>
-                    <Route exact path="/" component={Home} />
+                    <Route exact path="/" component={Overview} />
                 </Switch>
             </div>
         </Router>

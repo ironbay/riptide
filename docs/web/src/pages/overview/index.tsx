@@ -3,7 +3,7 @@ import Sidebar from '/structures/sidebar'
 import ReactMarkdown from 'react-markdown'
 
 
-export default function Home() {
+export default function Overview() {
     return (
         <div>
             <div className="bg-gray-100 flex justify-center">
@@ -59,9 +59,18 @@ export default function Home() {
                             <ReactMarkdown
                                 escapeHtml={false}
                                 renderers={{
+                                    thematicBreak: props => {
+                                        return <hr className="my-12" {...props} />
+                                    },
                                     heading: props => {
-                                        if (props.level === 1)
-                                            return <h1 className="text-3xl font-200 tracking-wide text-gray-700 mb-6" {...props} />
+                                        switch (props.level) {
+                                            case 1:
+                                                return <h1 className="text-3xl font-200 tracking-wide text-gray-700 mb-6" {...props} />
+                                            case 2:
+                                                return <h2 className="text-2xl mb-6 font-500" {...props} />
+
+                                        }
+
                                     },
                                     paragraph: props => <p className="leading-relaxed text-gray-700 mb-6" {...props} />
                                 }}
