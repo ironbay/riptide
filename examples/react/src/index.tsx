@@ -40,6 +40,7 @@ interface Todo {
     name?: string
     key?: string
     created?: number
+    completed?: boolean
 }
 
 function App() {
@@ -71,16 +72,42 @@ function App() {
                 {
                     local
                         .query_values<Todo>(['todos'])
+                        .filter(item => !item.completed)
                         .map(item => {
-                            return (
+                            return ([
                                 <li key={item.key} onClick={async () => await sync.delete(['todos', item.key])}>
-                                    {item.name} - {item.created && `Created ${new Date(item.created).toLocaleTimeString()}`}
-                                </li>
-                            )
+                                    {
+                                        item.completed ? <s>{item.name}</s> : <span>{item.name}</span>
+                                    }
+                                    &nbsp;-&nbsp;
+                                    {item.created && `created ${new Date(item.created).toLocaleTimeString()}`}
+                                </li>,
+                                <br />
+                            ])
                         })
                 }
             </ul>
             <button onClick={create_todo}>Create New</button>
+            <ul>
+                {
+                    local
+                        .query_values<Todo>(['todos'])
+                        .filter(item => item.completed)
+                        .map(item => {
+                            return ([
+                                <li key={item.key} onClick={async () => await sync.delete(['todos', item.key])}>
+                                    {
+                                        item.completed ? <s>{item.name}</s> : <span>{item.name}</span>
+                                    }
+                                    &nbsp;-&nbsp;
+                                    {item.created && `created ${new Date(item.created).toLocaleTimeString()}`}
+                                </li>,
+                                <br />
+                            ])
+                        })
+                }
+
+            </ul>
         </div >
     )
 }
