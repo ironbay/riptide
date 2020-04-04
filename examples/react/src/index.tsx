@@ -65,22 +65,29 @@ function App() {
         }
     }
 
+    function handle_click(todo: Todo) {
+        console.dir(todo)
+        if (todo.completed) {
+            return sync.delete(['todos', todo.key])
+        }
+        sync.merge(['todos', todo.key, 'completed'], true)
+    }
+
     return (
         <div>
-            <h3>Ocean Todos</h3>
+            <h3>Todos</h3>
             <ul>
                 {
                     local
                         .query_values<Todo>(['todos'])
-                        .filter(item => !item.completed)
                         .map(item => {
                             return ([
-                                <li key={item.key} onClick={async () => await sync.delete(['todos', item.key])}>
+                                <li key={item.key} onClick={() => handle_click(item)}>
                                     {
-                                        item.completed ? <s>{item.name}</s> : <span>{item.name}</span>
+                                        item.completed ?
+                                            <s>{item.name} - {item.created && `created ${new Date(item.created).toLocaleTimeString()}`}</s> :
+                                            <span>{item.name} - {item.created && `created ${new Date(item.created).toLocaleTimeString()}`}</span>
                                     }
-                                    &nbsp;-&nbsp;
-                                    {item.created && `created ${new Date(item.created).toLocaleTimeString()}`}
                                 </li>,
                                 <br />
                             ])
@@ -88,26 +95,6 @@ function App() {
                 }
             </ul>
             <button onClick={create_todo}>Create New</button>
-            <ul>
-                {
-                    local
-                        .query_values<Todo>(['todos'])
-                        .filter(item => item.completed)
-                        .map(item => {
-                            return ([
-                                <li key={item.key} onClick={async () => await sync.delete(['todos', item.key])}>
-                                    {
-                                        item.completed ? <s>{item.name}</s> : <span>{item.name}</span>
-                                    }
-                                    &nbsp;-&nbsp;
-                                    {item.created && `created ${new Date(item.created).toLocaleTimeString()}`}
-                                </li>,
-                                <br />
-                            ])
-                        })
-                }
-
-            </ul>
         </div >
     )
 }
