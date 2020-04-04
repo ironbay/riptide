@@ -66,34 +66,32 @@ function App() {
     }
 
     function handle_click(todo: Todo) {
-        console.dir(todo)
-        if (todo.completed) {
-            return sync.delete(['todos', todo.key])
-        }
-        sync.merge(['todos', todo.key, 'completed'], true)
+        todo.completed ? sync.delete(['todos', todo.key]) : sync.merge(['todos', todo.key, 'completed'], true)
     }
 
     return (
         <div>
-            <h3>Todos</h3>
             <ul>
+                <h3>Todos</h3>
                 {
                     local
                         .query_values<Todo>(['todos'])
-                        .map(item => {
-                            return ([
-                                <li key={item.key} onClick={() => handle_click(item)}>
+                        .map(todo => {
+                            return (
+                                <li key={todo.key} onClick={() => handle_click(todo)}>
                                     {
-                                        item.completed ?
-                                            <s>{item.name} - {item.created && `created ${new Date(item.created).toLocaleTimeString()}`}</s> :
-                                            <span>{item.name} - {item.created && `created ${new Date(item.created).toLocaleTimeString()}`}</span>
+                                        todo.completed ? <s>{todo.name}</s> : todo.name
                                     }
-                                </li>,
-                                <br />
-                            ])
+                                    &nbsp;-&nbsp;
+                                    {
+                                        todo.created && `created ${new Date(todo.created).toLocaleTimeString()}`
+                                    }
+                                    <hr />
+                                </li>
+                            )
                         })
                 }
-            </ul>
+            </ul >
             <button onClick={create_todo}>Create New</button>
         </div >
     )
