@@ -12,7 +12,7 @@
 #  delete: %{}
 # }
 
-defmodule Todo.Created do
+defmodule TodoList.Todo.Created do
   use Riptide.Interceptor
 
   # Appends a `created` timestamp when the todo is first created
@@ -24,7 +24,7 @@ defmodule Todo.Created do
   end
 end
 
-defmodule Todo.Alert do
+defmodule TodoList.Todo.Alert do
   use Riptide.Interceptor
   require Logger
 

@@ -7,6 +7,6 @@ config :riptide,
   },
   interceptors: [
     TodoList.Permissions,
-    Todo.Created,
-    Todo.Alert
+    TodoList.Todo.Created,
+    TodoList.Todo.Alert
   ]
