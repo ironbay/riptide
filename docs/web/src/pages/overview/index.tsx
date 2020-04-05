@@ -35,7 +35,7 @@ export default function Overview() {
                         <div>
                             <div className="text-3xl font-300 tracking-wide leading-snug">
                                 <div>A data first framework for</div>
-                                <div className="text-blue-500 font-400">building realtime applications</div>
+                                <div className="text-blue-500 font-400">building realtime Elixir apps</div>
                             </div>
                             <div className="mt-6 text-lg leading-relaxed text-gray-600">
                                 Riptide makes building snappy, realtime applications a breeze by letting you think purely in terms of your data and functionally about what should happen when it changes.

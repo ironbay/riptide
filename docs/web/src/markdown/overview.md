@@ -1,24 +1,32 @@
-# Most frameworks get it wrong
+# Most frameworks focus on plumbing
 
-They ship with tools to define a REST API for your frontends, an ORM to transform incoming data into something your database understands, and if you're lucky, a pub/sub system to keep everything in sync.
+They ship with tools to define a REST API for your frontends, an ORM to transform objects into something your database understands, and if you're lucky, a pub/sub system for some light realtime functionality.
 
-It's up to you to juggle these disparate systems and as your application evolves, more of your energy becomes devoted to managing the glue that holds it all together.
+As your application evolves, your time becomes increasingly devoted to juggling these disparate systems and building the pipes that hold it all together.
+
+Riptide eases this burden by taking the plumbing - how data is moved around, transformed, and saved - and making it invisible.  You're responsible purely for the logic of your application which you can implement scalably using Riptide's tooling as simple cause and effect rules.
+
+Most frameworks rely on you to maintain the pipes.  Riptide keeps the flow going so you can focus on your product.
 
 * * *
 
-## The tree data model
+## The same data model — everywhere
+
+Traditional frameworks require you to think about your data differently depending on where it is.  Objects in your frontend and backend applications, relational tables in your database, events in your message queue.
+
+Riptide enforces a singular data model - a tree - no matter where you are.
+
+
+
+* * *
+
+## Interceptors
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Pretium vulputate sapien nec sagittis aliquam malesuada bibendum arcu vitae. Lobortis scelerisque fermentum dui faucibus in ornare quam viverra orci. Pellentesque id nibh tortor id aliquet lectus.
 
 * * *
 
-## The tree data model
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Pretium vulputate sapien nec sagittis aliquam malesuada bibendum arcu vitae. Lobortis scelerisque fermentum dui faucibus in ornare quam viverra orci. Pellentesque id nibh tortor id aliquet lectus.
-
-* * *
-
-## The tree data model
+## Realtime for free
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Pretium vulputate sapien nec sagittis aliquam malesuada bibendum arcu vitae. Lobortis scelerisque fermentum dui faucibus in ornare quam viverra orci. Pellentesque id nibh tortor id aliquet lectus.
 

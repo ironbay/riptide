@@ -10,12 +10,12 @@ export default function Sidebar() {
                     <Header>Getting Started</Header>
                     <Link to="/">Overview</Link>
                     <Link to="/quick-start">Quick Start</Link>
+                    <Link to="/caveats">Caveats</Link>
 
                     <div className="h-8" />
-                    <Header>Section Two</Header>
-                    <Link to="/quick-start">Link 1</Link>
-                    <Link to="/quick-start">Link 2</Link>
-                    <Link to="/quick-start">Link 3</Link>
+                    <Header>Core Concepts</Header>
+                    <Link to="/quick-start">Mutations</Link>
+                    <Link to="/quick-start">Queries</Link>
 
                     <div className="h-8" />
                     <Header>Section Three</Header>
@@ -23,6 +23,7 @@ export default function Sidebar() {
                     <Link to="/quick-start">Link 2</Link>
                     <Link to="/quick-start">Link 3</Link>
                 </div>
+
             </div>
         </div>
     )
