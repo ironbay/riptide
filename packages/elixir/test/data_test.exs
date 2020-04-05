@@ -1,17 +1,17 @@
 defmodule Riptide.Test.Data do
-  def hammerhead(),
+  def clean_tank(),
     do:
       {"001",
        %{
          "key" => "001",
-         "name" => "Hammerhead Shark"
+         "name" => "Clean the shark tank"
        }}
 
-  def gw(),
+  def pet_hammerhead(),
     do:
       {"002",
        %{
          "key" => "002",
-         "name" => "Great White Shark"
+         "name" => "Pet Sledge, the hammerhead shark"
        }}
 end

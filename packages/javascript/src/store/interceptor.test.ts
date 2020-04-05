@@ -7,14 +7,14 @@ describe('interceptor', () => {
         let hit = false
         interceptor.before_mutation(['+'], async (mut, path) => {
             hit = true
-            expect(mut.merge.shark).toEqual('hammerhead')
-            expect(path).toEqual(['animals'])
+            expect(mut.merge.todo_01).toEqual('hammerhead')
+            expect(path).toEqual(['todos'])
         })
 
         await interceptor.trigger_before({
             delete: {}, merge: {
-                animals: {
-                    shark: 'hammerhead'
+                todos: {
+                    todo_01: 'hammerhead'
                 }
             }
         })

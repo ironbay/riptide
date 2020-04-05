@@ -1,4 +1,4 @@
-defmodule Ocean.Permissions do
+defmodule TodoList.Permissions do
   use Riptide.Interceptor
 
   def mutation_before([], _layer, mut, %{internal: true}), do: :ok
@@ -7,7 +7,7 @@ defmodule Ocean.Permissions do
     # mut
     # |> Riptide.Mutation.layers()
     # |> Enum.any?(fn
-    #   {["creatures" | _], _} -> false
+    #   {["todos" | _], _} -> false
     #   {path, layer} -> false
     # end)
     # |> case do

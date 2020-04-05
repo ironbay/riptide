@@ -23,7 +23,7 @@ defmodule Riptide.Test.Interceptor do
     end
 
     def query_resolve(["resolved" | path], _opts, _state) do
-      {_, creature} = Riptide.Test.Data.gw()
+      {_, creature} = Riptide.Test.Data.pet_hammerhead()
       Dynamic.get(creature, path)
     end
   end
@@ -31,7 +31,7 @@ defmodule Riptide.Test.Interceptor do
   use ExUnit.Case
 
   test "mutation_before" do
-    {key, creature} = Riptide.Test.Data.hammerhead()
+    {key, creature} = Riptide.Test.Data.clean_tank()
 
     {
       :ok,
@@ -53,7 +53,7 @@ defmodule Riptide.Test.Interceptor do
   end
 
   test "mutation_after" do
-    {key, creature} = Riptide.Test.Data.hammerhead()
+    {key, creature} = Riptide.Test.Data.clean_tank()
 
     :ok =
       Riptide.Interceptor.mutation_after(
@@ -66,7 +66,7 @@ defmodule Riptide.Test.Interceptor do
   end
 
   test "mutation_effect" do
-    {key, creature} = Riptide.Test.Data.hammerhead()
+    {key, creature} = Riptide.Test.Data.clean_tank()
 
     %{
       merge: %{
@@ -81,7 +81,7 @@ defmodule Riptide.Test.Interceptor do
   end
 
   test "query_resolve" do
-    {_key, creature} = Riptide.Test.Data.gw()
+    {_key, creature} = Riptide.Test.Data.pet_hammerhead()
 
     ^creature =
       Riptide.Interceptor.query_resolve(
