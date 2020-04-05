@@ -49,7 +49,7 @@ Take a deep dive into [Mutations](/mutations), [Queries](/queries), and [Stores]
 
 ## Composable logic
 
-Riptide Interceptors let you define simple rules using Elixir's pattern matching that trigger when matching data is written or read. Take the following Mutation that creates a new Todo.
+Riptide Interceptors let you define simple rules using Elixir's pattern matching that trigger conditionally when data is written or read. Take the following Mutation that creates a new Todo.
 
 ```json
 {
