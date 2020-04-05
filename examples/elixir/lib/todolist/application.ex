@@ -7,8 +7,8 @@ defmodule TodoList.Application do
 
   def start(_type, _args) do
     children = [
-      # Starts a worker by calling: Todo.Worker.start_link(arg)
-      # {Todo.Worker, arg}
+      # Starts a worker by calling: TodoList.Worker.start_link(arg)
+      # {TodoList.Worker, arg}
       {Riptide, []}
     ]
 

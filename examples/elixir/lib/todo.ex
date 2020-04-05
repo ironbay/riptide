@@ -1,6 +1,6 @@
 defmodule TodoList do
   @moduledoc """
-  Documentation for `Todo`.
+  Documentation for `TodoList`.
   """
 
   @doc """
@@ -8,7 +8,7 @@ defmodule TodoList do
 
   ## Examples
 
-      iex> Todo.hello()
+      iex> TodoList.hello()
       :world
 
   """
