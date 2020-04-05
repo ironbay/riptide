@@ -14,7 +14,7 @@ Riptide has been enormously productive for us but choosing a framework shouldn't
 
 Traditional frameworks require you to think about your data as objects in your application, relational tables in your database, events in your message queue and all the transformations to go from one to another.
 
-Riptide represents all of your data as one big tree no matter where you are.
+Riptide represents all of your data as one big tree no matter where you are: server, client or database
 
 ```json
 {
@@ -46,9 +46,7 @@ Take a deep dive into [Mutations](/mutations), [Queries](/queries), and [Stores]
 
 ## Interceptors
 
-Interceptors leverage Elixir's pattern matching to allow you to define simple rules that trigger when matching data is written or read.
-
-Take the following Mutation that creates a new Todo.
+Interceptors leverage Elixir's pattern matching to allow you to define simple rules that trigger when matching data is written or read. Take the following Mutation that creates a new Todo.
 
 ```json
 {
