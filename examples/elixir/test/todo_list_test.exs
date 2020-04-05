@@ -1,4 +1,4 @@
-defmodule TodoList do
+defmodule TodoListTest do
   use ExUnit.Case
   doctest TodoList
 
