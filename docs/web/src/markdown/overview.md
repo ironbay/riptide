@@ -90,7 +90,7 @@ defmodule Todo.Created do
 end
 ```
 
-This results in the following data to be written
+This results in the following data being written
 
 ```json
 {
@@ -105,7 +105,7 @@ This results in the following data to be written
 }
 ```
 
-Interceptors are simple but powerful. They can be composed together to model the entirety of your complex business logic.
+Interceptors are simple but powerful. Complex business logic can be broken down and represented as a collection of simple, independent Interceptors that are composed together to form the full application.
 
 [Learn more about the various interceptors available in Riptide](/interceptors)
 
