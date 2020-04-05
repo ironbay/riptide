@@ -1,4 +1,4 @@
-defmodule Todo do
+defmodule TodoList do
   @moduledoc """
   Documentation for `Todo`.
   """
