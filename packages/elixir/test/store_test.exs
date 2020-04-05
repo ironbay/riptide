@@ -26,12 +26,12 @@ defmodule Riptide.Test.Store do
 
   defp test_store(store, opts) do
     :ok = store.init(opts)
-    {hh_key, hh} = Riptide.Test.Data.hammerhead()
-    {gw_key, gw} = Riptide.Test.Data.gw()
+    {hh_key, hh} = Riptide.Test.Data.clean_tank()
+    {gw_key, gw} = Riptide.Test.Data.pet_hammerhead()
 
     :ok =
       Riptide.Store.mutation(
-        Riptide.Mutation.merge(["creatures"], %{
+        Riptide.Mutation.merge(["todos"], %{
           hh_key => hh,
           gw_key => gw
         }),
@@ -39,34 +39,34 @@ defmodule Riptide.Test.Store do
         opts
       )
 
-    %{"creatures" => %{^hh_key => ^hh}} =
-      Riptide.Store.query(%{"creatures" => %{hh_key => %{}}}, store, opts)
+    %{"todos" => %{^hh_key => ^hh}} =
+      Riptide.Store.query(%{"todos" => %{hh_key => %{}}}, store, opts)
 
     2 =
-      ["creatures"]
+      ["todos"]
       |> Riptide.Store.stream(%{}, store, opts)
       |> Enum.count()
 
     1 =
-      ["creatures"]
+      ["todos"]
       |> Riptide.Store.stream(%{limit: 1}, store, opts)
       |> Enum.count()
 
     [{^gw_key, ^gw}] =
-      ["creatures"]
+      ["todos"]
       |> Riptide.Store.stream(%{min: "002"}, store, opts)
       |> Enum.to_list()
 
-    Riptide.Store.mutation(Riptide.Mutation.delete(["creatures", gw_key]), store, opts)
+    Riptide.Store.mutation(Riptide.Mutation.delete(["todos", gw_key]), store, opts)
 
     %{
-      "creatures" => %{
+      "todos" => %{
         ^hh_key => ^hh
       }
     } =
       Riptide.Store.query(
         %{
-          "creatures" => %{
+          "todos" => %{
             hh_key => %{},
             gw_key => %{}
           }
