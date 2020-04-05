@@ -47,9 +47,9 @@ Data is modified by issuing Mutations. Mutations can merge new fields or delete 
 Take a deep dive into [Mutations](/mutations), [Queries](/queries), and [Stores](/stores)
 * * *
 
-## Interceptors
+## Composable logic
 
-Interceptors leverage Elixir's pattern matching to allow you to define simple rules that trigger when matching data is written or read. Take the following Mutation that creates a new Todo.
+Riptide Interceptors let you define simple rules using Elixir's pattern matching that trigger when matching data is written or read. Take the following Mutation that creates a new Todo.
 
 ```json
 {
