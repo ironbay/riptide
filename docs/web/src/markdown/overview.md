@@ -106,7 +106,7 @@ This results in the following data being written
 }
 ```
 
-Interceptors are simple but powerful. Even the most complex business logic can be broken down and written as a collection of composable, independent and easily digestable Interceptors.
+Interceptors are simple but powerful. Even the most complex business logic can be broken down into a collection of composable, independent and easily digestable Interceptors.
 
 [Learn more about the various interceptors available in Riptide](/interceptors)
 
