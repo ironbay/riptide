@@ -4,7 +4,7 @@ They ship with tools to define a REST API for your frontends, an ORM to transfor
 
 As your application evolves, your time becomes increasingly devoted to juggling these disparate systems and building the pipes that hold it all together.
 
-Riptide eases this burden by taking the plumbing - how data is moved around, transformed, and saved - and making it invisible.  You're responsible purely for the logic of your application which you can implement scalably using Riptide's tooling as simple cause and effect rules.
+Riptide eases this burden by taking the plumbing - how data is moved around, transformed, and saved - and making it invisible. You focus exclusively on the logic of your application which can be implemented as simple cause and effect rules using Riptide's tooling.
 
 Riptide has been enormously productive for us but choosing a framework shouldn't be done without due dilligence. To make this easier, we put together [our best arguments against Riptide](/caveats) and also [where our inspiration came from](/inspiration) so you can make an informed decision.
 
