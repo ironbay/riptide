@@ -10,9 +10,12 @@ Riptide has been enormously productive for us but choosing a framework shouldn't
 
 * * *
 
-## The same data model — everywhere
+## One data model — everywhere
 
-Traditional frameworks require you to think about your data as objects in your application, relational tables in your database, events in your message queue and all the transformations to go from one to another.
+Traditional frameworks require you to think about your data in numerous ways:
+- Objects in your application
+- Relational tables in your database
+- Events in your message queue
 
 Riptide represents all of your data as one big tree no matter where you are: server, client or database
 
@@ -38,7 +41,7 @@ Riptide represents all of your data as one big tree no matter where you are: ser
 }
 ```
 
-Data can be modified by issuing a Mutation that merges new fields or deletes existing ones. Clients can query and subscribe to parts of the tree they care about and that data will be kept in sync in realtime.
+Data is modified by issuing Mutations. Mutations can merge new fields or delete existing ones. Clients can query and subscribe to parts of the tree they care about and that data will be kept in sync in realtime.
 
 
 Take a deep dive into [Mutations](/mutations), [Queries](/queries), and [Stores](/stores)

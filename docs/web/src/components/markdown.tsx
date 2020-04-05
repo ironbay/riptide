@@ -12,9 +12,18 @@ export default function Markdown(props: Props) {
             <ReactMarkdown
                 escapeHtml={false}
                 renderers={{
+                    list: props => {
+                        const p = {
+                            className: 'leading-relaxed mb-6 text-gray-700 pl-4',
+                            style: { listStyle: 'inside' }
+                        }
+                        if (props.ordered)
+                            return <ol {...p}>{props.children}</ol>
+                        return <ul {...p}>{props.children}</ul>
+                    },
                     code: props => {
                         return (
-                            <div className="font-mono text-sm leading-snug rounded-md overflow-hidden p-2 mb-6" style={{ background: '#282c34' }}>
+                            <div className="font-mono text-sm leading-relaxed rounded-md overflow-hidden p-2 mb-6" style={{ background: '#282c34' }}>
                                 <Highlight
                                     className={props.language}
                                 >
