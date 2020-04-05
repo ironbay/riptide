@@ -9,20 +9,30 @@ export default function Sidebar() {
                 <div className="h-screen overflow-y-scroll pt-12 text-gray-600">
                     <Header>Getting Started</Header>
                     <Link to="/">Overview</Link>
-                    <Link to="/quick-start">Quick Start</Link>
+                    <Link to="/setup">Setup</Link>
+                    <Link to="/inspiration">Inspiration</Link>
+                    <Link to="/caveats">Caveats</Link>
 
-                    <div className="h-8" />
-                    <Header>Section Two</Header>
-                    <Link to="/quick-start">Link 1</Link>
-                    <Link to="/quick-start">Link 2</Link>
-                    <Link to="/quick-start">Link 3</Link>
+                    <div className="h-12" />
+                    <Header>Core Concepts</Header>
+                    <Link to="/quick-start">Mutations</Link>
+                    <Link to="/quick-start">Queries</Link>
+                    <Link to="/quick-start">Interceptors</Link>
+                    <Link to="/quick-start">Commands</Link>
 
-                    <div className="h-8" />
-                    <Header>Section Three</Header>
-                    <Link to="/quick-start">Link 1</Link>
-                    <Link to="/quick-start">Link 2</Link>
-                    <Link to="/quick-start">Link 3</Link>
+                    <div className="h-12" />
+                    <Header>Stores</Header>
+                    <Link to="/quick-start">Overview</Link>
+                    <Link to="/quick-start">Memory</Link>
+                    <Link to="/quick-start">LMDB</Link>
+                    <Link to="/quick-start">Postgres</Link>
+
+                    <div className="h-12" />
+                    <Header>Frontends</Header>
+                    <Link to="/quick-start">Javascript</Link>
+                    <Link to="/quick-start">React</Link>
                 </div>
+
             </div>
         </div>
     )
@@ -30,7 +40,7 @@ export default function Sidebar() {
 
 function Header(props) {
     return (
-        <div className="font-500 ">
+        <div className="font-600 tracking-wider text-sm uppercase">
             {props.children}
         </div>
     )

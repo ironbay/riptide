@@ -24,6 +24,7 @@ defmodule Riptide.Subscribe do
     end
   end
 
+  # TODO: This could have a better implementation
   def broadcast_mutation(mut) do
     mut
     |> Riptide.Mutation.layers()
