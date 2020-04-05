@@ -23,7 +23,7 @@
     "typescript": "3.8.0-beta"
   },
   "dependencies": {
-    "@ironbay/riptide": "file:../../packages/javascript",
+    // "@ironbay/riptide": "file:../../packages/javascript",
     "react": "16.12.0",
     "react-dom": "16.12.0",
     "react-markdown": "^4.3.1",
