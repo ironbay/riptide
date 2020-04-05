@@ -49,7 +49,7 @@ function Header(props) {
 function Link(props) {
     return (
         <div className="mt-4">
-            <NavLink {...props} activeClassName="text-blue-600" className="duration-200 transition-all text-sm font-500 hover:text-black" />
+            <NavLink exact {...props} activeClassName="text-blue-600" className="duration-200 transition-all text-sm font-500 hover:text-black" />
         </div>
     )
 }

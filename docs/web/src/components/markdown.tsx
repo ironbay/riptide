@@ -1,5 +1,6 @@
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
+import { Link } from 'react-router-dom'
 import Highlight from 'react-highlight'
 
 interface Props {
@@ -23,7 +24,11 @@ export default function Markdown(props: Props) {
                         )
                     },
                     link: props => {
-                        return <a {...props} className="text-blue-600 underline font-500" />
+                        const classes = "text-blue-600 underline font-500 hover:text-blue-800 transition-all duration-300"
+                        if (props.href.includes('://'))
+                            return <a {...props} className={classes} />
+                        return <Link to={props.href} className={classes} >{props.children}
+                        </Link>
                     },
                     thematicBreak: props => {
                         return <hr className="my-12" {...props} />
@@ -41,7 +46,7 @@ export default function Markdown(props: Props) {
                     paragraph: props => <p className="leading-relaxed text-gray-700 mb-6" {...props} />
                 }}
             >
-                {require('bundle-text:/markdown/overview.md')}
+                {props.code}
             </ReactMarkdown>
         </div>
     )
