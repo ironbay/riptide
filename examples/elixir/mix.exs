@@ -1,9 +1,9 @@
-defmodule Ocean.MixProject do
+defmodule Todo.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :ocean,
+      app: :todo,
       version: "0.1.0",
       elixir: "~> 1.10",
       start_permanent: Mix.env() == :prod,
@@ -15,7 +15,7 @@ defmodule Ocean.MixProject do
   def application do
     [
       extra_applications: [:logger],
-      mod: {Ocean.Application, []}
+      mod: {Todo.Application, []}
     ]
   end
 

@@ -12,7 +12,7 @@
 #  delete: %{}
 # }
 
-defmodule Ocean.Todo.Created do
+defmodule Todo.Created do
   use Riptide.Interceptor
 
   # Appends a `created` timestamp when the todo is first created
@@ -24,7 +24,7 @@ defmodule Ocean.Todo.Created do
   end
 end
 
-defmodule Ocean.Todo.Alert do
+defmodule Todo.Alert do
   use Riptide.Interceptor
   require Logger
 

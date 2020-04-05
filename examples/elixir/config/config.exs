@@ -6,7 +6,7 @@ config :riptide,
     read: {Riptide.Store.LMDB, directory: "data"}
   },
   interceptors: [
-    Ocean.Permissions,
-    Ocean.Todo.Created,
-    Ocean.Todo.Alert
+    Todo.Permissions,
+    Todo.Created,
+    Todo.Alert
   ]

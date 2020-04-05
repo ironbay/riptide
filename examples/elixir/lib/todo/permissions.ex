@@ -1,4 +1,4 @@
-defmodule Ocean.Permissions do
+defmodule Todo.Permissions do
   use Riptide.Interceptor
 
   def mutation_before([], _layer, mut, %{internal: true}), do: :ok

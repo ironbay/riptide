@@ -1,6 +1,6 @@
-defmodule Ocean do
+defmodule Todo do
   @moduledoc """
-  Documentation for `Ocean`.
+  Documentation for `Todo`.
   """
 
   @doc """
@@ -8,7 +8,7 @@ defmodule Ocean do
 
   ## Examples
 
-      iex> Ocean.hello()
+      iex> Todo.hello()
       :world
 
   """
