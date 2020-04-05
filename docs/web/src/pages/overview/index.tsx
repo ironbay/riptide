@@ -1,6 +1,7 @@
 import React from 'react'
 import Sidebar from '/structures/sidebar'
 import ReactMarkdown from 'react-markdown'
+import Highlight from 'react-highlight'
 
 
 export default function Overview() {
@@ -59,6 +60,22 @@ export default function Overview() {
                             <ReactMarkdown
                                 escapeHtml={false}
                                 renderers={{
+                                    code: props => {
+                                        console.log(props)
+                                        return (
+                                            <div className="font-mono text-sm leading-snug rounded-md overflow-hidden p-2 mb-6" style={{ background: '#282c34' }}>
+                                                <Highlight
+                                                    className={props.language}
+                                                >
+                                                    {props.value}
+                                                </Highlight>
+                                            </div>
+                                        )
+                                    },
+                                    link: props => {
+                                        console.log(props)
+                                        return <a {...props} className="text-blue-600 underline font-500" />
+                                    },
                                     thematicBreak: props => {
                                         return <hr className="my-12" {...props} />
                                     },

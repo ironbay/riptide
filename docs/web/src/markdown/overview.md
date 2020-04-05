@@ -6,27 +6,112 @@ As your application evolves, your time becomes increasingly devoted to juggling 
 
 Riptide eases this burden by taking the plumbing - how data is moved around, transformed, and saved - and making it invisible.  You're responsible purely for the logic of your application which you can implement scalably using Riptide's tooling as simple cause and effect rules.
 
-Most frameworks rely on you to maintain the pipes.  Riptide keeps the flow going so you can focus on your product.
+Riptide has been enormously productive for us but choosing a framework shouldn't be done without due dilligence. To make this easier, we put together [our best arguments against Riptide](/caveats) so you can figure out if it's a good fit for your project.
 
 * * *
 
 ## The same data model — everywhere
 
-Traditional frameworks require you to think about your data differently depending on where it is.  Objects in your frontend and backend applications, relational tables in your database, events in your message queue.
+Traditional frameworks require you to think about your data as objects in your application, relational tables in your database, events in your message queue and all the transformations to go from one to another.
 
-Riptide enforces a singular data model - a tree - no matter where you are.
+Riptide represents all of your data as one big tree no matter where you are.
+
+```json
+{
+  "users": {
+    "USR1": {
+      "key": "USR1",
+      "name": "Jack Sparrow",
+    },
+    "USR2": {...},
+    "USR3": {...}
+  },
+  "todos": {
+    "TOD1": {
+      "key": "TOD1",
+      "user": "USR1",
+      "created": 1586068269822,
+      "text": "Find the Black Pearl",
+    }
+    ...
+  }
+}
+```
+
+Data can be modified by issuing a Mutation that merges new fields or deletes existing ones. Clients can query and subscribe to parts of the tree they care about and that data will be kept in sync in realtime.
 
 
-
+Take a deep dive into [Mutations](/mutations), [Queries](/queries), and [Stores](/stores)
 * * *
 
 ## Interceptors
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Pretium vulputate sapien nec sagittis aliquam malesuada bibendum arcu vitae. Lobortis scelerisque fermentum dui faucibus in ornare quam viverra orci. Pellentesque id nibh tortor id aliquet lectus.
+Interceptors leverage Elixir's pattern matching to allow you to define simple rules that trigger when matching data is written or read.
+
+Take the following Mutation that creates a new Todo.
+
+```json
+{
+  "merge":{
+    "todos":{
+      "TOD2":{
+        "key": "TOD2",
+        "text": "Return cursed Aztec gold"
+      }
+    }
+  }
+}
+```
+
+It will trigger the following Interceptor which effectively says whenever a Todo is created, record the current time and user who created it.
+
+```elixir
+defmodule Todo.Created do
+  use Riptide.Interceptor
+
+  def before_mutation(
+        # Match path being written to
+        ["todos", _key],
+        # Match fields being merged
+        %{ merge: %{ "key" => _ }},
+        # Full mutation
+        _full,
+        # Connection state
+        state
+      ) do
+    {
+      :merge,
+      %{
+        "created" => :os.system_time(:millisecond),
+        "user" => state.user
+      }
+    }
+  end
+end
+```
+
+This results in the following data to be written
+
+```json
+{
+  "todos":{
+    "TOD2":{
+      "key": "TOD2",
+      "text": "Return cursed Aztec gold",
+      "created": 1586068269822,
+      "user": "USR1"
+    }
+  }
+}
+```
+
+Interceptors are simple but powerful. They can be composed together to model the entirety of your complex business logic.
+
+[Learn more about the various interceptors available in Riptide](/interceptors)
 
 * * *
 
-## Realtime for free
+## Realtime by default
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Pretium vulputate sapien nec sagittis aliquam malesuada bibendum arcu vitae. Lobortis scelerisque fermentum dui faucibus in ornare quam viverra orci. Pellentesque id nibh tortor id aliquet lectus.
 
