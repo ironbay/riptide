@@ -18,7 +18,6 @@ const sync = local.sync(remote)
 local.onChange.add(mut => {
     console.dir('Mutation', mut)
     console.dir('Local', local.query_path([]))
-
 })
 
 // When the connection status changes, save the state just to the local store

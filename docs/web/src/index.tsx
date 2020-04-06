@@ -31,6 +31,10 @@ function App() {
                                 '/inspiration',
                                 require('bundle-text:/markdown/inspiration.md')
                             ],
+                            [
+                                '/javascript',
+                                require('bundle-text:/markdown/javascript.md')
+                            ]
                         ]
                             .map(([route, md]) => (
                                 <Route

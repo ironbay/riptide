@@ -29,7 +29,7 @@ export default function Sidebar() {
 
                     <div className="h-12" />
                     <Header>Frontends</Header>
-                    <Link to="/quick-start">Javascript</Link>
+                    <Link to="/javascript">Javascript</Link>
                     <Link to="/quick-start">React</Link>
                 </div>
 
