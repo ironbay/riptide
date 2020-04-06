@@ -1,6 +1,6 @@
 # Javascript
 
-The first step to setting up Riptide is creating a websocket connection. Create a Websocket on port 12000:
+The first step to setting up Riptide is creating a connection instance, which provides an interface for interacting with our Websocket connection to the remote server. We'll later user this connection instance to listen for changes in our connection status.
 
 ```javascript
 const connection = Riptide.Connection.create()
@@ -19,13 +19,20 @@ Now that we have the remote server store accessible, let's create a representati
 const local = new Riptide.Store.Memory()
 ```
 
-Great, now we have both a remote and local store. The next step is to set up a sync object which we'll later use to apply mutations to both the local and remote representations.
+Now that we have both a local and remote store, the next step is to create a sync object. Any change we want to apply from the client, we do so through the sync object. This ensures are local and remote stores are kept in sync. We insantiate a sync like this:
 
 ```javascript
 const sync = local.sync(remote)
 ```
+Now that we have a sync object, we can write Mutations that will be applied to both stores. 
 
-Now we can apply Mutations to local and remote and know they're synced. Next we can add a simple listener onto local which will listen for any updates. This is useful for handling rerenders in our application. In this case we'll log the Mutation being applie to local and the entire local store on every update: 
+```javascript
+sync.delete(['todos', 'todo_01'])
+
+sync.merge(['todos', 'todo_02'], {name: 'Clean the fish bowl'})
+```
+
+Now that we have the ability to update our local and remote states, we need a way to listen to our local store. If take an action when our local store updates (such as rerendering our list of todos) we do so with a listener: 
 
 ```javascript
 local.onChange.add(mut => {
@@ -34,7 +41,7 @@ local.onChange.add(mut => {
 })
 ```
 
-We can listen for changes in our connection status. We can save the state to just the local store on a status change with the following:
+We can also listen for changes to our Websocket connection. We can listen for changes in our connection's status and keep a local record of the status:
 
 ```javascript
 connection.transport.onStatus.add(status => 
@@ -42,8 +49,7 @@ connection.transport.onStatus.add(status =>
 )
 ```
 
-Since our app displays a list of constantly updating todos, we want to make sure to do two things: fetch all the todos when our connection becomes ready, and subscribe to the todos so we're aware of any changes that take place. We can do this by placing a listener on the local store:
-
+Now our local state will keep an up-to-date record of our connection status. What if we want to take an action whenever the connection status updates? To do this we'll use an interceptor on our local store that will listen for any changes under the `['connection']` path. Whenever that path is altered in our local store our interceptor will run, passing the responsible Mutation to the callback. 
 
 ```javascript
 local.interceptor.before_mutation(['connection'], async (mut) => {
@@ -56,3 +62,5 @@ local.interceptor.before_mutation(['connection'], async (mut) => {
     })
 })
 ```
+
+Here we're waiting for a `ready` status from the Websocket connection. When that status is written to our local state, we query all of our todos from the remote server. We also make sure to write `subscribe: true`, so that we'll be subscribed to any future changes.
