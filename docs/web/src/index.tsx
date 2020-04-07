@@ -25,21 +25,7 @@ function App() {
             <div className="font-poppins leading-none">
                 <Switch>
                     <Route exact path="/" component={Overview} />
-                    {
-                        [
-                            [
-                                '/inspiration',
-                                require('bundle-text:/markdown/inspiration.md')
-                            ],
-                        ]
-                            .map(([route, md]) => (
-                                <Route
-                                    exact
-                                    path={route}
-                                    component={() => <Doc markdown={md} />} />
-
-                            ))
-                    }
+                    <Route component={Doc} />
                 </Switch>
             </div>
         </Router>

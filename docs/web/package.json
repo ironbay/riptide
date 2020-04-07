@@ -6,6 +6,7 @@
   "scripts": {
     "start": "parcel serve ./src/index.html --open",
     "serve": "parcel serve ./src/index.html --no-hmr --no-cache ",
+    "markdown": "node ./src/markdown/build.js",
     "build": "parcel build ./src/index.html --dist-dir dist",
     "snapshot": "react-snap"
   },
