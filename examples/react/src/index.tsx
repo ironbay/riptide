@@ -16,8 +16,8 @@ const sync = local.sync(remote)
 
 // Log entire state when local store updates
 local.onChange.add(mut => {
-    console.dir('Mutation', mut)
-    console.dir('Local', local.query_path([]))
+    console.dir(mut)
+    console.dir(local.query_path([]))
 
 })
 

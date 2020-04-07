@@ -4,10 +4,10 @@
   "description": "",
   "main": "dist/index.html",
   "scripts": {
-    "start": "parcel serve ./src/index.html --open",
+    "start": "npm run markdown && parcel serve ./src/index.html --open",
     "serve": "parcel serve ./src/index.html --no-hmr --no-cache ",
-    "markdown": "node ./src/markdown/build.js",
-    "build": "parcel build ./src/index.html --dist-dir dist",
+    "markdown": "./src/markdown/build.js ./src/markdown",
+    "build": "npm run markdown && parcel build ./src/index.html --dist-dir dist",
     "snapshot": "react-snap"
   },
   "author": "",
