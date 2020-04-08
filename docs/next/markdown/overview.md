@@ -6,7 +6,7 @@ As your application evolves, your time becomes increasingly devoted to juggling 
 
 Riptide eases this burden by taking the plumbing - how data is moved around, transformed, and saved - and making it invisible. You focus exclusively on the logic of your application which can be implemented as simple cause and effect rules using Riptide's tooling.
 
-Riptide has been enormously productive for us but choosing a framework shouldn't be done without due dilligence. To make this easier, we put together [our best arguments against Riptide](/caveats) and also [where our inspiration came from](/inspiration) so you can make an informed decision.
+Riptide has been enormously productive for us but choosing a framework shouldn't be done without due dilligence. To make this easier, we put together [our best arguments against Riptide](/docs/caveats) and also [where our inspiration came from](/docs/inspiration) so you can make an informed decision.
 
 * * *
 

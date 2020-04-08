@@ -1,0 +1,30 @@
+{
+  "name": "riptide-docs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next",
+    "build": "next build",
+    "start": "next start",
+    "export": "next export"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "next": "^9.3.4",
+    "raw-loader": "^4.0.0",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-highlight": "^0.12.0",
+    "react-markdown": "^4.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^13.11.0",
+    "@types/react": "^16.9.32",
+    "postcss-preset-env": "^6.7.0",
+    "tailwindcss": "^1.2.0",
+    "typescript": "^3.8.3"
+  }
+}
