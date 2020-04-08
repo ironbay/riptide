@@ -1,18 +1,18 @@
 import * as Riptide from '@ironbay/riptide'
 
 // Create a connection to the remote server
-export const connection = Riptide.Connection.create()
+const connection = Riptide.Connection.create()
 connection.transport.connect('ws://localhost:12000/socket')
 
 // Represents the remote store on the server
 const remote = new Riptide.Store.Remote(connection)
 
 // Represents local store for the current session
-export const local = new Riptide.Store.Memory()
+const local = new Riptide.Store.Memory()
 
 // Setup local store to sync with remote.
 // Returns a sync object that can be used to apply mutations both to local and remote
-export const sync = local.sync(remote)
+const sync = local.sync(remote)
 
 // Log entire state when local store updates
 local.onChange.add(mut => {
@@ -35,3 +35,5 @@ local.interceptor.before_mutation(['connection'], async (mut) => {
         }
     })
 })
+
+export { connection, remote, local, sync }
