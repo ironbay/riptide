@@ -1,40 +1,9 @@
 import React from 'react'
 import * as ReactDOM from 'react-dom'
-import * as Riptide from '@ironbay/riptide'
+import { UUID } from '@ironbay/riptide'
 
-// Create a connection to the remote server
-const connection = Riptide.Connection.create()
-connection.transport.connect('ws://localhost:12000/socket')
-
-// Represents the remote store on the server
-const remote = new Riptide.Store.Remote(connection)
-// Represents local store for the current session
-const local = new Riptide.Store.Memory()
-// Setup local store to sync with remote.
-// Returns a sync object that can be used to apply mutations both to local and remote
-const sync = local.sync(remote)
-
-// Log entire state when local store updates
-local.onChange.add(mut => {
-    console.dir(mut)
-    console.dir(local.query_path([]))
-
-})
-
-// When the connection status changes, save the state just to the local store
-connection.transport.onStatus.add(status => local.merge(['connection', 'status'], status))
-
-// Create interceptor to fetch todos whenever connection becomes ready
-local.interceptor.before_mutation(['connection'], async (mut) => {
-    if (mut.merge.status !== 'ready') return
-
-    // Refresh todos path from remote and subscribe to any future changes
-    await remote.query({
-        'todos': {
-            subscribe: true
-        }
-    })
-})
+// look at ./data/riptide to see how Riptide is bootstrapped 
+import { local, sync } from './data/riptide'
 
 interface Todo {
     name?: string
@@ -53,7 +22,7 @@ function App() {
     async function create_todo() {
         const name = prompt('Name of new todo?')
         if (!name) return
-        const key = Riptide.UUID.ascending()
+        const key = UUID.ascending()
         try {
             await sync.merge(['todos', key], {
                 key,
