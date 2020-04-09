@@ -16,6 +16,7 @@ jobs:
     working_directory: ~/packages/elixir
     steps:
       - checkout
+      - run: ls
 
       # specify any bash command here prefixed with `run: `
       - run: mix deps.get
