@@ -12,6 +12,8 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    env:
+      directory: ./packages/elixir
 
     steps:
     - uses: actions/checkout@v2
@@ -22,5 +24,7 @@ jobs:
         otp-version: 22.2 # Define the OTP version [required]
     - name: Install Dependencies
       run: mix deps.get
+      working-directory: ${{env.working_directory}}
     - name: Run Tests
       run: mix test
+      working-directory: ${{env.working_directory}}
