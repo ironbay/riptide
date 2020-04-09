@@ -28,6 +28,9 @@ jobs:
     - name: Install Dependencies
       run: mix deps.get
       working-directory: ${{env.directory}}
+    - name: Compile
+      run: mix compile
+      working-directory: ${{env.directory}}
     - name: Run Tests
       run: mix test
       working-directory: ${{env.directory}}
