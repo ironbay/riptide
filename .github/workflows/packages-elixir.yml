@@ -3,10 +3,12 @@ name: packages/elixir
 on:
   push:
     branches: [ master ]
-    #paths:
-     # - 'packages/elixir/*'
+    paths:
+     - 'packages/elixir/*'
   pull_request:
     branches: [ master ]
+    paths:
+     - 'packages/elixir/*'
 
 jobs:
   build:
