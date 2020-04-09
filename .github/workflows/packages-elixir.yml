@@ -11,7 +11,7 @@ on:
      - 'packages/elixir/*'
 
 jobs:
-  build:
+  packages/elixir:
 
     runs-on: ubuntu-latest
     env:
