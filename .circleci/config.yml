@@ -3,7 +3,7 @@
 # Check https://circleci.com/docs/2.0/language-elixir/ for more details
 version: 2
 jobs:
-  packages/elixir:
+ build:
     docker:
       # specify the version here
       - image: elixir:1.10.2
