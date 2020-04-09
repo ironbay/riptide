@@ -22,9 +22,12 @@ jobs:
       with:
         elixir-version: 1.9.4 # Define the elixir version [required]
         otp-version: 22.2 # Define the OTP version [required]
+    - name: LS
+      run: 'ls -lah'
+      working-directory: ${{env.directory}}
     - name: Install Dependencies
       run: mix deps.get
-      working-directory: ${{env.working_directory}}
+      working-directory: ${{env.directory}}
     - name: Run Tests
       run: mix test
-      working-directory: ${{env.working_directory}}
+      working-directory: ${{env.directory}}
