@@ -26,6 +26,8 @@ defmodule Riptide.Subscribe do
 
   # TODO: This could have a better implementation
   def broadcast_mutation(mut) do
+    IO.inspect("oh shit i got called first")
+
     mut
     |> Riptide.Mutation.layers()
     |> Stream.flat_map(fn {path, value} ->

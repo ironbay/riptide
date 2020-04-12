@@ -9,6 +9,7 @@ connection.transport.connect('ws://localhost:12000/socket')
 // Represents the remote store on the server
 const remote = new Riptide.Store.Remote(connection)
 // Represents local store for the current session
+
 const local = new Riptide.Store.Memory()
 // Setup local store to sync with remote.
 // Returns a sync object that can be used to apply mutations both to local and remote
@@ -65,7 +66,7 @@ function App() {
     }
 
     function handle_click(todo: Todo) {
-        todo.completed ? sync.delete(['todos', todo.key]) : sync.merge(['todos', todo.key, 'completed'], true)
+        todo.completed ? remote.delete(['todos', todo.key]) : remote.merge(['todos', todo.key, 'completed'], true)
     }
 
     return (

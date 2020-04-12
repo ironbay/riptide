@@ -13,6 +13,10 @@ defmodule Riptide.Processor do
   end
 
   def process_data(msg, state) do
+    IO.inspect(msg)
+    IO.inspect(state)
+    IO.inspect("i am the msg")
+
     msg
     |> state.format.decode()
     |> case do
