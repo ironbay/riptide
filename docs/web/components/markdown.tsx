@@ -50,7 +50,9 @@ export default function Markdown(props: Props) {
                             case 1:
                                 return <h1 className="text-3xl font-200 tracking-wide text-gray-700 mb-6" {...props} />
                             case 2:
-                                return <h2 className="text-2xl mb-6 font-500" {...props} />
+                                return <h2 className="text-2xl font-normal mt-16 mb-4 text-gray-900 leading-none" {...props} />
+                            case 3:
+                                return <h3 className="text-xl font-medium mt-12 mb-3 text-gray-900 leading-tight" {...props} />
 
                         }
 
