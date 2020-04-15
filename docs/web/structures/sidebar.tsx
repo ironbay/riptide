@@ -30,7 +30,7 @@ export default function Sidebar() {
 
                     <div className="h-12" />
                     <Header>Frontends</Header>
-                    <Doc href="/quick-start">Javascript</Doc>
+                    <Doc href="/docs/[...doc]" as="/docs/javascript">Javascript</Doc>
                     <Doc href="/quick-start">React</Doc>
                 </div>
 
