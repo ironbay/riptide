@@ -58,9 +58,18 @@ connection.transport.connect('ws://localhost:12000/socket')
 const remote = new Riptide.Store.Remote(connection)
 ```
 
+That's it! Our remote store is now up and running. We can now use our remote store to interact with the remote server: 
+
+```javacsript
+const todos = await remote.query_path(['todos'])
+const deleted = await remote.delete(['todos'])
+```
+
+You might notice that calling functions using our remote store returns functions. That's because our requests are going over the network to interact with our data. Let's store some of this data in-memory so that we don't have to rely solely on promises. 
+
 ### 5. Create a local store
 
-The local store is where we'll hold data in-memory on our front-end. We'll instantiate a new local store using Riptide's `Memory` class: 
+Riptide has a `Memory` class that allows us to hold our data in-memory on the front-end. We can store whatever we want in our local store: session specific information, information we fetch from remote, etc. In the next steps we'll show you how to do both. Let's create a new in-memory local store: 
 
 ```javascript
 // Riptide.js
@@ -75,9 +84,23 @@ const remote = new Riptide.Store.Remote(connection)
 const local = new Riptide.Store.Memory()
 ```
 
+You can check that your local store is working by running some simple writes and reads on it: 
+
+```javascript
+local.merge(['todos'], {name: 'i am a todo!'})
+
+local.query_path(['todos'])
+// {todos: {name: 'i am a todo!'}
+```
+
+
+
 ### 6. Sync our local store 
 
-Riptide runs on Mutations, which are simple descriptions of how our data should transform. 
+When you want to change data in Riptide, you do so through Mutations. Mutations are a simple way of describing how you want your data to change. 
+
+When ou
+
 
 When data changes in our application, our remote store will hear about those data transformations in the form of Mutations. In this example, we want to make sure our local store hears about those Mutations as well. 
 

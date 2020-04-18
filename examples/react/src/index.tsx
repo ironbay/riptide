@@ -38,10 +38,13 @@ function App() {
         todo.completed ? sync.delete(['todos', todo.key]) : sync.merge(['todos', todo.key, 'completed'], true)
     }
 
+
     return (
         <div>
             <ul>
                 <h3>Todo Lists</h3>
+                <div onClick={() => local.merge(['wow'], { name: 'bingo' })}>hello</div>
+                <div onClick={() => local.query_path(['wow'])}>s</div>
                 {
                     local
                         .query_values<Todo>(['todos'])
