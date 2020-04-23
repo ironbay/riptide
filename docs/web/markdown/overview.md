@@ -8,11 +8,12 @@ Riptide eases this burden by taking the plumbing - how data is moved around, tra
 
 Riptide has been enormously productive for us but choosing a framework shouldn't be done without due dilligence. To make this easier, we put together [our best arguments against Riptide](/docs/caveats) and also [where our inspiration came from](/docs/inspiration) so you can make an informed decision.
 
-* * *
+---
 
 ## One data model — everywhere
 
 Traditional frameworks require you to think about your data in numerous ways:
+
 - Objects in your application
 - Relational tables in your database
 - Events in your message queue
@@ -43,9 +44,9 @@ Riptide represents all of your data as one big tree no matter where you are: ser
 
 Data is modified by issuing Mutations. Mutations can merge new fields or delete existing ones. Clients can query and subscribe to parts of the tree they care about and that data will be kept in sync in realtime.
 
-
 Take a deep dive into [Mutations](/mutations), [Queries](/queries), and [Stores](/stores)
-* * *
+
+---
 
 ## Composable logic
 
@@ -53,9 +54,9 @@ Riptide Interceptors let you define simple rules using Elixir's pattern matching
 
 ```json
 {
-  "merge":{
-    "todos":{
-      "TOD2":{
+  "merge": {
+    "todos": {
+      "TOD2": {
         "key": "TOD2",
         "text": "Return cursed Aztec gold"
       }
@@ -95,8 +96,8 @@ This results in the following data being written
 
 ```json
 {
-  "todos":{
-    "TOD2":{
+  "todos": {
+    "TOD2": {
       "key": "TOD2",
       "text": "Return cursed Aztec gold",
       "created": 1586068269822,
@@ -110,17 +111,29 @@ Interceptors are simple but powerful. Even the most complex business logic can b
 
 [Learn more about the various interceptors available in Riptide](/interceptors)
 
-* * *
+---
 
 ## Realtime by default
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Pretium vulputate sapien nec sagittis aliquam malesuada bibendum arcu vitae. Lobortis scelerisque fermentum dui faucibus in ornare quam viverra orci. Pellentesque id nibh tortor id aliquet lectus.
+Riptide takes care of shipping data around and ensuring all observers are kept up to date with the latest changes. This happens automatically - there's no pub/sub system to setup or event triggers and handlers to define.
 
-<!-- 
-# Beyond REST, ORMs and Pub/Sub
+```javascript
+// React example
+Riptide.remote.query_path(["todos"], { subscribe: true })
 
-Most application frameworks ship with tools to define a REST API for your frontends, an ORM to transform incoming data into something your database understands, and if you're lucky, a pub/sub system to keep everything in sync.  
+function render() {
+  return (
+    <ul>
+    {
+      Riptide.local
+        .query_values(["todos"])
+        .map(item => (
+          <li key={item.key}>{item.text}</li>
+        ))
+    }
+    </ul>;
+  )
+}
+```
 
-This approach your energy is spent juggling these disparate systems and building the glue that holds them together. Nevermind the tools you're missing to manage your increasingly complex business logic.  
-
-Riptide eases this pain by taking a functional approach. -->
+Instead of being an after thought, 100% of the UIs you build will be realtime by default.
