@@ -26,7 +26,6 @@ jobs:
 
       - name: Cache deps
         uses: actions/cache@v1
-        working-directory: ${{env.directory}}
         with:
           path: ${{env.directory}}/deps
           key: deps-${{ hashFiles('${{env.directory}}/mix.lock') }}
@@ -35,7 +34,6 @@ jobs:
 
       - name: Cache build
         uses: actions/cache@v1
-        working-directory: ${{env.directory}}
         with:
           path: _build
           key: build-${{github.ref}}-${{github.sha}}
