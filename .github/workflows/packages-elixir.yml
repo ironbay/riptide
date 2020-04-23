@@ -2,37 +2,53 @@ name: packages/elixir
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
     paths:
-     - 'packages/elixir/*'
+      - "packages/elixir/*"
   pull_request:
-    branches: [ master ]
+    branches: [master]
     paths:
-     - 'packages/elixir/*'
+      - "packages/elixir/*"
 
 jobs:
   packages/elixir:
-
     runs-on: ubuntu-latest
     env:
       directory: ./packages/elixir
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup elixir
-      uses: actions/setup-elixir@v1
-      with:
-        elixir-version: 1.9.4 # Define the elixir version [required]
-        otp-version: 22.2 # Define the OTP version [required]
-    - name: LS
-      run: 'ls -lah'
-      working-directory: ${{env.directory}}
-    - name: Install Dependencies
-      run: mix deps.get
-      working-directory: ${{env.directory}}
-    - name: Compile
-      run: mix compile
-      working-directory: ${{env.directory}}
-    - name: Run Tests
-      run: mix test
-      working-directory: ${{env.directory}}
+      - uses: actions/checkout@v2
+      - name: Setup elixir
+        uses: actions/setup-elixir@v1
+        with:
+          elixir-version: 1.9.4 # Define the elixir version [required]
+          otp-version: 22.2 # Define the OTP version [required]
+
+      - name: Cache deps
+        uses: actions/cache@v1
+        with:
+          path: ${{env.directory}}/deps
+          key: deps-${{ hashFiles('${{env.directory}}/mix.lock') }}
+          restore-keys: |
+            deps-
+
+      - name: Cache build
+        uses: actions/cache@v1
+        with:
+          path: _build
+          key: build-${{github.ref}}-${{github.sha}}
+          restore-keys: |
+            build-${{github.ref}}-
+            build-
+
+      - name: Install Dependencies
+        run: mix deps.get
+        working-directory: ${{env.directory}}
+
+      - name: Compile
+        run: mix compile
+        working-directory: ${{env.directory}}
+
+      - name: Run Tests
+        run: mix test
+        working-directory: ${{env.directory}}
