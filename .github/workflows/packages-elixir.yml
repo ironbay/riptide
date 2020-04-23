@@ -11,7 +11,7 @@ on:
       - "packages/elixir/*"
 
 jobs:
-  packages/elixir:
+  test:
     runs-on: ubuntu-latest
     env:
       directory: ./packages/elixir
