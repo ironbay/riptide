@@ -40,7 +40,7 @@ jobs:
       - name: Cache build
         uses: actions/cache@v1
         with:
-          path: _build
+          path: ${{env.directory}}/_build
           key: build-${{github.ref}}-${{github.sha}}
           restore-keys: |
             build-${{github.ref}}-
