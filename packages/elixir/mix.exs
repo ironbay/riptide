@@ -4,7 +4,7 @@ defmodule Riptide.MixProject do
   def project do
     [
       app: :riptide,
-      version: "0.2.4",
+      version: "0.2.#{version_patch()}",
       description: "Framework for building realtime applications",
       package: [
         maintainers: ["thdxr", "ironbay"],
@@ -15,6 +15,11 @@ defmodule Riptide.MixProject do
       start_permanent: Mix.env() == :prod,
       deps: deps()
     ]
+  end
+
+  def version_patch() do
+    {result, 0} = System.cmd("git", ["rev-list", "HEAD", "--count"])
+    String.trim(result)
   end
 
   # Run "mix help compile.app" to learn about applications.
