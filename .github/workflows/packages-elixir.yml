@@ -5,10 +5,12 @@ on:
     branches: [master]
     paths:
       - "packages/elixir/*"
+      - ".github/*"
   pull_request:
     branches: [master]
     paths:
       - "packages/elixir/*"
+      - ".github/*"
 
 jobs:
   test:
@@ -52,4 +54,9 @@ jobs:
 
       - name: Run Tests
         run: mix test
+        working-directory: ${{env.directory}}
+
+      - name: Publish
+        if: github.ref == 'refs/heads/master'
+        run: mix hex.publish --yes
         working-directory: ${{env.directory}}
