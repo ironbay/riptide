@@ -4,7 +4,7 @@ defmodule Riptide.MixProject do
   def project do
     [
       app: :riptide,
-      version: "0.3.0+#{version_patch()}",
+      version: "0.3.0-#{version_patch()}",
       description: "Framework for building realtime applications",
       package: [
         maintainers: ["thdxr", "ironbay"],
@@ -18,7 +18,7 @@ defmodule Riptide.MixProject do
   end
 
   def version_patch() do
-    {result, 0} = System.cmd("git", ["rev-list", "HEAD", "--count"])
+    {result, 0} = System.cmd("git", ["rev-parse", "--short", "HEAD"])
     String.trim(result)
   end
 
