@@ -49,5 +49,5 @@ jobs:
 
       - name: Publish
         if: github.ref == 'refs/heads/master'
-        run: npm publish
+        run: npm publish || true
         working-directory: ${{env.directory}}
