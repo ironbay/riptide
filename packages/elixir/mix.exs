@@ -9,7 +9,10 @@ defmodule Riptide.MixProject do
       package: [
         maintainers: ["thdxr", "ironbay"],
         licenses: ["MIT"],
-        links: %{}
+        links: %{
+          github: "https://github.com/ironbay/riptide-next",
+          docs: "https://riptide.ironbay.co"
+        }
       ],
       elixir: "~> 1.9",
       start_permanent: Mix.env() == :prod,
