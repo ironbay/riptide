@@ -13,7 +13,7 @@ In this guide we'll run through setting up `Riptide` on the front-end. Here are 
 - Using `onChange` and `interceptors` to take actions according to data transformations
 
 <!--  -->
-### 1. Install Riptide via npm
+### Install Riptide via npm
 
 Let's start by installing Riptide via npm. 
 
