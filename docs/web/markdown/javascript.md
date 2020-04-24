@@ -3,7 +3,7 @@
 A guide for setting up Riptide on the front-end. 
 *** 
 
-In this guide we'll show you the basic setup steps for getting Riptide running on the front-end. Here are some of the steps we'll cover: 
+In this guide we'll run through setting up `Riptide` on the front-end. Here are the steps we'll take: 
 
 - Installing and importing `Riptide`
 - Setting up a `remote` store for interacting with data on our remote server
@@ -25,9 +25,10 @@ npm install @ironbay/riptide
 yard add @ironbay/riptide
 ```
 
-### 2. Create a riptide.js file
+### Create a riptide.js file
 
-While this step isn't necessary, we highly reccomend dedicating a file to your `Riptide` setup. As your application grows, you might want to extend your setup to account for new developments. For example, you can alter your initial set up based off a end-user's permissions. A detailed explanation is beyond the scope of this guide, so for now let's create the file and import `Riptide.`
+While this step isn't stictly necessary, we reccomend dedicating your `Riptide` setup its own file. As the complexity of your application grows, you might want to add further configuration here. An example configuration might entail fetching different data based off session-specific information like user's permissions. For now let's create a `riptide.js` file and import the `Riptide` library that we just installed: 
+
 
 ```javascript
 // riptide.js
@@ -35,11 +36,13 @@ While this step isn't necessary, we highly reccomend dedicating a file to your `
 import * as Riptide from '@ironbay/riptide'
 ```
 
-### 3. Connect to the remote server
+### Connect to the remote server
 
-Before we create any of our stores, we need to connect to the remote server. We'll use `Riptide.Connection` to create a connection interface that we'll use to begin the connection. As we'll see later in the guide, we can also use this interface to listen for changes to our `connection` status and accordingly take actions. 
+As we mentioned previously, we'll want to set up a remote store to interact with data on our remote server. The remote store itself is a client that exposes basic ready and write operations and more advanced helper functions. Before we instantiate a remote store, we have to create a connection to the remote server that the remote store can use. 
 
-We call `Riptide.Connection.create()` to create the interface, and then call the instance's `transport.connect()` function, passing in the Websocket url. 
+We create this connection via the `Riptide.Connection` class. This interface is where we'll handle all things connection related, including creating the connection, listening for connection status updates, etc. 
+
+Let's instantiate a `Connection` interface with `Riptide.Connection.create()`, and then use the class to start a connection using the `transport.connect(url)` function, connection tjj the websocket url `ws://localhost:12000/socket`. 
 
 Make sure your back-end is running and then add: 
 
@@ -52,11 +55,11 @@ const connection = Riptide.Connection.create()
 connection.transport.connect('ws://localhost:12000/socket')
 ```
 
-### 4. Create a remote store
+### Create a remote store
 
-Now that we have a `connection` instance, let's create our `remote` store. The `remote` store is how we'll interact with data on our remote server. It also comes with a group of helper functions that let us do things like listen for data transformations.
+Great, now our connection is up and running and it's time to instantiate a remote store that will use this connection, allowing us to access data on the server. 
 
-We'll instantiate a new `remote` store by calling `new Riptide.Store.Remote(connection)`, passing the `connection` we just created to the constructor: 
+We'll create a remote store instance by calling `new Riptide.Store.Remote(connection)`, passing in the connection we previously created to the constructor. 
 
 ```javascript
 // Riptide.js
@@ -69,20 +72,25 @@ connection.transport.connect('ws://localhost:12000/socket')
 const remote = new Riptide.Store.Remote(connection)
 ```
 
-That's it! There's more setup involved to ensure that our connection status is ready before we stary interacing with data on the remote server, but to give you a taste of what using the `remote` store is like, here are some simple examples: 
+That's it! Our remote store is connected to the back-end. Later in this guide we'll explain how to ensure the connection is ready before trying to interact with data on the server. But for now, here's a taste of what using the remote server will look like: 
 
 ```javascript
 // app.js 
 
-const todos = await remote.query_path(['todos'])
+const merged = await remote.merge(['todos', 'todos_01'])
 const deleted = await remote.delete(['todos'])
+
+this.remote.onChange.add(mut => 
+    console.dir('*** New Mutation ***')
+    console.dir(mut)
+)
 ```
 
-You'll notice that when we interact with data via our remote store, our interactions return `Promises`. Since the requests are going over network, we have to wait for the back-end to respond. Next we'll create a local store where we can interact with data that's in-memory without having to reply on `Promises`. 
+Whenever we interact with data using our remote store, we're going over a network, and therefore these functions (here `query_path` and `delete`) return `Promises`. Next we'll create a local store where we can interact with data that's in-memory without having to reply on `Promises`. 
 
-### 5. Create a local store
+### Create a local store
 
-Riptide has a `Memory` class that allows us to hold our data in-memory on the front-end. We can store whatever we want to use immediately in our local store. Most commonly, this is a mix of data imported from our `remote` store and session specific information (server connection status, UI filtering settings, etc). 
+Riptide has a `Memory` class that allows us to hold our data in-memory on the front-end. We can store whatever we want to use immediately in our local store. Most commonly, this is a mix of data imported from our `remote` store and session specific information server connection status, UI filtering settings, etc. 
 
 In later steps we'll go over how to get data from our `remote` store into our `local` store. For now let's create a new store by calling `new Riptide.Store.Memory()`:
 
@@ -99,31 +107,39 @@ const remote = new Riptide.Store.Remote(connection)
 const local = new Riptide.Store.Memory()
 ```
 
-You'll notice that for the `local` store we didn't have to pass in any arguments to the constructor. That's because our local store is all held in-memory, so initially it's state is just an empty object. All reading and writing will happen in-memory and not over any network, so no `connection` instance needed. 
-
-Similar to our remote store, we can interact with data on our `local` store as such:
+You'll notice that for the local store we didn't have to pass in any arguments to the constructor. This store's state is in a simple object that we can access instantly; no connection needed. You can see below how the remote and local stores have similar interfaces for interacting with data (one difference being local doesn't use `Promises`): 
 
 ```javascript
 // app.js 
 
 local.merge(['todos'], {name: 'i am a todo!'})
-
-local.query_path(['todos'])
+local.delete(['todos'])
 ```
 
 ### 6. Sync the local store 
 
-Now that we have an in-memory store we can use to render data, how do we get data from our `remote` store to our `local` one? Our `local` store provides us with a `sync` function that we'll use to ensure our data is consistent between the stores. 
+With our local store we can now access data instantly. When we want to display data from our server on our front-end, we'll want to query that data with the remote store and then save it to the local store for instant access. Since this is such a common pattern, our local store ships with a `sync` function that allows a seamless coordination between the two stores. 
 
-The `sync` is at its core very simple: any data transformations that our `remote` store hears about, our `local` store will hear about as well. We can still store additional data in our `local` store that remote doesn't know about. But for any paths that remote recieves transformations for, our `local` store will here about and apply those changes.
+The functionality of calling `local.sync(remote)` is very simple: it ensures that any data transformations (mutations) that reach our remote store will also reach our local store. For example: 
 
-The `sync` function not only instantiates this coordination between stores, it acts as it's own interface that allows us to write to both stores simultanesouly. We can perform optimistic updates by immediately writing to both stores upon a user-action. If the action doesn't validate on the back-end, our `remote` and `local` stores will still be kept in sync. The optimistic update will be reversed in the `local` store.
+- If we call a `remote.query(['todos'])`, both our local and remote stores will store the result of the query. 
+- If we call a `remote.delete(['todos', 'todo_01'])`, our local store will recievie a mutation, describing that `todo_01` was deleted and update accordingly. 
 
+Insantiation a sync by calling `local.sync(remote)` initiates the above functionality. A sync instance is returned from calling `local.sync(remote)` that also has it's own functionality. To give you a preview of what this looks like: 
 
-Let's instantiate the `sync` object. We call `local.sync(remote)`, passing in the `remote` instance that we want our `local` store to sync with:
+```javascript
+const sync = local.sync(remote)
+sync.merge(['todos', 'todo_01'])
+sync.delete(['todos', 'todo_01'])
+```
 
+The `merge` and `delete` function look eerily similar to the `merge` and `delete` functions we saw on the local and remote stores, is sync its own store? The sync objects provied a helpful interface for interact with our local and remote stores at once. 
 
-Let's instantiate a `sync`:
+We use the sync object to perform [optimistic updates](https://stackoverflow.com/questions/33009657/what-is-optimistic-updates-in-front-end-development). If we want to have our UI update instantly (rather than waiting for the back-end to confirm that a user action was successful), we call `sync.merge` or `sync.delete` and both stores get written to. 
+
+For this guides purposes, we'll be satisfied creating the sync to ensure that our remote and local stores are recieving the same information. We'll export the sync object at the end of this guide for use in our application's components. 
+
+Let's instantiate a sync:
 
 ```javascript
 // Riptide.js
@@ -140,29 +156,62 @@ const local = new Riptide.Store.Memory()
 const sync = local.sync(remote)
 ```
 
-Awesome, now we know that our `remote` store will pass along any mutations it recieves to our `local` store. We don't have to worry about our data being consistent between stores. 
+### Query and subscribe to data 
 
-As we mentioned, the `sync` instance provides its own data transormation functions (similar to those on our local and remote stores). To give you a glimpse of what this looks like:
+Let's recap our setup so far. We've connected our remote store to the remote server with the connection we initiated. We created a local store and then synced it with our remote store. Now whenever remote recieves information, that info will be passed onto our local store. 
+
+Since `Riptide` was built with real-time applications in-mind, we want to ensure that our remote store is kept up-to-date with the latest information from our remote server. 
+
+Using our todos example, imagine that we initially call a `remote.query(['todos'])` in our application. The remote store will recieive any todos and pass those along to our local store. So good so far. 
+
+But what happens if another todo is added to our back-end? This could come from anywhere: another user's actions, an external API, a data migration, etc. We might want to create a polling system to requery todos every x seconds. But what if we need to subscribe to more than just todos? Rewriting a polling function for each path of data would quickly become cumbersome. We could also write a polling system to query ALL of our server data, `remote.query([])`, but loading all of our back-end data into our in-memory store is clearly not the best option. 
+
+To solve this issue, `Riptide` ships with an optional `{subscribe: true}` parameter when calling `remote.query()`. This option tells our back-end that we want to be notified of any updates happening under the path we're querying. For example: 
 
 ```javascript
-// add this todo to both stores 
-sync.merge(['todos'], {task: "clean the fishtank"})
+await remote.query({
+    'todos': {
+        subscribe: true
+    }
+})
+```
+This is telling our back-end two things: 
 
-// remore the todo from both stores 
-sync.delete(['todos]) 
+- Query for all the todos and return them
+- Notify our remote store of and updates happening under the todos path
+
+So far we've used the word "notify" to describe when parts of our system are speaking to each other. `Riptide` uses the concept of mutations to speak across components. Mutations are a simple description of how our data is being transformed in the form of an object, for example: 
+
+```javascript
+{
+    merge: {
+        todos: {
+            todo_01: {
+                user: 'Alan' 
+            }
+        }
+    }, 
+    delete: {}
+}
 ```
 
-Now that our stores are synced, let's start to explore some of the features of our stores beyond interacting directly with data. 
+This mutation alters the user's name under the path: `['todos', 'todo_01', 'user']`. If we were subscribed to this path, the following data flow would take place: 
 
-### 7. Listen for changes to our local store 
+- back-end recieves mutation 
+- data transformation occurs 
+- back-end looks for any subscriptions on the todos path
+- since remote is subscribe to this path, it broadcasts the mutation 
+- the remote store recieves the mutation and forwards to our local store (since they're synced)
+- our local store updates it's state accordingly
 
-It might be nice to print the state of our `local` store. That way we could verify that mutations are being sent from the `remote` store, and we could debug issues by tracing the data flow in our console. 
 
-Our local store comes with a simple `onChange.add` function that allows us to pass in callbacks that get triggered when a mutation reaches our local store. 
+### Listen for changes to our local store 
 
-The `onChange.add` handler does not provide a ton of granularity, its best for basic tasks like printing the current state, or taking a certain action every a mutation hits our local store. We'll see later in this guide how if we want futher granularity we can use `interceptors`. 
+We mentioned previously that our stores are capable of more than data querying and transformation functions. One of these helpful functions is the `onChange.add` function, which allows us to pass in callbacks which will be called anytime that our store recieves a mutation. 
 
-For now let's add the simple callback we described, one that will print the current `local` store. We'll also print the mutation being sent to our `local` store. 
+A common pattern is to add an `onChange` callback to our local store that prints the incoming mutation and entire local state. Doing so makes it easy to track the local state and find bugs. 
+
+We add that callback like this:
 
 ```javascript
 // Riptide.js
@@ -176,6 +225,7 @@ const remote = new Riptide.Store.Remote(connection)
 
 const local = new Riptide.Store.Memory()
 
+const sync = local.sync(remote)
 
 local.onChange.add(mut => {
     console.dir(mut)
@@ -183,40 +233,22 @@ local.onChange.add(mut => {
 })
 ```
 
-Great! Now anytime a mutation comes into our `local` store, we'll hear about it. We can inspect how our data is being told to transform. 
-
-### Start a subscription 
- 
-Let's recap the data flow we have now. Our back-end recieves a mutation (this could come from anywhere in our application, or from a back-end service, or from polling an API, etc). The back-end will read the path being written to (for example, ["todos", "todo_01"]) and then look if there are any subscriptions to that path. 
-
-A subscription is simply a method our remote server uses to notify a store when a data transformation occurs under a specific path. If the store is subscribed to that path, our back-end will make sure to notify the store. The subscription model is opt-in, so that you can adjust the volume of information reaching your remote store. For high-write applications, subscribing to all of the data on our-back end could quickly become cumbersome. 
-
-For our purposes, we want our remote store to subscribe to the `todos` path. This way, our `remote` and `local` stores (since they're synced) will both be kept up to date with any transformations happening under that path. We don't have to write any polling to check for changes, the subscription model will handle all of that. 
-
-In `Riptide` we initiate subscriptions via a query. This way, we fetch the path initially by manually querying it, but making sure to pass in a `{subscribe: true}` option. If we omit this option, we'll still recieve all the current `todos`, but we won't hear about any future updates automatically. 
-
-Here's what a query that initiates a subscription looks like:
-
-```javascript
-await remote.query({
-    'todos': {
-        subscribe: true
-    }
-})
-```
-
-Now both our stores (remember the sync!) will recieve all the current todos, and be made aware of any updates via mutations. 
-
-Although the above query is straightforward, we have to ensure that our `connection` status is ready before we start querying our `remote` server. In The next step, we'll show you how to ensure that the `connection` is up and running before trying to query and subscribe to data. 
+Great! Now anytime a mutation comes into our `local` store, we'll hear about it. We can inspect the incoming mutations to our local store and how these mutations are affecting our local state. 
 
 ### Putting it all together 
 
-Now that we know how to query and subscribe to our `remote` server, how can we ensure that our `connection` is up and running before trying to access the data? 
+So far we've outlined how to set up the invididual components in our `Riptide` system. Now we'll explain a common pattern for assembling the components which ensures that all of our components are up and running before they try to interact with each other. 
 
-As we explained earlier, our `connection` client comes with functions that expose information about our `connection`. Similar to the `local.onChange.add` function, our `connection` comes with a `connection.transport.onStatus.add` callback. We can add and number of callbacks using this function, which will be called any time that our `connection` status updates. 
+Here are the basic steps that we'll cover in this section: 
 
-To start, let's add a listener that will simply listen for a `connection` status update and merge that information into the local store. We'll save it under the `['connection', 'status']` path. Remember, if we want to write to both stores at once, we use the `sync` object. But since a connection status is session-specific, we most likely don't want to save it on our remote server. We'll use a simple to `local.merge` function to save it locally. 
+- Listen for a server connection status update
+- Whenever our connection status updates, save this information to our local store 
+- Attach a listener to our local store that listens for the connection status being updated
+- Inside this listener, if our connection status is "ready", query the remote server using our remote store and pass in the subscription parameter
 
+That might be a lot to digest at once, so let's just focus on the first task, listening for the connection status update. 
+
+As we explained earlier, the connection interface that we instantiated comes with some helpful functions. One of these is the `transport.onStatus.add()` function, which allows us to add callbacks which will run whenever the connection status updates. This way we can add a callback that will merge the connection status to our local store whenever the connection status updates. 
 
 Let's add the callback: 
 
@@ -244,10 +276,10 @@ connection.transport.onStatus.add(status => {
 })
 ```
 
-Great! Now whenever our `connection` status changes, our `local` store will hear about it. Remember, our goal is to make that subscription query once our `connection` status is ready. One approach might be to use the `local.onChange` callback we saw previously: 
+Great! Now whenever our connection to the remote server changes, our local store will save that information. Now we want to listen for an incoming mutation to our local store that says our server status connection is ready. Remember the `onChange.add` functionality that we used to print our local store's state? What if we tried to use that?
 
 ```javascript
-local.onChange(mut => {
+local.onChange.add(mut => {
     if (
         mut.merge.connection && 
         mut.merge.connection.status && 
@@ -258,11 +290,12 @@ local.onChange(mut => {
 })
 ```
 
-But relying on the `onChange` handler doesn't provide us with a ton of granularity. We can see how we might end up with a huge switch statement, inspecting every merge to see if it's altering a path we care about. 
+Hmm, this seems a little cumbersome. The `onChange.add` was a good option for logging the entire state, but having to filter each incoming mutation seems like a bit much. Is there a function that will allow us some more granularity?
 
-Luckily, `Riptide` has an `interceptor` functionality that allows us to specify this granularity easily. The `interceptor` framework allows us to specify a path as an argument. We also have both `interceptor.before_mutation` and `interceptor.after_mutation`, if we want to take after before or after a mutation is written. 
 
-In this case, we'll use a `interceptor.before_mutation` to listen for a mutation coming into our local store that is specifying that the `['connection', 'status']` path is being written to. We'll then inspect the mutation to see if has a `ready` status. If not, we simply return (the interceptor will re-run when another status change occurs). If it is ready, we'll make the initial subscription query. 
+`Riptide` uses an interceptor system for this exact purpose. Interceptors listen for incoming mutations, under a certain path, and allow us take an action according to the incoming mutation. In this case, we want to inspect the incoming connection status, and only query the back-end with our remote store if the connection has a ready status. 
+
+We saw earier how we're saving the connection status under the `['connection', 'status']` path in our local store. So for our interceptor, we'll pass in this path and a callback function that checks the connection status, and either returns immediately or carries out our remote query and subscription based on the connection status. 
 
 The implementation is simple and straightforward: 
 
@@ -308,7 +341,13 @@ local.interceptor.before_mutation(['connection'], async (mut) => {
 })
 ```
 
-And that's it! When our `connection` is ready, we'll subscribe to the todos path and fetch any initial todos. Our `local` and `remote` stores will subscribe to and further transformations automatically. 
+That's it! No we simply wait for an incoming mutation to our local store where `mut.merge.status === 'ready'`. To recap this portion, here's what's happening: 
+
+- We instantiate a connection to the remote server 
+- We add a listener to this connection, which will merge the current status into our local store
+- We attach a `interceptor.before_mutation` function to the local store, which will listen for a mutation altering the `['connection']` path
+- Inside the interceptor, we check the mutation to see if its returning a ready state. If we so we query for the todos and tell our back-end that we're subscribing to them 
+
 
 ### Export
 
@@ -324,22 +363,14 @@ import { local, sync } from './riptide.js'
 
 Let's recap our whole setup. 
 
-- First, we installed `Riptide` in our application, created a setup file, and imported `Riptide` into the file. 
-
+- First, we installed `Riptide` in our application, created a setup file, and imported `Riptide` into the file.
 - Then we set up a `connection` instance to the remote server. We passed in a Websocket url to this constructor. 
-
 - We created a `remote` store, and passed in the connection instance to the constructor. Our remote store will use this connection to interact with our remote server. 
-
 - We created an in-memory `local` store. We learned we can store anything here that we want, including session-specific information, data from our remote server, etc. 
-
 - We synced the stores. This ensure that any mutations that reach our remote store also reach our local store. It also provided us with a sync object so that we can implement optimistic updates by writing to both stores simultaneously. 
-
 - We saw how we can add `onChange` callbacks to our stores. While not providing granularity, this callback is helpful for taking action whenever a mutation reaches our store. 
-
 - We saw how to set up a subscription with our `remote` store. We learned that we do not have to implement any sort of polling: `Riptide` will tell our `remote` store if any changes occur under paths that we're subscribed to. Since our stores were synced, and mutations sent to our `remote` store will also hit our `local` store. 
-
 - We learned that before interacting with data on our remote server, we want to ensure the `connection` is ready. We showed how we can use a listener on the `connection` to notify only our local store when a status change occurs. 
-
 - We then saw how our `interceptors` can listen for changes to our stores (either before or after the write occurs). In our case, we listen for a `connection` status of `ready` being merged, and then make our initial query with a subscription option specified. 
 
 # Next steps 
