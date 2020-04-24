@@ -13,7 +13,7 @@ on:
       - ".github/*"
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
     env:
       directory: ./packages/javascript
@@ -42,9 +42,9 @@ jobs:
         run: npm run build
         working-directory: ${{env.directory}}
 
-      - name: Run Tests
-        run: npm run test
-        working-directory: ${{env.directory}}
+      # - name: Run Tests
+      #   run: npm run test
+      #   working-directory: ${{env.directory}}
 
       - name: Publish
         if: github.ref == 'refs/heads/master'
