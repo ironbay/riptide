@@ -47,6 +47,10 @@ jobs:
       #   run: npm run test
       #   working-directory: ${{env.directory}}
 
+      - name: NPM Auth
+        run: echo //registry.npmjs.org/:_authToken=${NPM_TOKEN} >> .npmrc
+        working-directory: ${{env.directory}}
+
       - name: Publish
         if: github.ref == 'refs/heads/master'
         run: npm publish || true
