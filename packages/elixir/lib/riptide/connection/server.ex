@@ -39,7 +39,8 @@ defmodule Riptide.Websocket.Server do
       Map.merge(
         %{
           port: 12_000,
-          format: Riptide.Format.JSON
+          format: Riptide.Format.JSON,
+          handlers: []
         },
         opts
       )
@@ -53,7 +54,8 @@ defmodule Riptide.Websocket.Server do
               [
                 {"/socket", __MODULE__,
                  %{
-                   format: opts.format
+                   format: opts.format,
+                   handlers: opts.handlers
                  }}
                 # {"/", Riptide.Server.OK, []}
               ]
