@@ -4,6 +4,7 @@ defmodule Riptide.Processor do
   def init(state) do
     Map.merge(
       %{
+        format: Riptide.Format.JSON,
         counter: 0,
         handlers: [],
         data: %{}
