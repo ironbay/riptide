@@ -27,7 +27,7 @@ yard add @ironbay/riptide
 
 ### Create a riptide.js file
 
-We recommend giving your `Riptide` setup its own dedicated file. Create a `riptide.js` file and import the `Riptide` library that we just installed:
+We recommend giving your `Riptide` setup its own dedicated file. Let's create a `riptide.js` file and import the `Riptide` library that we just installed:
 
 ```javascript
 // riptide.js
@@ -38,7 +38,7 @@ import * as Riptide from "@ironbay/riptide";
 
 ### Connect to the remote server
 
-Now we will create a connection to the backend. This is done via the `Riptide.Connection` class. This interface is where we'll handle all things connection related, including creating the connection, listening for connection status updates, etc.
+Let's start by creating a connection to the backend. We create this connection via the `Riptide.Connection` class. This interface is where we'll handle all things connection related, including creating the connection, listening for connection status updates, etc.
 
 Let's instantiate a `Connection` with `Riptide.Connection.create()`, and then connect to the server using `transport.connect("ws://localhost:12000/socket")`.
 
@@ -77,7 +77,7 @@ That's it! Our remote store is connected to the back-end. Later in this guide we
 ```javascript
 // app.js
 
-const merged = await remote.merge(['todos', 'todos_01'], {name: "i am a todo!"})
+const merged = await remote.merge(['todos', 'todos_01'])
 const deleted = await remote.delete(['todos'])
 
 this.remote.onChange.add(mut =>
@@ -86,13 +86,13 @@ this.remote.onChange.add(mut =>
 )
 ```
 
-Whenever we interact with data using our remote store, we're going over a network, and therefore these functions (here `query_path` and `delete`) return `Promises`. Next we'll create a local store that replicates data locally so that you can access it instantly without waiting on a `Promises`.
+Whenever we interact with data using our remote store, we're going over a network, and therefore these functions (here `query_path` and `delete`) return `Promises`. Next we'll create a local store that replicates data locally so that you can access it without waiting on a `Promises`.
 
 &nbsp;
 
 ### Create a local store
 
-Riptide has a `Memory` store that allows us to hold our data in-memory on the front-end. We can store whatever we want to use immediately in our local store. Most commonly, this is a mix of data replicated from our `remote` store and optionally, session specific information like a server connection status, UI state, etc.
+Riptide has a `Memory` store that allows us to hold our data in-memory on the front-end. We can store whatever we want to use immediately in our local store. Most commonly, this is a mix of data replicated from our `remote` store and session specific information like a server connection status, UI state, etc.
 
 In later steps we'll go over how to get data from our `remote` store into our `local` store. For now let's create a new store by calling `new Riptide.Store.Memory()`:
 
@@ -109,12 +109,12 @@ const remote = new Riptide.Store.Remote(connection);
 const local = new Riptide.Store.Memory();
 ```
 
-You'll notice that for the local store we didn't have to pass in any arguments to the constructor. This store's state is in a simple object that we can access instantly - no connection needed. You can see below how the remote and local stores have similar interfaces for interacting with data (one difference being local doesn't use `Promises`):
+You'll notice that for the local store we didn't have to pass in any arguments to the constructor. This store's state is in a simple object that we can access instantly; no connection needed. You can see below how the remote and local stores have similar interfaces for interacting with data (one difference being local doesn't use `Promises`):
 
 ```javascript
 // app.js
 
-local.merge(["todos", 'todos_01'], { name: "i am a todo!" });
+local.merge(["todos"], { name: "i am a todo!" });
 local.delete(["todos"]);
 ```
 
