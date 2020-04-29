@@ -3,9 +3,9 @@ name: packages/elixir
 on:
   push:
     branches: [master]
-    paths:
-      - "packages/elixir/*"
-      - ".github/workflows/*"
+    # paths:
+    #   - "packages/elixir/*"
+    #   - ".github/workflows/*"
   pull_request:
     branches: [master]
     paths:
