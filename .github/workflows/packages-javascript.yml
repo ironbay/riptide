@@ -4,13 +4,13 @@ on:
   push:
     branches: [master]
     paths:
-      - "packages/javascript/*"
-      - ".github/workflows/*"
+      - "packages/javascript/**"
+      - ".github/workflows/**"
   pull_request:
     branches: [master]
     paths:
-      - "packages/javascript/*"
-      - ".github/*"
+      - "packages/javascript/**"
+      - ".github/**"
 
 jobs:
   build:
