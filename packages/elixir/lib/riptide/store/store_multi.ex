@@ -1,4 +1,5 @@
 defmodule Riptide.Store.Multi do
+  @moduledoc false
   @behaviour Riptide.Store
   def init(stores) do
     Enum.each(stores, fn {store, opts} ->

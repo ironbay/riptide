@@ -1,4 +1,5 @@
 defmodule Riptide.Subscribe do
+  @moduledoc false
   def watch(path), do: watch(path, self())
 
   def watch(path, pid) do

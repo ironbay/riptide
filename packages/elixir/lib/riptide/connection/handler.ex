@@ -1,4 +1,5 @@
 defmodule Riptide.Handler do
+  @moduledoc false
   @callback handle_call(action :: String.t(), body :: any(), state :: any()) ::
               nil | {:reply, any(), any()}
   @callback handle_cast(action :: String.t(), body :: any(), state :: any()) ::

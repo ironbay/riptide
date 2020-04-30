@@ -1,4 +1,5 @@
 defmodule Riptide.Query do
+  @moduledoc false
   def flatten(query) do
     case shallow?(query) do
       true -> [{[], query}]

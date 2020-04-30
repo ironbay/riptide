@@ -1,4 +1,5 @@
 defmodule Riptide.Store.Prefix do
+  @moduledoc false
   def range(nil, _opts), do: {[], [<<127>>]}
 
   def range(input, opts) do

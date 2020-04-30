@@ -1,4 +1,5 @@
 defmodule Riptide.Scheduler.Dispatch do
+  @moduledoc false
   require Logger
   use GenServer
 

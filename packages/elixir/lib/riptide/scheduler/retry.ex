@@ -1,4 +1,5 @@
 defmodule Riptide.Retry do
+  @moduledoc false
   @callback retry(task :: any, count :: number()) :: any
 end
 

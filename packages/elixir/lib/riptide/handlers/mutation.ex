@@ -1,4 +1,5 @@
 defmodule Riptide.Handler.Mutation do
+  @moduledoc false
   use Riptide.Handler
 
   def handle_call("riptide.mutation", mut, state) do

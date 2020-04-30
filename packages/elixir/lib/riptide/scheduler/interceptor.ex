@@ -1,4 +1,5 @@
 defmodule Riptide.Scheduler.Interceptor do
+  @moduledoc false
   use Riptide.Interceptor
 
   # def mutation_after(

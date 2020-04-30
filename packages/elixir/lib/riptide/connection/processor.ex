@@ -1,4 +1,5 @@
 defmodule Riptide.Processor do
+  @moduledoc false
   require Logger
 
   def init(state) do

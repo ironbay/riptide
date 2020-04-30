@@ -1,4 +1,5 @@
 defmodule Riptide.Handler.Query do
+  @moduledoc false
   use Riptide.Handler
 
   def handle_call("riptide.query", query, state) do

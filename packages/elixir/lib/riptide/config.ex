@@ -1,4 +1,5 @@
 defmodule Riptide.Config do
+  @moduledoc false
   use Brine
 
   config :riptide, %{

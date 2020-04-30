@@ -1,4 +1,5 @@
 defmodule Riptide.Store.LMDB do
+  @moduledoc false
   @behaviour Riptide.Store
   @delimiter "×"
 

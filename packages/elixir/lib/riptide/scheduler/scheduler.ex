@@ -1,4 +1,5 @@
 defmodule Riptide.Scheduler do
+  @moduledoc false
   require Logger
   use Supervisor
 

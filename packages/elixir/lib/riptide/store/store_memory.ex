@@ -1,4 +1,5 @@
 defmodule Riptide.Store.Memory do
+  @moduledoc false
   @behaviour Riptide.Store
 
   def init(opts) do

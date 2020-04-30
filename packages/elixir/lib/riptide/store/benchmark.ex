@@ -1,4 +1,5 @@
 defmodule Riptide.Store.Benchmark do
+  @moduledoc false
   require Logger
 
   def run(store, opts) do

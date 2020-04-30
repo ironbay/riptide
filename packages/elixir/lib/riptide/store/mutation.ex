@@ -1,4 +1,6 @@
 defmodule Riptide.Mutation do
+  @moduledoc false
+
   @typedoc "A map containing a path to be added (merge) and a path to be removed (delete)."
   @type t :: %{merge: map, delete: map}
 

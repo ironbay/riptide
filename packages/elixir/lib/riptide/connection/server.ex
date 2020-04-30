@@ -1,4 +1,5 @@
 defmodule Riptide.Websocket.Server do
+  @moduledoc false
   @behaviour :cowboy_websocket
 
   def init(req, state) do

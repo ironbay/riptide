@@ -1,4 +1,5 @@
 defmodule Riptide.Migration do
+  @moduledoc false
   require Logger
   @callback run() :: Riptide.Mutation.t() | Enum.t(Riptide.Mutation.t())
   @root "riptide:migrations"

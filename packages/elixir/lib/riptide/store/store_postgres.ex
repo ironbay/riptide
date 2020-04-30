@@ -1,4 +1,5 @@
 defmodule Riptide.Store.Postgres do
+  @moduledoc false
   @behaviour Riptide.Store
   @delimiter "×"
   def init(opts) do

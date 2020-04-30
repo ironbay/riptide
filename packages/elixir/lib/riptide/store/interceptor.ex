@@ -1,6 +1,5 @@
 defmodule Riptide.Interceptor do
   @moduledoc """
-  # Interceptors
 
   Riptide Interceptors let you define simple rules using Elixir's pattern matching that trigger conditionally when data is written or read. Each one is defined as a module that can be added to your Riptide configuration for easy enabling/disabling.
 
@@ -18,8 +17,6 @@ defmodule Riptide.Interceptor do
 
   Every Interceptor in this list is called in order for every Mutation and Query processed
 
-  ---
-
   ## Mutation Interceptors
 
   Mutation interceptors run as a mutation is being processed. The callbacks are called for each part of the paths in the mutation so you can define a pattern to match any kind of mutation. The arguments passed to them are
@@ -28,8 +25,6 @@ defmodule Riptide.Interceptor do
   - `layer`: The `merge` and `delete` that is occuring at the path
   - `mut`: The full, original mutation
   - `state`: The state of the connection which can be used to store things like the currently authed user
-
-  &nbsp;
 
   ### `mutation_before`
 
@@ -60,8 +55,6 @@ defmodule Riptide.Interceptor do
   - `{:merge, map}` - Convenience version of `:combine` that merges `map` at the current path
   - `{:delete, map}` - Convenience version of `:combine` that deletes `map` at the current path
 
-  &nbsp;
-
   ### `mutation_effect`
 
   This interceptor can be used to schedule work to be done after a mutation is successfully written. It can be used to trigger side effects like sending an email or syncing data with a third party system.
@@ -89,8 +82,6 @@ defmodule Riptide.Interceptor do
   - `{fun, args}` - Calls `fun` in the current module with `args`
   - `{module, fun, args}` - Calls `fun` in `module` with `args`
 
-  ---
-
   ## Query Interceptors
 
   Query interceptors run as a query is being processed. They can be used to allow/disallow access to certain paths or even expose third party data sources. Unlike the mutation interceptors they are called only once for each path requested by a query. The arguments passed to them are
@@ -98,8 +89,6 @@ defmodule Riptide.Interceptor do
   - `path`: A string list representing the full path where the data is being written
   - `opts`: The options for the query at this path
   - `state`: The state of the connection which can be used to store things like the currently authed user
-
-  &nbsp;
 
   ### `query_before`
 
@@ -122,8 +111,6 @@ defmodule Riptide.Interceptor do
 
   - `:ok` - Returns successfully
   - `{:error, err}` - Halts processing of interceptors and returns the error
-
-  &nbsp;
 
   ### `query_resolve`
 
@@ -151,9 +138,15 @@ defmodule Riptide.Interceptor do
   """
   require Logger
 
+  @doc """
+  Trigger `query_before` callback on configured interceptors for given query
+  """
   def query_before(query, state),
     do: query_before(query, state, Riptide.Config.riptide_interceptors())
 
+  @doc """
+  Trigger `query_before` callback on interceptors for given query
+  """
   def query_before(query, state, interceptors) do
     query
     |> query_trigger(interceptors, :query_before, [state])
@@ -168,9 +161,49 @@ defmodule Riptide.Interceptor do
     end
   end
 
+  @doc """
+  Trigger `query_resolve` callback on configured interceptors for given query
+  """
+  def query_resolve(query, state),
+    do: query_resolve(query, state, Riptide.Config.riptide_interceptors())
+
+  @doc """
+  Trigger `query_resolve` callback on interceptors for given query
+  """
+  def query_resolve(query, state, interceptors) do
+    query
+    |> query_trigger(interceptors, :query_resolve, [state])
+    |> Enum.find_value(fn
+      {_mod, nil} -> nil
+      {_, result} -> result
+    end)
+  end
+
+  defp query_trigger(query, interceptors, fun, args) do
+    layers = Riptide.Query.flatten(query)
+
+    interceptors
+    |> Stream.flat_map(fn mod ->
+      Stream.map(layers, fn {path, opts} ->
+        result = apply(mod, fun, [path, opts | args])
+
+        if logging?() and result != nil,
+          do: Logger.info("#{mod} #{fun} #{inspect(path)} -> #{inspect(result)}")
+
+        {mod, result}
+      end)
+    end)
+  end
+
+  @doc """
+    Trigger `mutation_effect` callback on configured interceptors for given mutation
+  """
   def mutation_effect(mutation, state),
     do: mutation_effect(mutation, state, Riptide.Config.riptide_interceptors())
 
+  @doc """
+    Trigger `mutation_effect` callback on interceptors for given mutation
+  """
   def mutation_effect(mutation, state, interceptors) do
     mutation
     |> mutation_trigger(interceptors, :mutation_effect, [mutation, state])
@@ -185,9 +218,15 @@ defmodule Riptide.Interceptor do
     |> Riptide.Mutation.combine(mutation)
   end
 
+  @doc """
+    Trigger `mutation_before` callback on configured interceptors for given mutation
+  """
   def mutation_before(mutation, state),
     do: mutation_before(mutation, state, Riptide.Config.riptide_interceptors())
 
+  @doc """
+    Trigger `mutation_before` callback on interceptors for given mutation
+  """
   def mutation_before(mutation, state, interceptors) do
     mutation
     |> mutation_trigger(interceptors, :mutation_before, [
@@ -214,9 +253,11 @@ defmodule Riptide.Interceptor do
     end)
   end
 
+  @doc false
   def mutation_after(mutation, state),
     do: mutation_after(mutation, state, Riptide.Config.riptide_interceptors())
 
+  @doc false
   def mutation_after(mutation, state, interceptors) do
     mutation
     |> mutation_trigger(interceptors, :mutation_after, [
@@ -250,42 +291,17 @@ defmodule Riptide.Interceptor do
     end)
   end
 
-  def query_resolve(query, state),
-    do: query_resolve(query, state, Riptide.Config.riptide_interceptors())
-
-  def query_resolve(query, state, interceptors) do
-    query
-    |> query_trigger(interceptors, :query_resolve, [state])
-    |> Enum.find_value(fn
-      {_mod, nil} -> nil
-      {_, result} -> result
-    end)
-  end
-
-  defp query_trigger(query, interceptors, fun, args) do
-    layers = Riptide.Query.flatten(query)
-
-    interceptors
-    |> Stream.flat_map(fn mod ->
-      Stream.map(layers, fn {path, opts} ->
-        result = apply(mod, fun, [path, opts | args])
-
-        if logging?() and result != nil,
-          do: Logger.info("#{mod} #{fun} #{inspect(path)} -> #{inspect(result)}")
-
-        {mod, result}
-      end)
-    end)
-  end
-
+  @doc false
   def logging?() do
     Keyword.get(Logger.metadata(), :interceptor) == true
   end
 
+  @doc false
   def logging_enable() do
     Logger.metadata(interceptor: true)
   end
 
+  @doc false
   def logging_disable() do
     Logger.metadata(interceptor: false)
   end
@@ -303,6 +319,7 @@ defmodule Riptide.Interceptor do
               state :: String.t()
             ) :: :ok | {:error, term} | {:combine, Riptide.Mutation.t()}
 
+  @doc false
   @callback mutation_after(
               path :: list(String.t()),
               layer :: Riptide.Mutation.t(),
@@ -315,7 +332,7 @@ defmodule Riptide.Interceptor do
               layer :: Riptide.Mutation.t(),
               mut :: Riptide.Mutation.t(),
               state :: String.t()
-            ) :: :ok | {atom(), atom(), list(String.t())} | {atom(), list(String.t())}
+            ) :: :ok | {atom(), atom(), list()} | {atom(), list()}
 
   defmacro __using__(_opts) do
     quote do

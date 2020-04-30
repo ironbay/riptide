@@ -1,4 +1,5 @@
 defmodule Riptide do
+  @moduledoc false
   @internal %{internal: true}
 
   use Supervisor
