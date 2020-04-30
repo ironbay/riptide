@@ -144,7 +144,7 @@ defmodule Riptide.Interceptor do
               {:ok, any} | {:error, term} | nil
 
   @callback query_before(path :: list(String.t()), opts :: map, state :: any) ::
-              {:ok, any} | {:error, term} | nil
+              :ok | {:error, term} | nil
 
   @callback mutation_before(
               path :: list(String.t()),
