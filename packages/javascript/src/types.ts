@@ -1,5 +1,3 @@
-import { PathLike } from "fs";
-const x: PathLike = "";
 declare namespace Riptide {
   interface Mutation {
     merge: { [key: string]: any | Mutation["merge"] };
