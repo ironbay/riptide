@@ -22,12 +22,9 @@ defmodule Riptide.Handler.Query do
         {:reply,
          layers
          |> Enum.reduce(Riptide.Mutation.new(result), fn {path, opts}, collect ->
-           opts
-           |> Map.keys()
-           |> Enum.any?(fn key -> key in [:limit, :min, :max] end)
-           |> case do
-             false -> Riptide.Mutation.delete(collect, path)
-             true -> collect
+           case opts == %{} do
+             true -> Riptide.Mutation.delete(collect, path)
+             false -> collect
            end
          end), state}
     end
