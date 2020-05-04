@@ -6,8 +6,8 @@ export default {
   output: [
     {
       file: pkg.main,
-      format: "cjs"
-    }
+      format: "cjs",
+    },
     // {
     //     file: pkg.module,
     //     format: 'es'
@@ -21,7 +21,7 @@ export default {
   external: [...Object.keys(pkg.dependencies || {})],
   plugins: [
     typescript({
-      typescript: require("typescript")
-    })
-  ]
+      typescript: require("typescript"),
+    }),
+  ],
 };
