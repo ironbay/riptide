@@ -3,13 +3,16 @@ defmodule Riptide.Handler.Query do
   use Riptide.Handler
 
   def handle_call("riptide.query", query, state) do
+    layers = Riptide.Query.flatten(query)
+
+    query =
+      Enum.reduce(layers, %{}, fn {path, opts}, collect -> Dynamic.put(collect, path, opts) end)
+
     case Riptide.query(query, state) do
       {:error, msg} ->
         {:error, msg, state}
 
       {:ok, result} ->
-        layers = Riptide.Query.flatten(query)
-
         Enum.each(layers, fn {path, opts} ->
           if opts[:subscribe] === true do
             Riptide.Subscribe.watch(path)
