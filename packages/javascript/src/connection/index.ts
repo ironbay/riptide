@@ -1,9 +1,9 @@
-import * as Transport from "./transport";
-import * as Format from "./format";
-import Client from "./client";
+import * as Transport from "./transport"
+import * as Format from "./format"
+import Client from "./client"
 
 function create() {
-  return new Client(Transport.WS, Format.Json);
+  return new Client(Transport.WS, Format.Json)
 }
 
-export { Transport, Client, Format, create };
+export { Transport, Client, Format, create }
