@@ -2,6 +2,11 @@ defmodule Riptide.Store.Postgres do
   @moduledoc false
   @behaviour Riptide.Store
   @delimiter "×"
+
+  def child_spec(opts) do
+    Postgrex.child_spec(Keyword.merge([name: :postgres], opts))
+  end
+
   def init(opts) do
     Postgrex.query!(
       opts_name(opts),
