@@ -1,9 +1,13 @@
 import React from "react"
 
-export default function hook(local) {
-  const [_, render] = React.useState(0)
+function useHook(local) {
+  const [num, render] = React.useState(0)
 
   React.useEffect(() => {
-    local.onChange.add(() => render())
+    local.onChange.add(() => render(num + 1))
   }, [])
+
+  console.dir("uh....realy?!?!?!?!")
 }
+
+export { useHook }

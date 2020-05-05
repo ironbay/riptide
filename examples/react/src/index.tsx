@@ -1,43 +1,45 @@
-import React from "react";
-import * as ReactDOM from "react-dom";
-import { UUID } from "@ironbay/riptide";
+import React from "react"
+import * as ReactDOM from "react-dom"
+import { UUID } from "@ironbay/riptide"
+import * as RiptideReact from "../../../packages/riptide-react"
 
 // look at ./data/riptide to see how Riptide is bootstrapped
-import { local, sync } from "./data/riptide";
+import { local, sync } from "./data/riptide"
 
 interface Todo {
-  name?: string;
-  key?: string;
-  created?: number;
-  completed?: boolean;
+  name?: string
+  key?: string
+  created?: number
+  completed?: boolean
 }
 
 function App() {
-  // Tell React to rerender the application when there's a change to the local store
-  const [_, render] = React.useState(0);
+  console.dir(RiptideReact.useHook(local))
+
+  const [_, render] = React.useState(0)
   React.useEffect(() => {
-    local.onChange.add(() => render((val) => val + 1));
-  }, []);
+    local.onChange.add(() => render((val) => val + 1))
+  }, [])
 
   async function create_todo() {
-    const name = prompt("Name of new todo?");
-    if (!name) return;
-    const key = UUID.ascending();
+    const name = prompt("Name of new todo?")
+    if (!name) return
+    const key = UUID.ascending()
     try {
       await sync.merge(["todos", key], {
         key,
         name,
-      });
+      })
     } catch (ex) {
-      alert(ex);
-      await local.delete(["todos", key]);
+      alert(ex)
+      await local.delete(["todos", key])
     }
   }
 
   function handle_click(todo: Todo) {
     todo.completed
       ? sync.delete(["todos", todo.key])
-      : sync.merge(["todos", todo.key, "completed"], true);
+      : sync.merge(["todos", todo.key, "completed"], true)
   }
 
   return (
@@ -55,12 +57,12 @@ function App() {
                   `created ${new Date(todo.created).toLocaleTimeString()}`}
                 <hr />
               </li>
-            );
+            )
           })}
       </ul>
       <button onClick={create_todo}>Create New</button>
     </div>
-  );
+  )
 }
 
-ReactDOM.render(<App />, document.querySelector(".root"));
+ReactDOM.render(<App />, document.querySelector(".root"))
