@@ -1,6 +1,6 @@
 {
-  "name": "@ironbay/riptide",
-  "version": "0.2.4",
+  "name": "@ironbay/riptide-react",
+  "version": "0.0.1",
   "description": "",
   "main": "dist/index.js",
   "scripts": {
@@ -11,15 +11,17 @@
   "license": "ISC",
   "devDependencies": {
     "@types/jest": "^25.1.4",
+    "@types/react": "^16.9.34",
     "eslint-plugin-react-hooks": "^4.0.0",
     "rollup": "^2.0.2",
     "rollup-plugin-typescript2": "^0.26.0",
     "tsdx": "^0.12.3",
-    "typescript": "^3.8.3"
+    "typescript": "^3.8.3",
+    "react": "16.13.1",
+    "react-dom": "16.13.1"
   },
-  "dependencies": {
-    "@ironbay/dynamic": "^1.0.10",
-    "react": "^16.13.1",
-    "universal-websocket-client": "^1.0.2"
+  "peerDependencies": {
+    "react": "^16.8.0",
+    "react-dom": "^16.8.0"
   }
 }
