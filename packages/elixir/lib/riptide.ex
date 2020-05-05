@@ -15,7 +15,11 @@ defmodule Riptide do
     Supervisor.init(
       [
         {Riptide.Scheduler, []},
-        {Riptide.Websocket.Server, opts}
+        {Riptide.Websocket.Server,
+         Keyword.merge(
+           [handlers: Riptide.Config.riptide_handlers()],
+           opts
+         )}
       ],
       strategy: :one_for_one
     )
