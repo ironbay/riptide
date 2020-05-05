@@ -47,6 +47,16 @@ defmodule Riptide.Websocket.Server do
     {:reply, :pong, state}
   end
 
+  def handle_info({:riptide_call, action, body, from}, state) do
+    {:reply, data, next} = Riptide.Processor.send_call(action, body, from, state)
+    {:reply, {:text, data}, next}
+  end
+
+  def handle_info({:riptide_cast, action, body}, state) do
+    {:reply, data, next} = Riptide.Processor.send_cast(action, body, state)
+    {:reply, {:text, data}, next}
+  end
+
   def websocket_info(msg, state) do
     case Riptide.Processor.process_info(msg, state) do
       {:reply, val, next} -> {:reply, {:text, val}, next}
