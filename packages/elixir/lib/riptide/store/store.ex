@@ -38,7 +38,10 @@ defmodule Riptide.Store do
   end
 
   def query(query, store, store_opts) do
-    paths = query |> Riptide.Query.flatten() |> Enum.to_list()
+    paths =
+      query
+      |> Riptide.Query.flatten()
+      |> Enum.to_list()
 
     paths
     |> store.query(store_opts)

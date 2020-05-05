@@ -4,6 +4,7 @@ defmodule Riptide.Retry do
 end
 
 defmodule Riptide.Retry.Basic do
+  @moduledoc false
   @behaviour Riptide.Retry
 
   def retry(_task, _count) do

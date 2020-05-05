@@ -15,7 +15,6 @@ interface Todo {
 
 function App() {
   console.dir(useRiptide(local))
-
   const [_, render] = React.useState(0)
   React.useEffect(() => {
     local.onChange.add(() => render((val) => val + 1))

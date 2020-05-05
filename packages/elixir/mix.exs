@@ -4,7 +4,7 @@ defmodule Riptide.MixProject do
   def project do
     [
       app: :riptide,
-      version: "0.3.3",
+      version: "0.3.7",
       description: "Framework for building realtime applications",
       package: [
         maintainers: ["thdxr", "ironbay"],
@@ -40,6 +40,7 @@ defmodule Riptide.MixProject do
       {:jason, "~> 1.1"},
       {:dynamic, "~> 0.1.2"},
       {:brine, "~> 0.2.2"},
+      {:websockex, "~> 0.4.2"},
       {:bridge_lmdb, "~> 0.1.1", optional: true},
       {:postgrex, "~> 0.15.3", optional: true},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},

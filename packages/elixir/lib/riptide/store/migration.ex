@@ -53,6 +53,7 @@ defmodule Riptide.Migration do
 end
 
 defmodule Riptide.Migration.Initial do
+  @moduledoc false
   @behaviour Riptide.Migration
 
   def run(), do: Riptide.Mutation.new()

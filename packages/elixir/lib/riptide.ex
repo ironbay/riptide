@@ -9,14 +9,17 @@ defmodule Riptide do
   end
 
   def init(opts) do
-    opts = Enum.into(opts, %{})
     Riptide.Store.init()
     Riptide.Migration.run()
 
     Supervisor.init(
       [
         {Riptide.Scheduler, []},
-        {Riptide.Websocket.Server, opts}
+        {Riptide.Websocket.Server,
+         Keyword.merge(
+           [handlers: Riptide.Config.riptide_handlers()],
+           opts
+         )}
       ],
       strategy: :one_for_one
     )
