@@ -5,13 +5,40 @@ defmodule Riptide.Processor do
   def init(state) do
     Map.merge(
       %{
-        format: Riptide.Format.JSON,
         counter: 0,
+        pending: %{},
+        format: Riptide.Format.JSON,
         handlers: [],
         data: %{}
       },
       state
     )
+  end
+
+  def send_call(action, body, from, state) do
+    data =
+      %{
+        type: "call",
+        key: state.counter,
+        action: action,
+        body: body
+      }
+      |> format(state)
+
+    {:reply, data,
+     %{state | counter: state.counter + 1, pending: Map.put(state.pending, state.counter, from)}}
+  end
+
+  def send_cast(action, body, state) do
+    data =
+      %{
+        type: "cast",
+        action: action,
+        body: body
+      }
+      |> format(state)
+
+    {:reply, data, state}
   end
 
   def process_data(msg, state) do
@@ -54,6 +81,22 @@ defmodule Riptide.Processor do
 
           nil ->
             {:reply, error(key, [:not_implemented, action], state), state}
+        end
+
+      {:ok,
+       %{
+         "type" => type,
+         "key" => key,
+         "body" => body
+       }}
+      when type in ["error", "reply"] ->
+        case Map.get(state.pending, key) do
+          nil ->
+            {:noreply, state}
+
+          pid ->
+            send(pid, {:riptide_response, type, body})
+            {:noreply, %{state | pending: Map.delete(state.pending, key)}}
         end
 
       _ ->

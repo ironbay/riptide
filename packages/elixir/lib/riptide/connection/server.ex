@@ -2,6 +2,28 @@ defmodule Riptide.Websocket.Server do
   @moduledoc false
   @behaviour :cowboy_websocket
 
+  def start_link(opts) do
+    opts =
+      [port: 12_000]
+      |> Keyword.merge(opts)
+      |> Enum.into(%{})
+
+    :cowboy.start_clear(:http, [{:port, opts.port}], %{
+      env: %{
+        dispatch:
+          :cowboy_router.compile([
+            {
+              :_,
+              [
+                {"/socket", __MODULE__, opts}
+                # {"/", Riptide.Server.OK, []}
+              ]
+            }
+          ])
+      }
+    })
+  end
+
   def init(req, state) do
     {
       :cowboy_websocket,
@@ -21,6 +43,10 @@ defmodule Riptide.Websocket.Server do
     end
   end
 
+  def websocket_handle(:ping, state) do
+    {:reply, :pong, state}
+  end
+
   def websocket_info(msg, state) do
     case Riptide.Processor.process_info(msg, state) do
       {:reply, val, next} -> {:reply, {:text, val}, next}
@@ -33,36 +59,5 @@ defmodule Riptide.Websocket.Server do
       id: __MODULE__,
       start: {__MODULE__, :start_link, [opts]}
     }
-  end
-
-  def start_link(opts) do
-    opts =
-      Map.merge(
-        %{
-          port: 12_000,
-          format: Riptide.Format.JSON,
-          handlers: []
-        },
-        opts
-      )
-
-    :cowboy.start_clear(:http, [{:port, opts.port}], %{
-      env: %{
-        dispatch:
-          :cowboy_router.compile([
-            {
-              :_,
-              [
-                {"/socket", __MODULE__,
-                 %{
-                   format: opts.format,
-                   handlers: opts.handlers
-                 }}
-                # {"/", Riptide.Server.OK, []}
-              ]
-            }
-          ])
-      }
-    })
   end
 end

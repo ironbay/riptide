@@ -9,7 +9,6 @@ defmodule Riptide do
   end
 
   def init(opts) do
-    opts = Enum.into(opts, %{})
     Riptide.Store.init()
     Riptide.Migration.run()
 

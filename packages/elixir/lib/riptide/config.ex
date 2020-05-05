@@ -4,6 +4,7 @@ defmodule Riptide.Config do
 
   config :riptide, %{
     commands: [],
+    handlers: [],
     scheduler: true,
     store: %{
       write: {Riptide.Store.Memory, []},
