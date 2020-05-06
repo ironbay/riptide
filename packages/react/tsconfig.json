@@ -1,12 +1,29 @@
 {
   "compilerOptions": {
-    "declaration": true,
-    "declarationDir": "./dist",
-    "module": "es6",
-    "moduleResolution": "Node",
-    "noImplicitAny": false,
-    "outDir": "./dist",
-    "target": "es2015"
+    "noEmit": true,
+    "allowSyntheticDefaultImports": true,
+    "outDir": "build/dist",
+    "module": "esnext",
+    "target": "es5",
+    "lib": [
+      "dom",
+      "es2015",
+      "es2016",
+      "es2017",
+      "es2018",
+      "es2019",
+      "es2020",
+      "es2017.object"
+    ],
+    "sourceMap": true,
+    "allowJs": true,
+    "jsx": "react",
+    "moduleResolution": "node",
+    "baseUrl": "./src",
+    "paths": {
+      "/*": ["./*"]
+    },
+    "esModuleInterop": true
   },
-  "include": ["./src/**/*"]
+  "include": ["src/**/*"]
 }
