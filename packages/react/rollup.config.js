@@ -18,7 +18,10 @@ export default {
     //     name: 'Riptide'
     // }
   ],
-  external: [...Object.keys(pkg.dependencies || {})],
+  external: [
+    ...Object.keys(pkg.dependencies),
+    ...Object.keys(pkg.peerDependencies)
+  ],
   plugins: [
     typescript({
       typescript: require("typescript")
