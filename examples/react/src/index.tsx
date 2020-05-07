@@ -13,6 +13,7 @@ interface Todo {
 }
 
 function App() {
+  // Tell React to rerender the application when there's a change to the local store
   const [_, render] = React.useState(0)
   React.useEffect(() => {
     local.onChange.add(() => render((val) => val + 1))
