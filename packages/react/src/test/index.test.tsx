@@ -1,20 +1,30 @@
 import { useRiptide } from "../index"
 import * as Riptide from "@ironbay/riptide"
-import test_renderer from "react-test-renderer"
-import App from "./app"
 import React from "react"
+import { act } from "react-dom/test-utils"
+import ReactDOM from "react-dom"
 
-function Link(props) {
-  return <a href={props.page}>{props.children}</a>
+const App = props => {
+  const { local } = props
+  const [count, setCount] = React.useState(1)
+  useRiptide(local)
+
+  return <div className="count">{local.query_path(["count"])}</div>
 }
 
-const testRenderer = test_renderer.create(
-  <Link page="https://google.com">Google</Link>
-)
+test("use Riptide updates DOM", async () => {
+  const local = new Riptide.Store.Memory()
+  let container = document.createElement("div")
+  document.body.appendChild(container)
 
-test("it works", () => {
-  expect(1).toBe(2)
+  await act(async () => {
+    ReactDOM.render(<App local={local} />, container)
+  })
+
+  await act(async () => {
+    await local.merge(["count"], 1)
+  })
+
+  const count = document.querySelector(".count")
+  expect(count.textContent).toEqual("1")
 })
-
-console.log(testRenderer.toJSON())
-expect(1).toBe(1)
