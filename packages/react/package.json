@@ -1,6 +1,6 @@
 {
   "name": "@ironbay/riptide-react",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
@@ -13,7 +13,7 @@
   "devDependencies": {
     "@babel/preset-env": "^7.9.6",
     "@babel/preset-react": "^7.9.4",
-    "@ironbay/riptide": "^0.2.4",
+    "@ironbay/riptide": "^0.2.5",
     "@types/jest": "^25.2.1",
     "@types/react": "^16.9.34",
     "@types/react-dom": "^16.9.7",
@@ -28,7 +28,7 @@
   "peerDependencies": {
     "react": "^16.8.0",
     "react-dom": "^16.8.0",
-    "@ironbay/riptide": "^0.2.2"
+    "@ironbay/riptide": "^0.2.5"
   },
   "dependencies": {}
 }
