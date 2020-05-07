@@ -1,7 +1,6 @@
 import React from "react"
 import * as ReactDOM from "react-dom"
 import { UUID } from "@ironbay/riptide"
-import { useRiptide } from "@ironbay/riptide-react"
 
 // look at ./data/riptide to see how Riptide is bootstrapped
 import { local, sync } from "./data/riptide"
@@ -14,7 +13,6 @@ interface Todo {
 }
 
 function App() {
-  console.dir(useRiptide(local))
   const [_, render] = React.useState(0)
   React.useEffect(() => {
     local.onChange.add(() => render((val) => val + 1))
