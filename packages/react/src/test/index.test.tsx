@@ -5,11 +5,9 @@ import { act } from "react-dom/test-utils"
 import ReactDOM from "react-dom"
 
 const App = props => {
-  const { local } = props
-  const [count, setCount] = React.useState(1)
-  useRiptide(local)
+  useRiptide(props.local)
 
-  return <div className="count">{local.query_path(["count"])}</div>
+  return <div className="count">{props.local.query_path(["count"])}</div>
 }
 
 test("use Riptide updates DOM", async () => {
