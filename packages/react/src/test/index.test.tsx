@@ -4,11 +4,7 @@ import React from "react"
 import { act } from "react-dom/test-utils"
 import ReactDOM from "react-dom"
 
-interface Props {
-  local: Riptide.Store.Memory
-}
-
-const App = (props: Props) => {
+const App = (props: { local: Riptide.Store.Memory }) => {
   useRiptide(props.local)
 
   return <div className="count">{props.local.query_path(["count"])}</div>
