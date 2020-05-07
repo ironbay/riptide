@@ -1,0 +1,57 @@
+name: packages/react
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "packages/react/**"
+      - ".github/workflows/**"
+  pull_request:
+    branches: [master]
+    paths:
+      - "packages/react/**"
+      - ".github/**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      directory: ./packages/react
+      NPM_TOKEN: ${{secrets.NPM_TOKEN}}
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Setup node
+        uses: actions/setup-node@v1
+
+      - name: Cache deps
+        uses: actions/cache@v1
+        with:
+          path: ~/.npm
+          key: deps-${{ hashFiles('${{env.directory}}/package-lock.json') }}
+          restore-keys: |
+            deps-
+
+      - name: Install Dependencies
+        run: npm i
+        working-directory: ${{env.directory}}
+
+      - name: Build
+        run: npm run build
+        working-directory: ${{env.directory}}
+
+      # - name: Run Tests
+      #   run: npm run test
+      #   working-directory: ${{env.directory}}
+
+      - name: NPM Auth
+        run: echo //registry.npmjs.org/:_authToken=${NPM_TOKEN} >> .npmrc
+        working-directory: ${{env.directory}}
+
+      - name: Publish
+        if: github.ref == 'refs/heads/master'
+        run: npm publish || true
+        working-directory: ${{env.directory}}
