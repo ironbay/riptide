@@ -5,7 +5,11 @@ export default class Dispatcher<T> {
     this.callbacks.push(cb)
   }
 
-  public trigger(msg: T, delay = 0) {
+  public remove(cb: Callback<T>) {
+    this.callbacks = this.callbacks.filter(item => item === cb)
+  }
+
+  public trigger(msg: T) {
     this.callbacks.forEach(cb => cb(msg))
   }
 }

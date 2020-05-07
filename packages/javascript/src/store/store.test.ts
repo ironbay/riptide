@@ -1,5 +1,4 @@
 import Memory from "./memory"
-
 ;[Memory].map(mod => {
   describe(mod.name, () => {
     it("implementation", async () => {
