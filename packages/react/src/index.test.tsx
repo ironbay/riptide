@@ -13,8 +13,13 @@ function App() {
 }
 
 function Child() {
-  const count = useRiptidePath(["count"])
-  return <div className="count">{count}</div>
+  const [count, ref] = useRiptidePath(["count"])
+
+  return (
+    <div ref={ref} className="count">
+      {count}
+    </div>
+  )
 }
 
 test("useRiptide updates DOM", async () => {

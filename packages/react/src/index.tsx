@@ -8,10 +8,10 @@ export function useRiptide(local: Riptide.Store.Memory) {
 
   React.useEffect(() => {
     function trigger() {
-      render(val => val + 1)
+      render((val) => val + 1)
     }
     local.onChange.add(trigger)
-    return function() {
+    return function () {
       local.onChange.remove(trigger)
     }
   }, [])
@@ -26,10 +26,10 @@ export function RiptideStoreProvider(props: {
   children: any
 }) {
   React.useEffect(() => {
-    props.store.onChange.add(mut => {
-      Dynamic.flatten(mut.merge).map(layer => {
+    props.store.onChange.add((mut) => {
+      Dynamic.flatten(mut.merge).map((layer) => {
         const result = Dynamic.get_values<any>(subs, layer.path)
-        result.map(item => item(val => val + 1))
+        result.map((item) => item((val) => val + 1))
       })
     })
   }, [props.store])
@@ -41,10 +41,13 @@ export function RiptideStoreProvider(props: {
   )
 }
 
-export function useRiptidePath(path: string[]) {
+export function useRiptidePath(
+  path: string[]
+): [any, React.MutableRefObject<any>] {
+  const ref = React.useRef(null)
   const [_, render] = React.useState(0)
-  const path_full = [...path, this]
+  const path_full = [...path, ref]
   Dynamic.put(subs, path_full, render)
   const store = React.useContext(RiptideStoreContext)
-  return store.query_path(path)
+  return [store.query_path(path), ref]
 }
