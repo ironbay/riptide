@@ -1,8 +1,10 @@
+import "./types"
 import * as Riptide from "./"
 import sleep from "./sleep"
 describe("riptide", () => {
   it("implementation", async () => {
     const local = new Riptide.Store.Memory()
+    const x = null as Riptide.Mutation
 
     const conn = Riptide.Connection.create()
     conn.transport.onStatus.add(async status => {

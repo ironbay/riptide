@@ -1,21 +1,23 @@
 import Local from "./local"
+import { Mutation, Query } from "../types"
+
 export default class Memory extends Local {
   private state: { [key: string]: any } = {}
 
-  mutation_raw(mut: Riptide.Mutation) {
+  mutation_raw(mut: Mutation) {
     Memory.delete(this.state, mut.delete)
     Memory.merge(this.state, mut.merge)
   }
 
-  mutation_reverse(mut: Riptide.Mutation) {
+  mutation_reverse(mut: Mutation) {
     return Memory.merge_reverse(this.state, mut.merge)
   }
 
-  query_raw(query: Riptide.Query) {
+  query_raw(query: Query) {
     return Memory.query(this.state, query)
   }
 
-  private static query(state: { [key: string]: any }, input: Riptide.Query) {
+  private static query(state: { [key: string]: any }, input: Query) {
     const result = {} as { [key: string]: any }
     let found = false
     for (let key of Object.keys(input)) {
@@ -23,7 +25,7 @@ export default class Memory extends Local {
       if (value instanceof Object) {
         found = true
         const existing = state && state[key]
-        result[key] = Memory.query(existing, value as Riptide.Query)
+        result[key] = Memory.query(existing, value as Query)
       }
     }
     if (!found) return state
@@ -32,7 +34,7 @@ export default class Memory extends Local {
 
   private static delete(
     state: { [key: string]: any },
-    input: Riptide.Mutation["delete"]
+    input: Mutation["delete"]
   ) {
     for (let key of Object.keys(input)) {
       const value = input[key]
@@ -50,7 +52,7 @@ export default class Memory extends Local {
 
   private static merge(
     state: { [key: string]: any },
-    input: Riptide.Mutation["merge"]
+    input: Mutation["merge"]
   ) {
     for (let key of Object.keys(input)) {
       const value = input[key]
@@ -68,7 +70,7 @@ export default class Memory extends Local {
   }
   private static merge_reverse(
     state: { [key: string]: any },
-    input: Riptide.Mutation["merge"]
+    input: Mutation["merge"]
   ) {
     const result = {
       merge: {},

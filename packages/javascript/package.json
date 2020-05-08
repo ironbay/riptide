@@ -1,6 +1,6 @@
 {
   "name": "@ironbay/riptide",
-  "version": "0.2.5",
+  "version": "0.2.9",
   "description": "",
   "main": "dist/index.js",
   "scripts": {
@@ -10,8 +10,8 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@types/jest": "^25.1.4",
-    "rollup": "^2.0.2",
+    "@types/jest": "^25.2.1",
+    "rollup": "^2.8.2",
     "rollup-plugin-typescript2": "^0.26.0",
     "tsdx": "^0.12.3",
     "typescript": "^3.8.3"
