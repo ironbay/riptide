@@ -5,6 +5,14 @@ import { act } from "react-dom/test-utils"
 import ReactDOM from "react-dom"
 
 function App() {
+  return (
+    <div className="root">
+      <Child />
+    </div>
+  )
+}
+
+function Child() {
   const count = useRiptidePath(["count"])
   return <div className="count">{count}</div>
 }
