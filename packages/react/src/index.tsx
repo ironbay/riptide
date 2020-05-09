@@ -8,10 +8,10 @@ export function useRiptide(local: Riptide.Store.Memory) {
 
   React.useEffect(() => {
     function trigger() {
-      render((val) => val + 1)
+      render(val => val + 1)
     }
     local.onChange.add(trigger)
-    return function () {
+    return function() {
       local.onChange.remove(trigger)
     }
   }, [])
@@ -26,10 +26,10 @@ export function RiptideStoreProvider(props: {
   children: any
 }) {
   React.useEffect(() => {
-    props.store.onChange.add((mut) => {
-      Dynamic.flatten(mut.merge).map((layer) => {
+    props.store.onChange.add(mut => {
+      Dynamic.flatten(mut.merge).map(layer => {
         const result = Dynamic.get_values<any>(subs, layer.path)
-        result.map((item) => item((val) => val + 1))
+        result.map(render => render())
       })
     })
   }, [props.store])
@@ -41,13 +41,17 @@ export function RiptideStoreProvider(props: {
   )
 }
 
-export function useRiptidePath(
-  path: string[]
-): [any, React.MutableRefObject<any>] {
-  const ref = React.useRef(null)
-  const [_, render] = React.useState(0)
-  const path_full = [...path, ref]
-  Dynamic.put(subs, path_full, render)
+export function useRiptideContext() {
+  // Ref might not even be needed if you store subs as an array of render funcs under a path
+  const ref = React.useRef()
   const store = React.useContext(RiptideStoreContext)
-  return [store.query_path(path), ref]
+  const [_, render] = React.useState(0)
+
+  // TODO: Delete old subs
+
+  return function(path: string[]) {
+    const path_full = [...path, ref]
+    Dynamic.put(subs, path_full, () => render(v => v + 1))
+    return store.query_path(path)
+  }
 }

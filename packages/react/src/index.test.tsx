@@ -1,4 +1,4 @@
-import { useRiptide, useRiptidePath, RiptideStoreProvider } from "./index"
+import { RiptideStoreProvider, useRiptideContext } from "./index"
 import * as Riptide from "@ironbay/riptide"
 import React from "react"
 import { act } from "react-dom/test-utils"
@@ -13,13 +13,11 @@ function App() {
 }
 
 function Child() {
-  const [count, ref] = useRiptidePath(["count"])
+  const riptide = useRiptideContext()
 
-  return (
-    <div ref={ref} className="count">
-      {count}
-    </div>
-  )
+  const count = riptide(["count"])
+
+  return <div className="count">{count}</div>
 }
 
 test("useRiptide updates DOM", async () => {
