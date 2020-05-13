@@ -3,7 +3,7 @@
   "version": "0.2.10",
   "description": "",
   "main": "dist/index.js",
-  "module": "dist/index.es.js",
+  "module": "dist/index.esm.js",
   "scripts": {
     "build": "rollup -c",
     "test": "tsdx test"
