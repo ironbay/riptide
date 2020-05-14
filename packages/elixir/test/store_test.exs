@@ -49,7 +49,17 @@ defmodule Riptide.Test.Store do
 
     1 =
       ["todos"]
-      |> Riptide.Store.stream(%{limit: 1}, store, opts)
+      |> Riptide.Store.stream(%{min: "", limit: 1}, store, opts)
+      |> Enum.count()
+
+    1 =
+      ["todos"]
+      |> Riptide.Store.stream(%{min: "001", max: "002"}, store, opts)
+      |> Enum.count()
+
+    1 =
+      ["todos"]
+      |> Riptide.Store.stream(%{min: "001", max: "002"}, store, opts)
       |> Enum.count()
 
     [{^gw_key, ^gw}] =

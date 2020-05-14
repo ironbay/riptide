@@ -3,24 +3,20 @@ defmodule Riptide.Store.Prefix do
   def range(nil, _opts), do: {[], [<<127>>]}
 
   def range(input, opts) do
-    input =
-      case input do
-        "" -> <<0>>
-        _ -> input
-      end
+    input = blank(input)
 
     case {Map.get(opts, :min), Map.get(opts, :max)} do
-      {nil, nil} ->
+      {min, max} when min in ["", nil] and max in ["", nil] ->
         min = [input]
         max = [prefix(input)]
         {min, max}
 
-      {min, nil} ->
+      {min, max} when max in ["", nil] ->
         min = [input, min]
         max = [prefix(input)]
         {min, max}
 
-      {nil, max} ->
+      {min, max} when min in ["", nil] ->
         min = [input]
         max = [input, max]
         {min, max}
@@ -31,6 +27,9 @@ defmodule Riptide.Store.Prefix do
         {min, max}
     end
   end
+
+  def blank(""), do: <<0>>
+  def blank(input), do: input
 
   def prefix(<<0>>) do
     <<127>>
