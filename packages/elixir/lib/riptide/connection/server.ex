@@ -15,8 +15,8 @@ defmodule Riptide.Websocket.Server do
             {
               :_,
               [
-                {"/socket", __MODULE__, opts}
-                # {"/", Riptide.Server.OK, []}
+                {"/socket", __MODULE__, opts},
+                {"/", Riptide.Websocket.OK, []}
               ]
             }
           ])
@@ -70,4 +70,22 @@ defmodule Riptide.Websocket.Server do
       start: {__MODULE__, :start_link, [opts]}
     }
   end
+end
+
+defmodule Riptide.Websocket.OK do
+  def init(req, state) do
+    handle(req, state)
+  end
+
+  def handle(request, state) do
+    reply =
+      :cowboy_req.reply(
+        200,
+        request
+      )
+
+    {:ok, reply, state}
+  end
+
+  def terminate(_reason, _request, _state), do: :ok
 end
