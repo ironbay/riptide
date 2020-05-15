@@ -33,6 +33,10 @@ import Memory from "./memory"
       })
       expect(store.query({})).toEqual({ todos: {} })
 
+      await store.merge(["primitive", "test"], new Date())
+      expect(store.query_path(["primitive", "test"]).constructor === Date)
+      store.delete(["primitive"])
+
       await store.mutation({
         delete: { todos: {} },
         merge: {
