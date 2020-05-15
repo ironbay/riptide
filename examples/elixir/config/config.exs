@@ -2,8 +2,8 @@ import Config
 
 config :riptide,
   store: %{
-    write: {Riptide.Store.LMDB, directory: "data"},
-    read: {Riptide.Store.LMDB, directory: "data"}
+    write: {Riptide.Store.Postgres, []},
+    read: {Riptide.Store.Postgres, []}
   },
   interceptors: [
     TodoList.Permissions,

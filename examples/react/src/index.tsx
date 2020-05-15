@@ -3,7 +3,7 @@ import * as ReactDOM from "react-dom"
 import { UUID } from "@ironbay/riptide"
 
 // look at ./data/riptide to see how Riptide is bootstrapped
-import { local, sync } from "./data/riptide"
+import { local, sync, remote } from "./data/riptide"
 
 interface Todo {
   name?: string
@@ -17,6 +17,22 @@ function App() {
   const [_, render] = React.useState(0)
   React.useEffect(() => {
     local.onChange.add(() => render((val) => val + 1))
+  }, [])
+
+  React.useEffect(() => {
+    async function stream() {
+      let min = ""
+      while (true) {
+        const results = await remote.query_path(["test"], {
+          min: min,
+          limit: 10,
+        })
+        const keys = Object.keys(results)
+        if (keys.length < 10) break
+        min = keys.sort()[keys.length - 1]
+      }
+    }
+    stream()
   }, [])
 
   async function create_todo() {
