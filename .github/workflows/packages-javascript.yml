@@ -36,11 +36,11 @@ jobs:
             deps-
 
       - name: Install Dependencies
-        run: npm i
+        run: yarn
         working-directory: ${{env.directory}}
 
       - name: Build
-        run: npm run build
+        run: yarn build
         working-directory: ${{env.directory}}
 
       # - name: Run Tests
@@ -53,5 +53,5 @@ jobs:
 
       - name: Publish
         if: github.ref == 'refs/heads/master'
-        run: npm publish || true
+        run: yarn publish --non-interactive
         working-directory: ${{env.directory}}
