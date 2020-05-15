@@ -43,7 +43,7 @@ export default class Memory extends Local {
       }
 
       const existing = state[key]
-      if (!existing) continue
+      if (existing == null || !(existing instanceof Object)) continue
       Memory.delete(existing, value)
     }
   }
@@ -60,8 +60,12 @@ export default class Memory extends Local {
         continue
       }
 
-      if (!state[key]) state[key] = {}
-      const existing = state[key]
+      let existing = state[key]
+      if (existing == null || !(existing instanceof Object)) {
+        existing = {}
+        state[key] = existing
+      }
+
       Memory.merge(existing, value)
       continue
     }
