@@ -53,5 +53,5 @@ jobs:
 
       - name: Publish
         if: github.ref == 'refs/heads/master'
-        run: yarn publish --non-interactive
+        run: yarn publish --non-interactive || true
         working-directory: ${{env.directory}}
