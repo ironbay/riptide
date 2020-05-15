@@ -20,7 +20,7 @@ export default class Memory extends Local {
     let found = false
     for (let key of Object.keys(input)) {
       const value = input[key]
-      if (value instanceof Object) {
+      if (Memory.is_object(value)) {
         found = true
         const existing = state && state[key]
         result[key] = Memory.query(existing, value as Riptide.Query)
@@ -43,7 +43,7 @@ export default class Memory extends Local {
       }
 
       const existing = state[key]
-      if (existing == null || !(existing instanceof Object)) continue
+      if (!Memory.is_object(existing)) continue
       Memory.delete(existing, value)
     }
   }
@@ -55,13 +55,13 @@ export default class Memory extends Local {
     for (let key of Object.keys(input)) {
       const value = input[key]
 
-      if (!(value instanceof Object)) {
+      if (!Memory.is_object(value)) {
         state[key] = value
         continue
       }
 
       let existing = state[key]
-      if (existing == null || !(existing instanceof Object)) {
+      if (!Memory.is_object(existing)) {
         existing = {}
         state[key] = existing
       }
@@ -86,7 +86,7 @@ export default class Memory extends Local {
         continue
       }
 
-      if (!(value instanceof Object)) {
+      if (!Memory.is_object(value)) {
         result.merge[key] = exists
         continue
       }
@@ -96,5 +96,9 @@ export default class Memory extends Local {
       result.delete[key] = child.delete
     }
     return result
+  }
+
+  private static is_object(input: any) {
+    return input != null && input.constructor === Object
   }
 }
