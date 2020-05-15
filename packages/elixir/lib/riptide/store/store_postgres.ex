@@ -178,7 +178,7 @@ defmodule Riptide.Store.Postgres do
 
     conn
     |> Postgrex.stream(
-      "SELECT path, value FROM riptide WHERE path >= $1 AND path < $2",
+      "SELECT path, value FROM riptide WHERE path >= $1 AND path < $2 ORDER BY path ASC",
       [encode_path(min), encode_path(max)]
     )
     |> Stream.flat_map(fn item -> item.rows end)
