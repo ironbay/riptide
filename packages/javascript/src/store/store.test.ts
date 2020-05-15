@@ -49,7 +49,7 @@ import Memory from "./memory"
       await store.delete(["primitive"])
 
       await store.mutation({
-        delete: { todos: {} },
+        delete: { todos: 1 },
         merge: {
           todos: {
             todo_01: "feed the barracuda",
@@ -64,7 +64,7 @@ import Memory from "./memory"
         todos: { todo_01: "feed the barracuda" }
       })
       expect(store.query({ todos: { todo_03: { created: {} } } })).toEqual({
-        todos: { todo_03: { creaded: undefined } }
+        todos: { todo_03: { created: undefined } }
       })
 
       expect(store.query_path(["todos", "todo_01"])).toEqual(
