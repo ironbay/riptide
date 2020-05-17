@@ -28,7 +28,7 @@ defmodule Todo.MixProject do
       {:postgrex, "~> 0.15.4"},
       {:riptide, path: "../../packages/elixir", allow_pre: true},
       {:bcrypt_elixir, "~> 2.0"},
-      {:bridge_lmdb, "~> 0.1.1"}
+      {:bridge_lmdb, "~> 0.1.3"}
     ]
   end
 end

@@ -9,8 +9,8 @@ defmodule TodoList.Application do
     children = [
       # Starts a worker by calling: TodoList.Worker.start_link(arg)
       # {TodoList.Worker, arg}
-      {Riptide.Store.Postgres,
-       username: "postgres", hostname: "localhost", password: "password", database: "postgres"},
+      # {Riptide.Store.Postgres,
+      #  username: "postgres", hostname: "localhost", password: "password", database: "postgres"},
       {Riptide, []}
     ]
 
