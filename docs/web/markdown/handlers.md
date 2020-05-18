@@ -5,10 +5,9 @@ It is possible to extend Riptide to support more than simple Mutations and Queri
 ```elixir
 
 config :riptide,
-  interceptors: [
-    TodoList.Permissions,
-    TodoList.Todo.Created,
-    TodoList.Todo.Alert
+  handlers: [
+    Todo.Auth,
+    Todo.Ping
   ]
 
 
@@ -54,7 +53,7 @@ The valid responses are
 A cast is a command that does not expect a reply.
 
 ```elixir
-defmodule Todo.Auth do
+defmodule Todo.Ping do
   use Riptide.Command
 
   def handle_cast("todo.ping", _body, state) do
