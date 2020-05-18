@@ -1,6 +1,6 @@
-import React from "react";
-import { useRouter } from "next/router";
-import Link from "next/link";
+import React from "react"
+import { useRouter } from "next/router"
+import Link from "next/link"
 
 export default function Sidebar() {
   return (
@@ -31,7 +31,7 @@ export default function Sidebar() {
           <Doc href="/quick-start">Mutations</Doc>
           <Doc href="/quick-start">Queries</Doc>
           <Doc href="/docs/interceptors">Interceptors</Doc>
-          <Doc href="/quick-start">Commands</Doc>
+          <Doc href="/docs/handlers">Handlers</Doc>
 
           <div className="h-12" />
           <Header>Stores</Header>
@@ -49,7 +49,7 @@ export default function Sidebar() {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 function Header(props) {
@@ -57,12 +57,12 @@ function Header(props) {
     <div className="font-600 tracking-wider text-sm uppercase">
       {props.children}
     </div>
-  );
+  )
 }
 
 function Doc(props) {
-  const router = useRouter();
-  const active = router.asPath === (props.as || props.href);
+  const router = useRouter()
+  const active = router.asPath === (props.as || props.href)
   return (
     <div className="mt-4">
       <Link {...props}>
@@ -75,5 +75,5 @@ function Doc(props) {
         </a>
       </Link>
     </div>
-  );
+  )
 }
