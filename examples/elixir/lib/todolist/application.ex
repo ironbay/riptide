@@ -11,7 +11,7 @@ defmodule TodoList.Application do
       # {TodoList.Worker, arg}
       # {Riptide.Store.Postgres,
       #  username: "postgres", hostname: "localhost", password: "password", database: "postgres"},
-      {Riptide, [port: Enum.random(12000..13000)]}
+      {Riptide, []}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
