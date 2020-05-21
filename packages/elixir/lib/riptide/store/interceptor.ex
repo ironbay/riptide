@@ -209,8 +209,8 @@ defmodule Riptide.Interceptor do
     |> mutation_trigger(interceptors, :mutation_effect, [mutation, state])
     |> Stream.map(fn {mod, result} ->
       case result do
-        {fun, args} -> Riptide.Scheduler.schedule_in(mod, fun, args, 0)
-        {mod_other, fun, args} -> Riptide.Scheduler.schedule(mod_other, fun, args, 0)
+        {fun, args} -> Riptide.Scheduler.schedule_in(0, mod, fun, args)
+        {mod_other, fun, args} -> Riptide.Scheduler.schedule_in(0, mod_other, fun, args)
         _ -> Riptide.Mutation.new()
       end
     end)
