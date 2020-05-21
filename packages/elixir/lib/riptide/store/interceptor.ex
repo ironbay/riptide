@@ -317,7 +317,7 @@ defmodule Riptide.Interceptor do
               layer :: Riptide.Mutation.t(),
               mut :: Riptide.Mutation.t(),
               state :: String.t()
-            ) :: :ok | {:error, term} | {:combine, Riptide.Mutation.t()}
+            ) :: :ok | {:error, term} | {:combine, Riptide.Mutation.t()} | nil
 
   @doc false
   @callback mutation_after(
@@ -332,7 +332,7 @@ defmodule Riptide.Interceptor do
               layer :: Riptide.Mutation.t(),
               mut :: Riptide.Mutation.t(),
               state :: String.t()
-            ) :: :ok | {atom(), atom(), list()} | {atom(), list()}
+            ) :: :ok | {atom(), atom(), list()} | {atom(), list()} | nil
 
   defmacro __using__(_opts) do
     quote do
