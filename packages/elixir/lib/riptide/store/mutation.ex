@@ -124,6 +124,17 @@ defmodule Riptide.Mutation do
     end)
   end
 
+  @doc ~S"""
+  Combines two mutations into one.
+
+  ## Example
+
+    iex> Riptide.Mutation.combine(
+    ...>	%{delete: %{}, merge: %{"a" => true}},
+    ...>	%{delete: %{}, merge: %{"b" => false}}
+    ...> )
+    %{delete: %{}, merge: %{"a" => true, "b" => false}}
+  """
   @spec combine(t, t) :: t
   def combine(left, right) do
     mut = combine_delete(left, right.delete)
@@ -138,17 +149,6 @@ defmodule Riptide.Mutation do
     }
   end
 
-  @doc ~S"""
-  Combines two mutations into one.
-
-  ## Example
-
-    iex> Riptide.Mutation.combine(
-    ...>	%{delete: %{}, merge: %{"a" => true}},
-    ...>	%{delete: %{}, merge: %{"b" => false}}
-    ...> )
-    %{delete: %{}, merge: %{"a" => true, "b" => false}}
-  """
   @spec combine(Enum.t()) :: t
   def combine(input) do
     input
