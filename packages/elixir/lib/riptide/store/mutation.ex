@@ -138,6 +138,17 @@ defmodule Riptide.Mutation do
     }
   end
 
+  @doc ~S"""
+  Combines two mutations into one.
+
+  ## Example
+
+    iex> Riptide.Mutation.combine(
+    ...>	%{delete: %{}, merge: %{"a" => true}},
+    ...>	%{delete: %{}, merge: %{"b" => false}}
+    ...> )
+    %{delete: %{}, merge: %{"a" => true, "b" => false}}
+  """
   @spec combine(Enum.t()) :: t
   def combine(input) do
     input
@@ -145,7 +156,7 @@ defmodule Riptide.Mutation do
     |> Enum.reduce(new(), &combine(&2, &1))
   end
 
-  def combine_delete(mut, next) do
+  defp combine_delete(mut, next) do
     Enum.reduce(next, mut, fn
       {key, value}, collect when value == 1 ->
         %{
@@ -182,17 +193,6 @@ defmodule Riptide.Mutation do
     end)
   end
 
-  @doc ~S"""
-  Combines two mutations into one.
-
-  ## Example
-
-    iex> Riptide.Mutation.combine(
-    ...>	%{delete: %{}, merge: %{"a" => true}},
-    ...>	%{delete: %{}, merge: %{"b" => false}}
-    ...> )
-    %{delete: %{}, merge: %{"a" => true, "b" => false}}
-  """
   @spec combine_legacy(t, t) :: t
   def combine_legacy(left, right) do
     %{
