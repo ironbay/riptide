@@ -125,7 +125,7 @@ defmodule Riptide.Mutation do
   end
 
   @spec combine(t, t) :: t
-  def combine_next(left, right) do
+  def combine(left, right) do
     mut = combine_delete(left, right.delete)
 
     %{
@@ -136,6 +136,13 @@ defmodule Riptide.Mutation do
             right.merge
           )
     }
+  end
+
+  @spec combine(Enum.t()) :: t
+  def combine(input) do
+    input
+    |> Stream.filter(fn item -> item != nil end)
+    |> Enum.reduce(new(), &combine(&2, &1))
   end
 
   def combine_delete(mut, next) do
@@ -186,8 +193,8 @@ defmodule Riptide.Mutation do
     ...> )
     %{delete: %{}, merge: %{"a" => true, "b" => false}}
   """
-  @spec combine(t, t) :: t
-  def combine(left, right) do
+  @spec combine_legacy(t, t) :: t
+  def combine_legacy(left, right) do
     %{
       merge:
         left.merge
@@ -199,13 +206,6 @@ defmodule Riptide.Mutation do
           right.delete
         )
     }
-  end
-
-  @spec combine(Enum.t()) :: t
-  def combine(input) do
-    input
-    |> Stream.filter(fn item -> item != nil end)
-    |> Enum.reduce(new(), &combine(&2, &1))
   end
 
   @doc ~S"""
