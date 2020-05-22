@@ -74,7 +74,6 @@ defmodule Riptide.Scheduler do
   end
 
   def handle_call({:register, task, timestamp}, _from, state) do
-    Logger.info("Registered #{task}")
     existing = Map.get(state.scheduled, task)
 
     if existing != nil do
