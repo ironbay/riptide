@@ -124,6 +124,57 @@ defmodule Riptide.Mutation do
     end)
   end
 
+  @spec combine(t, t) :: t
+  def combine_next(left, right) do
+    mut = combine_delete(left, right.delete)
+
+    %{
+      mut
+      | merge:
+          Dynamic.combine(
+            mut.merge,
+            right.merge
+          )
+    }
+  end
+
+  def combine_delete(mut, next) do
+    Enum.reduce(next, mut, fn
+      {key, value}, collect when value == 1 ->
+        %{
+          merge: Map.delete(collect.merge, key),
+          delete:
+            case collect.delete do
+              1 -> nil
+              _ -> Map.put(collect.delete, key, 1)
+            end
+        }
+
+      {key, value}, collect when is_map(value) ->
+        %{merge: merge, delete: delete} =
+          combine_delete(
+            %{
+              delete: Map.get(collect.delete, key, %{}),
+              merge: Map.get(collect.merge, key, %{})
+            },
+            value
+          )
+
+        %{
+          merge:
+            case merge do
+              result when result == %{} -> Map.delete(collect.merge, key)
+              _ -> Map.put(collect.merge, key, merge)
+            end,
+          delete:
+            case delete do
+              nil -> collect.delete
+              _ -> Map.put(collect.delete, key, delete)
+            end
+        }
+    end)
+  end
+
   @doc ~S"""
   Combines two mutations into one.
 
