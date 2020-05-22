@@ -1,21 +1,7 @@
 defmodule Riptide.Scheduler do
   @moduledoc false
   require Logger
-  use Supervisor
-
-  def start_link(opts) do
-    Supervisor.start_link(__MODULE__, opts)
-  end
-
-  def init(_) do
-    Supervisor.init(
-      [
-        {Task.Supervisor, name: __MODULE__},
-        Riptide.Scheduler.Dispatch
-      ],
-      strategy: :one_for_one
-    )
-  end
+  use GenServer
 
   @root "riptide:scheduler"
 
@@ -23,11 +9,7 @@ defmodule Riptide.Scheduler do
 
   def stream(), do: Riptide.stream([@root])
 
-  def cancel(task) do
-    Riptide.Mutation.delete([@root, task])
-  end
-
-  def schedule_in(mod, fun, args, offset, key \\ nil),
+  def schedule_in(offset, mod, fun, args, key \\ nil),
     do: schedule(:os.system_time(:millisecond) + offset, mod, fun, args, key)
 
   def schedule(timestamp, mod, fun, args, key \\ nil) do
@@ -43,7 +25,98 @@ defmodule Riptide.Scheduler do
     })
   end
 
+  def cancel(task) do
+    Riptide.Mutation.delete([@root, task])
+  end
+
+  def start_link(_opts) do
+    GenServer.start_link(__MODULE__, [], name: __MODULE__)
+  end
+
+  def init(_) do
+    send(self(), {:nodeup, Node.self()})
+    :net_kernel.monitor_nodes(true)
+    {:ok, %{scheduled: %{}, active: false}}
+  end
+
+  def handle_info({evt, _}, state) when evt in [:nodeup, :nodedown] do
+    cond do
+      master() == Node.self() && state.active == false ->
+        Logger.info("#{__MODULE__} scheduling tasks...")
+
+        scheduled =
+          Riptide.Scheduler.stream()
+          |> Stream.map(fn {task, info} ->
+            now = :os.system_time(:millisecond)
+            diff = max(info["timestamp"] - now, 0)
+            {:ok, ref} = :timer.apply_after(diff, __MODULE__, :execute, [task])
+            {task, ref}
+          end)
+          |> Enum.into(%{})
+
+        {:noreply, %{scheduled: scheduled, active: true}}
+
+      master() != Node.self() && state.active == true ->
+        Logger.info("#{__MODULE__} releasing scheduled tasks")
+
+        Enum.each(state.scheduled, fn {_task, ref} ->
+          :timer.cancel(ref)
+        end)
+
+        {:noreply, %{active: false, scheduled: %{}}}
+
+      master() == Node.self() && state.active == true ->
+        {:noreply, state}
+
+      master() != Node.self() && state.active == false ->
+        {:noreply, state}
+    end
+  end
+
+  def handle_call({:register, task, timestamp}, _from, state) do
+    existing = Map.get(state.scheduled, task)
+
+    if existing != nil do
+      :timer.cancel(existing)
+    end
+
+    now = :os.system_time(:millisecond)
+    diff = max(timestamp - now, 0)
+    {:ok, ref} = :timer.apply_after(diff, __MODULE__, :execute, [task])
+    {:reply, :ok, %{state | scheduled: Map.put(state.scheduled, task, ref)}}
+  end
+
+  def handle_call({:complete, task}, _from, state) do
+    existing = Map.get(state.scheduled, task)
+
+    if existing != nil do
+      :timer.cancel(existing)
+    end
+
+    {:reply, :ok, %{state | scheduled: Map.delete(state.scheduled, task)}}
+  end
+
+  def complete(task) do
+    :rpc.call(master(), __MODULE__, :complete_local, [task])
+  end
+
+  def complete_local(task) do
+    GenServer.call(__MODULE__, {:complete, task})
+  end
+
+  def register(task, timestamp) do
+    :rpc.call(master(), __MODULE__, :register_local, [task, timestamp])
+  end
+
+  def register_local(task, timestamp) do
+    GenServer.call(__MODULE__, {:register, task, timestamp})
+  end
+
   def execute(task) do
+    :rpc.call(Enum.random(pool()), __MODULE__, :execute_local, [task])
+  end
+
+  def execute_local(task) do
     Logger.metadata(scheduler_task: task)
 
     task
@@ -64,7 +137,9 @@ defmodule Riptide.Scheduler do
 
           cond do
             timestamp === Riptide.query_path!([@root, task, "timestamp"]) ->
-              Riptide.delete!([@root, task])
+              task
+              |> cancel()
+              |> Riptide.mutation!()
 
             true ->
               Riptide.merge!([@root, task, "count"], 0)
@@ -85,7 +160,7 @@ defmodule Riptide.Scheduler do
             |> case do
               {:delay, amount} ->
                 :timer.sleep(amount)
-                execute(task)
+                execute_local(task)
 
               :abort ->
                 Riptide.delete!([@root, task])
@@ -96,5 +171,15 @@ defmodule Riptide.Scheduler do
       _ ->
         {:error, :invalid_task}
     end
+  end
+
+  def master do
+    pool()
+    |> Enum.sort()
+    |> List.first()
+  end
+
+  def pool() do
+    [Node.self() | Node.list()]
   end
 end
