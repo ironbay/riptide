@@ -4,16 +4,16 @@ import Link from "next/link"
 
 export default function Sidebar() {
   return (
-    <div className="overflow-y-visible w-1/5">
-      <div className="scrolling-touch h-auto relative sticky top-0">
+    <div className="w-1/5 overflow-y-visible">
+      <div className="relative sticky top-0 h-auto scrolling-touch">
         <div
           style={{
             backgroundImage:
               "linear-gradient(rgba(255,255,255,1), rgba(255,255,255,0))",
           }}
-          className="h-16 pointer-events-none absolute inset-x-0 z-10"
+          className="absolute inset-x-0 z-10 h-16 pointer-events-none"
         />
-        <div className="h-screen overflow-y-scroll pt-12 text-gray-600">
+        <div className="h-screen pt-12 overflow-y-scroll text-gray-600">
           <Header>Getting Started</Header>
           <Doc href="/">Overview</Doc>
           <Doc href="/docs/[...doc]" as="/docs/setup">
@@ -29,7 +29,7 @@ export default function Sidebar() {
           <div className="h-12" />
           <Header>Core Concepts</Header>
           <Doc href="/quick-start">Mutations</Doc>
-          <Doc href="/quick-start">Queries</Doc>
+          <Doc href="/docs/queries">Queries</Doc>
           <Doc href="/docs/interceptors">Interceptors</Doc>
           <Doc href="/docs/handlers">Handlers</Doc>
 
@@ -54,7 +54,7 @@ export default function Sidebar() {
 
 function Header(props) {
   return (
-    <div className="font-600 tracking-wider text-sm uppercase">
+    <div className="text-sm tracking-wider uppercase font-600">
       {props.children}
     </div>
   )
