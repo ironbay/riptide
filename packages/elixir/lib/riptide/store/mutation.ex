@@ -168,6 +168,7 @@ defmodule Riptide.Mutation do
           delete:
             case collect.delete do
               1 -> nil
+              nil -> nil
               _ -> Map.put(collect.delete, key, 1)
             end
         }
@@ -176,7 +177,11 @@ defmodule Riptide.Mutation do
         %{merge: merge, delete: delete} =
           combine_delete(
             %{
-              delete: Map.get(collect.delete, key, %{}),
+              delete:
+                cond do
+                  is_map(collect.delete) -> Map.get(collect.delete, key, %{})
+                  true -> nil
+                end,
               merge:
                 cond do
                   is_map(collect.merge) -> Map.get(collect.merge, key, %{})
