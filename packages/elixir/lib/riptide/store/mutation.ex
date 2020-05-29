@@ -160,7 +160,11 @@ defmodule Riptide.Mutation do
     Enum.reduce(next, mut, fn
       {key, value}, collect when value == 1 ->
         %{
-          merge: Map.delete(collect.merge, key),
+          merge:
+            cond do
+              is_map(collect.merge) -> Map.delete(collect.merge, key)
+              true -> collect.merge
+            end,
           delete:
             case collect.delete do
               1 -> nil
