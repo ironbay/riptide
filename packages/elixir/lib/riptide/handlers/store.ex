@@ -23,7 +23,6 @@ defmodule Riptide.Handler.Store do
       _ ->
         {:error, :auth_invalid, state}
     end
-    |> IO.inspect()
   end
 
   def handle_call("riptide.store.query", query, state) do

@@ -15,6 +15,21 @@ defmodule Riptide.Test.Store do
   #   test_store(Riptide.Store.Postgres, name: pid)
   # end
 
+  test Riptide.Store.Composite do
+    defmodule Store do
+      use Riptide.Store.Composite
+
+      def stores(),
+        do: [
+          {Riptide.Store.Memory, []}
+        ]
+
+      def which_store(_path), do: {Riptide.Store.Memory, []}
+    end
+
+    test_store(Store, [])
+  end
+
   test Riptide.Store.Riptide do
     {:ok, pid} = Riptide.start_link()
 
