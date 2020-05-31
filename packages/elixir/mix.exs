@@ -4,7 +4,7 @@ defmodule Riptide.MixProject do
   def project do
     [
       app: :riptide,
-      version: "0.3.12",
+      version: "0.3.13",
       description: "Framework for building realtime applications",
       package: [
         maintainers: ["thdxr", "ironbay"],
