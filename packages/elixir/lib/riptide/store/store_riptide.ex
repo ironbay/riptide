@@ -1,6 +1,10 @@
 defmodule Riptide.Store.Riptide do
   @behaviour Riptide.Store
 
+  def child_spec(opts) do
+    Riptide.Store.Riptide.Supervisor.child_spec(opts)
+  end
+
   def init(_opts) do
     :ok
   end
