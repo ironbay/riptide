@@ -8,7 +8,8 @@ defmodule Riptide.Config do
     scheduler: true,
     store: %{
       write: {Riptide.Store.Memory, []},
-      read: {Riptide.Store.Memory, []}
+      read: {Riptide.Store.Memory, []},
+      token: ""
       # write: nil,
       # read: nil
     },

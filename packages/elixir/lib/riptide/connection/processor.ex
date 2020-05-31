@@ -124,7 +124,8 @@ defmodule Riptide.Processor do
           Riptide.Handler.Ping,
           Riptide.Handler.Mutation,
           Riptide.Handler.Query,
-          Riptide.Handler.Subscribe
+          Riptide.Handler.Subscribe,
+          Riptide.Handler.Store
         ],
       fn mod ->
         try do

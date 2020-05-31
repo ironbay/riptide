@@ -15,6 +15,30 @@ defmodule Riptide.Test.Store do
   #   test_store(Riptide.Store.Postgres, name: pid)
   # end
 
+  test Riptide.Store.Riptide do
+    {:ok, pid} = Riptide.start_link()
+
+    Application.put_env(
+      :riptide,
+      :store,
+      %{
+        write: {Riptide.Store.Memory, []},
+        read: {Riptide.Store.Memory, []},
+        token: "abd"
+      }
+    )
+
+    Riptide.Store.Riptide.Supervisor.start_link(
+      url: "http://localhost:12000/socket",
+      name: :riptide,
+      token: "abd"
+    )
+
+    test_store(Riptide.Store.Riptide, [])
+    :ets.delete(:riptide_table)
+    Process.exit(pid, :kill)
+  end
+
   test Riptide.Store.LMDB do
     File.rm_rf("lmdb")
     test_store(Riptide.Store.LMDB, directory: "lmdb")
