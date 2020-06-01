@@ -1,0 +1,169 @@
+[
+    [
+        "same merge paths",
+        "combine",
+        {
+            "merge": {
+                "a": {
+                    "b": 1
+                }
+            },
+            "delete": {}
+        },
+        {
+            "merge": {
+                "a": {
+                    "b": 1
+                }
+            },
+            "delete": {}
+        },
+        {
+            "merge": {
+                "a": {
+                    "b": 1
+                }
+            },
+            "delete": {}
+        }
+    ],
+    [
+        "different merge paths",
+        "combine",
+        {
+            "merge": {
+                "a": {
+                    "b": 1
+                }
+            },
+            "delete": {}
+        },
+        {
+            "merge": {
+                "c": {
+                    "d": 1
+                }
+            },
+            "delete": {}
+        },
+        {
+            "merge": {
+                "a": {
+                    "b": 1
+                },
+                "c": {
+                    "d": 1
+                }
+            },
+            "delete": {}
+        }
+    ],
+    [
+        "narrow merge overwritten by wide delete",
+        "combine",
+        {
+            "merge": {
+                "a": {
+                    "b": 1
+                }
+            },
+            "delete": {}
+        },
+        {
+            "merge": {},
+            "delete": {
+                "a": 1
+            }
+        },
+        {
+            "merge": {},
+            "delete": {
+                "a": 1
+            }
+        }
+    ],
+    [
+        "narrow merge overwritten by wide merge",
+        "combine",
+        {
+            "merge": {
+                "a": {
+                    "b": 1
+                }
+            },
+            "delete": {}
+        },
+        {
+            "merge": {
+                "a": 1
+            },
+            "delete": {}
+        },
+        {
+            "merge": {
+                "a": 1
+            },
+            "delete": {}
+        }
+    ],
+    [
+        "wide merge and deep delete",
+        "combine",
+        {
+            "merge": {
+                "a": 1
+            },
+            "delete": {}
+        },
+        {
+            "merge": {},
+            "delete": {
+                "a": {
+                    "b": {
+                        "c": 1
+                    }
+                }
+            }
+        },
+        {
+            "merge": {
+                "a": 1
+            },
+            "delete": {
+                "a": {
+                    "b": {
+                        "c": 1
+                    }
+                }
+            }
+        }
+    ],
+    [
+        "wide delete overwrites narrow merges/deletes",
+        "combine",
+        {
+            "merge": {
+                "a": {
+                    "b": 1
+                }
+            },
+            "delete": {
+                "a": 1
+            }
+        },
+        {
+            "merge": {},
+            "delete": {
+                "a": {
+                    "b": 1
+                }
+            }
+        },
+        {
+            "merge": {},
+            "delete": {
+                "a": 1
+            }
+        }
+    ]
+]

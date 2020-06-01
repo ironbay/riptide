@@ -137,6 +137,78 @@ defmodule Riptide.Mutation do
   """
   @spec combine(t, t) :: t
   def combine(left, right) do
+    mut = combine_delete(left, right.delete)
+
+    %{
+      mut
+      | merge:
+          Dynamic.combine(
+            mut.merge,
+            right.merge
+          )
+    }
+  end
+
+  @spec combine(Enum.t()) :: t
+  def combine(input) do
+    input
+    |> Stream.filter(fn item -> item != nil end)
+    |> Enum.reduce(new(), &combine(&2, &1))
+  end
+
+  defp combine_delete(mut, next) do
+    Enum.reduce(next, mut, fn
+      {key, value}, collect when value == 1 ->
+        %{
+          merge:
+            cond do
+              is_map(collect.merge) -> Map.delete(collect.merge, key)
+              true -> nil
+            end,
+          delete:
+            case collect.delete do
+              1 -> nil
+              nil -> nil
+              _ -> Map.put(collect.delete, key, 1)
+            end
+        }
+
+      {key, value}, collect when is_map(value) ->
+        %{merge: merge, delete: delete} =
+          combine_delete(
+            %{
+              delete:
+                cond do
+                  is_map(collect.delete) -> Map.get(collect.delete, key, %{})
+                  true -> nil
+                end,
+              merge:
+                cond do
+                  is_map(collect.merge) -> Map.get(collect.merge, key, %{})
+                  true -> nil
+                end
+            },
+            value
+          )
+
+        %{
+          merge:
+            case merge do
+              result when result == %{} -> Map.delete(collect.merge, key)
+              nil -> collect.merge
+              _ -> Map.put(collect.merge, key, merge)
+            end,
+          delete:
+            case delete do
+              nil -> collect.delete
+              _ -> Map.put(collect.delete, key, delete)
+            end
+        }
+    end)
+  end
+
+  @spec combine_legacy(t, t) :: t
+  def combine_legacy(left, right) do
     %{
       merge:
         left.merge
@@ -148,13 +220,6 @@ defmodule Riptide.Mutation do
           right.delete
         )
     }
-  end
-
-  @spec combine(Enum.t()) :: t
-  def combine(input) do
-    input
-    |> Stream.filter(fn item -> item != nil end)
-    |> Enum.reduce(new(), &combine(&2, &1))
   end
 
   @doc ~S"""
