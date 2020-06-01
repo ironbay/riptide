@@ -1,0 +1,410 @@
+[
+    [
+        "merge wide, merge wide, same path",
+        "combine",
+        {
+            "merge": {
+                "a": 1
+            },
+            "delete": {}
+        },
+        {
+            "merge": {
+                "a": 1
+            },
+            "delete": {}
+        },
+        {
+            "merge": {
+                "a": 1
+            },
+            "delete": {}
+        }
+    ],
+    [
+        "merge wide, merge wide, different path",
+        "combine",
+        {
+            "merge": {
+                "a": 1
+            },
+            "delete": {}
+        },
+        {
+            "merge": {
+                "b": 1
+            },
+            "delete": {}
+        },
+        {
+            "merge": {
+                "a": 1,
+                "b": 1
+            },
+            "delete": {}
+        }
+    ],
+    [
+        "merge wide, merge narrow, same path",
+        "combine",
+        {
+            "merge": {
+                "a": 1
+            },
+            "delete": {}
+        },
+        {
+            "merge": {
+                "a": {
+                    "b": 1
+                }
+            },
+            "delete": {}
+        },
+        {
+            "merge": {
+                "a": {
+                    "b": 1
+                }
+            },
+            "delete": {}
+        }
+    ],
+    [
+        "merge wide, merge narrow, different path",
+        "combine",
+        {
+            "merge": {
+                "a": 1
+            },
+            "delete": {}
+        },
+        {
+            "merge": {
+                "b": {
+                    "c": 1
+                }
+            },
+            "delete": {}
+        },
+        {
+            "merge": {
+                "a": 1,
+                "b": {
+                    "c": 1
+                }
+            },
+            "delete": {}
+        }
+    ],
+    [
+        "merge wide, merge wide delete wide, same merge same delete path",
+        "combine",
+        {
+            "merge": {
+                "a": 1
+            },
+            "delete": {}
+        },
+        {
+            "merge": {
+                "a": 1
+            },
+            "delete": {
+                "a": 1
+            }
+        },
+        {
+            "merge": {
+                "a": 1
+            },
+            "delete": {
+                "a": 1
+            }
+        }
+    ],
+    [
+        "merge wide, merge wide delete wide, same merge different delete path",
+        "combine",
+        {
+            "merge": {
+                "a": 1
+            },
+            "delete": {}
+        },
+        {
+            "merge": {
+                "a": 1
+            },
+            "delete": {
+                "b": 1
+            }
+        },
+        {
+            "merge": {
+                "a": 1
+            },
+            "delete": {
+                "b": 1
+            }
+        }
+    ],
+    [
+        "merge wide, merge wide delete wide, different merge same delete path",
+        "combine",
+        {
+            "merge": {
+                "a": 1
+            },
+            "delete": {}
+        },
+        {
+            "merge": {
+                "c": 1
+            },
+            "delete": {
+                "a": {
+                    "b": 1
+                }
+            }
+        },
+        {
+            "merge": {
+                "a": 1,
+                "c": 1
+            },
+            "delete": {
+                "a": {
+                    "b": 1
+                }
+            }
+        }
+    ],
+    [
+        "merge wide, merge wide delete wide, different merge different delete path",
+        "combine",
+        {
+            "merge": {
+                "a": 1
+            },
+            "delete": {}
+        },
+        {
+            "merge": {
+                "b": 1
+            },
+            "delete": {
+                "c": 1
+            }
+        },
+        {
+            "merge": {
+                "a": 1,
+                "b": 1
+            },
+            "delete": {
+                "c": 1
+            }
+        }
+    ],
+    [
+        "merge wide, merge wide delete narrow, same merge same delete path",
+        "combine",
+        {
+            "merge": {
+                "a": 1
+            },
+            "delete": {}
+        },
+        {
+            "merge": {
+                "a": 1
+            },
+            "delete": {
+                "a": {
+                    "b": 1
+                }
+            }
+        },
+        {
+            "merge": {
+                "a": 1
+            },
+            "delete": {
+                "a": {
+                    "b": 1
+                }
+            }
+        }
+    ],
+    [
+        "merge wide, merge wide delete narrow, same merge different delete path",
+        "combine",
+        {
+            "merge": {
+                "a": 1
+            },
+            "delete": {}
+        },
+        {
+            "merge": {
+                "a": 1
+            },
+            "delete": {
+                "b": {
+                    "c": 1
+                }
+            }
+        },
+        {
+            "merge": {
+                "a": 1
+            },
+            "delete": {
+                "b": {
+                    "c": 1
+                }
+            }
+        }
+    ],
+    [
+        "merge wide, merge wide delete narrow, different merge same delete path",
+        "combine",
+        {
+            "merge": {
+                "a": 1
+            },
+            "delete": {}
+        },
+        {
+            "merge": {
+                "c": 1
+            },
+            "delete": {
+                "a": {
+                    "b": 1
+                }
+            }
+        },
+        {
+            "merge": {
+                "a": 1,
+                "c": 1
+            },
+            "delete": {
+                "a": {
+                    "b": 1
+                }
+            }
+        }
+    ],
+    [
+        "merge narrow, merge narrow, same path",
+        "combine",
+        {
+            "merge": {
+                "a": {
+                    "b": 1
+                }
+            },
+            "delete": {}
+        },
+        {
+            "merge": {
+                "a": {
+                    "b": 1
+                }
+            },
+            "delete": {}
+        },
+        {
+            "merge": {
+                "a": {
+                    "b": 1
+                }
+            },
+            "delete": {}
+        }
+    ],
+    [
+        "merge narrow, merge narrow, different path",
+        "combine",
+        {
+            "merge": {
+                "a": {
+                    "b": 1
+                }
+            },
+            "delete": {}
+        },
+        {
+            "merge": {
+                "c": {
+                    "d": 1
+                }
+            },
+            "delete": {}
+        },
+        {
+            "merge": {
+                "a": {
+                    "b": 1
+                },
+                "c": {
+                    "d": 1
+                }
+            },
+            "delete": {}
+        }
+    ],
+    [
+        "merge narrow, merge wide, same path",
+        "combine",
+        {
+            "merge": {
+                "a": {
+                    "b": 1
+                }
+            },
+            "delete": {}
+        },
+        {
+            "merge": {
+                "a": 1
+            },
+            "delete": {}
+        },
+        {
+            "merge": {
+                "a": 1
+            }
+        }
+    ],
+    [
+        "merge narrow, merge wide, different path",
+        "combine",
+        {
+            "merge": {
+                "a": {
+                    "b": 1
+                }
+            },
+            "delete": {}
+        },
+        {
+            "merge": {
+                "c": 1
+            },
+            "delete": {}
+        },
+        {
+            "merge": {
+                "a": {
+                    "b": 1
+                },
+                "c": 1
+            },
+            "delete": {}
+        }
+    ]
+]
