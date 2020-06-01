@@ -18,6 +18,7 @@ defmodule Riptide.Test.Mutation do
     for [title, action, left, right, expected] <- mutations do
       if action === "combine" do
         assert expected == Mutation.combine(left, right), "#{action}: #{title}"
+        assert expected == Mutation.combine(left, right)
       end
     end
   end
