@@ -132,7 +132,7 @@ defmodule Riptide do
   5. Trigger `c:Riptide.Interceptor.mutation_after/4`
 
   ## Examples
-      iex> Riptide.mutation(Riptide.Mutation.merge(["foo", "bar"], "hello"))
+      iex> Riptide.mutation(Riptide.Mutation.put_merge(["foo", "bar"], "hello"))
       {:ok, %{
         merge: %{
           "foo" => %{
@@ -142,6 +142,7 @@ defmodule Riptide do
         delete: %{}
       }}
   """
+  @spec mutation(Riptide.Mutation.t(), any()) :: {:ok, Riptide.Mutation.t()} | {:error, any()}
   def mutation(mut, state \\ @internal) do
     with {:ok, prepared} <- Riptide.Interceptor.mutation_before(mut, state),
          prepared <- Riptide.Interceptor.mutation_effect(prepared, state),
@@ -156,7 +157,7 @@ defmodule Riptide do
   Convience method to apply a mutation that merges a single value
 
   ## Examples
-      iex> Riptide.merge(["foo", "bar"], "hello")
+      iex> Riptide.put_merge(["foo", "bar"], "hello")
       {:ok, %{
         merge: %{
           "foo" => %{
@@ -167,7 +168,10 @@ defmodule Riptide do
       }}
   """
   def merge(path, value, state \\ @internal),
-    do: mutation(Riptide.Mutation.merge(path, value), state)
+    do:
+      path
+      |> Riptide.Mutation.put_merge(value)
+      |> mutation(state)
 
   @doc """
     The same as `merge/3` but raises an exception if it fails
@@ -181,7 +185,7 @@ defmodule Riptide do
   Convience method to apply a mutation that deletes a single path
 
   ## Examples
-      iex> Riptide.delete(["foo", "bar"])
+      iex> Riptide.put_delete(["foo", "bar"])
       {:ok, %{
         delete: %{
           "foo" => %{
@@ -191,7 +195,11 @@ defmodule Riptide do
         delete: %{}
       }}
   """
-  def delete(path, state \\ @internal), do: mutation(Riptide.Mutation.delete(path), state)
+  def delete(path, state \\ @internal),
+    do:
+      path
+      |> Riptide.Mutation.put_delete()
+      |> mutation(state)
 
   @doc """
     The same as `delete/2` but raises an exception if it fails

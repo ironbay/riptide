@@ -1,100 +1,206 @@
 defmodule Riptide.Mutation do
-  @moduledoc false
+  @behaviour Access
+  @moduledoc """
+  A mutation represents a set of changes that can be applied to a `Riptide.Store`. This module contains functions that make it easy to compose complex mutations and combine them together.
 
-  @typedoc "A map containing a path to be added (merge) and a path to be removed (delete)."
-  @type t :: %{merge: map, delete: map}
+  Mutations contains two types of operations:
+  - `:merge` - A map containing the values that will be merged in - creating them if they don't already exist
+  - `:delete` - A map containing the paths that should be deleted from the store
+
+
+  ## Deleting
+  In a mutation, the deletes are always applied first.  They are expressed as a map with a value of `1` for each path to be deleted.
+  ```elixir
+  iex> Mutation.put_delete(["todo:info", "001"])
+  %Riptide.Mutation{
+    delete: %{
+      "todo:info" => %{
+        "001" => 1
+      }
+    },
+    merge: %{}
+  }
+  ```
+  This mutation will delete everything under `["todo:info", "001]`
+
+  ## Merging
+  Merges are applied after deletes and are expressed as a map pointing to the values that should be set.
+
+  ```elixir
+  Mutation.put_merge(
+    ["todo:info", "001"],
+    %{
+      "key" => "001",
+      "text" => "Document riptide!"
+    }
+  )
+  %Riptide.Mutation{
+    delete: %{},
+    merge: %{
+      "todo:info" => %{
+        "001" => %{
+          "key" => "001",
+          "text" => "Document riptide!"
+        }
+      }
+    }
+  }
+  ```
+  This mutation will delete everything under `["todo:info", "001]`
+
+  ## Composing
+  There are various functions in this module for composing sophisticated mutations. A good approach is to break down a complex mutation into atomic pieces for clarity and combine them together.
+
+  Here are some examples of how they can be helpful:
+
+  ```elixir
+  Mutation.new()
+  |> Mutation.put_merge(["user:info", "001", "name"], "jack")
+  |> Mutation.put_merge(["user:info", "002", "name"], "john")
+  |> Mutation.put_delete(["todo:info"])
+  %Riptde.Mutation{
+    delete: %{"todo:info" => 1},
+    merge: %{
+      "user:info" => %{
+        "001" => %{"name" => "jack"},
+        "002" => %{"name" => "john"}
+      }
+    }
+  }
+  ```
+
+  ```elixir
+  def create_user_mut(key, email) do
+    Mutation.put_merge(["user:info", key], %{
+      "key" => key,
+      "email" => email
+    })
+  end
+
+  def set_password_mut(key, password) do
+    Mutation.put_merge(["user:passwords", key], Bcrypt.encrypt(password))
+  end
+
+  Mutation.combine(
+    create_user_mut("001", "user@example.com"),
+    set_password_mut("001", "mypassword")
+  )
+  %Riptde.Mutation{
+    merge: %{
+      "user:info" => %{
+        "001" => %{
+          "key" => "001",
+          "email" => "user@example.com",
+        }
+      },
+      "user:password" => %{
+        "001" => "$2a$10$kj5ZhhLWIwik8uK4RJrDA.ddOEIK5VO9f4Y5FwL5D3CvVafSVXcYe"
+      }
+    }
+  }
+  ```
+
+  ```elixir
+  1..100
+  |> Stream.map(fn index -> Mutation.merge(["todo:info", to_string(index)], index) end)
+  |> Mutation.combine()
+  %Riptide.Mutation{
+    delete: %{},
+    merge: %{
+      "todo:info" => %{
+        "1" => 1,
+        "2" => 2,
+        "3" => 3,
+        ...
+    }
+  }
+  ```
+
+  """
+
+  @typedoc "A map containing paths to be added (merge) and paths to be removed (delete)."
+  @type t :: %Riptide.Mutation{merge: map, delete: map}
 
   @typedoc "A key-value pair representing a layer of the mutation. The key
   is a list of strings representing the path to the current layer. The value is a
   mutation, representing any deeper sub-mutations."
   @type layer :: {list(String.t()), t}
 
+  defstruct merge: %{}, delete: %{}
+
   @doc ~S"""
-  Creates a new mutation with empty delete and merge maps.
+  Creates a new mutation, optionally passing in a map for merges or deletes
 
-  ## Example
-
-    iex> Riptide.Mutation.new
-    %{delete: %{}, merge: %{}}
-
+  ## Examples
+      iex> Riptide.Mutation.new
+      %Riptide.Mutation{delete: %{}, merge: %{}}
   """
   @spec new(map, map) :: t
   def new(merge \\ %{}, delete \\ %{}) do
-    %{
+    %Riptide.Mutation{
       merge: merge || %{},
       delete: delete || %{}
     }
   end
 
-  @doc false
-  @spec merge(list(String.t()), any) :: t
-  def merge(path, value), do: new() |> merge(path, value)
-
-  @doc ~S"""
-  Places the value at the given path in the merge.
-
-  ## Example
-
-    iex> mutation = %{delete: %{}, merge: %{"a" => %{"b" => 1}}}
-    iex> Riptide.Mutation.merge(mutation, ["a","c"], 2)
-    %{delete: %{}, merge: %{"a" => %{"b" => 1, "c" => 2}}}
-
+  @doc """
+    Creates a new mutation and puts a value to be merged
+  ## Examples
+      iex> Riptide.Mutation.put_merge(["a", "b"], 1)
+      %Riptide.Mutation{delete: %{}, merge: %{"a" => %{"b" => 1}}}
   """
-  @spec merge(t, list(String.t()), any) :: t
-  def merge(input, _path, value) when value == %{}, do: input
-  def merge(input, path, value), do: Dynamic.put(input, [:merge | path], value)
+  @spec put_merge(list(String.t()), any) :: t
+  def put_merge(path, value), do: new() |> put_merge(path, value)
 
-  @doc false
-  @spec delete(list(String.t())) :: t
-  def delete(path), do: new() |> delete(path)
+  @doc """
+  Adds a merge value to the input mutation
 
-  @doc ~S"""
-  Adds a path to be deleted to the input mutation.
-
-  ## Example
-
-    iex> Riptide.Mutation.delete(
-    ...>	%{
-    ...>		delete: %{},
-    ...>		merge: %{
-    ...>			"a" => %{
-    ...>				"b" => %{
-    ...>					"c" => true
-    ...>				}
-    ...>			}
-    ...>		}
-    ...>	},
-    ...>	["c"]
-    ...> )
-    %{delete: %{"c" => 1}, merge: %{"a" => %{"b" => %{"c" => true}}}}
+  ## Examples
+      iex> mutation = Riptide.Mutation.put_merge(["a", "b"], 1)
+      iex> Riptide.Mutation.put_merge(mutation, ["a", "c"], 2)
+      %Riptide.Mutation{delete: %{}, merge: %{"a" => %{"b" => 1, "c" => 2}}}
   """
-  @spec delete(t, list(String.t())) :: t
-  def delete(input, path), do: Dynamic.put(input, [:delete | path], 1)
+  @spec put_merge(t, list(String.t()), any) :: t
+  def put_merge(input, _path, value) when value == %{}, do: input
+  def put_merge(input, path, value), do: Dynamic.put(input, [:merge | path], value)
+
+  @doc """
+    Creates a new mutation and puts a path to be deleted
+  """
+  @spec put_delete(list(String.t())) :: t
+  def put_delete(path), do: new() |> put_delete(path)
 
   @doc ~S"""
-  Returns a map of levels for the given mutation. Each level is a key-value
-  pair, where the key is a list of keys representing the current path, and the
-  value is the remaining part of the mutation structure.
+  Adds a delete path to the input mutation
 
-  ## Example
+  ## Examples
+      iex> Riptide.Mutation.new()
+      ...> |> Riptide.Mutation.put_delete(["c"])
+      %Riptide.Mutation{delete: %{"c" => 1}, merge: %{}}
+  """
+  @spec put_delete(t, list(String.t())) :: t
+  def put_delete(input, path), do: Dynamic.put(input, [:delete | path], 1)
 
-    iex> %{delete: %{}, merge: %{"a" => %{"b" => true}}} |> Riptide.Mutation.layers
-    %{
-      [] => %{
-        delete: %{},
-        merge: %{
-          "a" => %{
+  @doc """
+  Returns a mapping with an entry for every layer of the mutation.  The keys represent a path and the value represents the full mutation that is being merged in at that path.
+  ## Examples
+      iex> Riptide.Mutation.put_merge(["a", "b"], true) |> Riptide.Mutation.layers
+      %{
+        [] => %Riptide.Mutation{
+          delete: %{},
+          merge: %{
+            "a" => %{
+              "b" => true
+            }
+          }
+        },
+        ["a"] => %Riptide.Mutation{
+          delete: %{},
+          merge: %{
             "b" => true
           }
         }
-      },
-      ["a"] => %{
-        delete: %{},
-        merge: %{
-          "b" => true
-        }
       }
-    }
   """
   @spec layers(t) :: %{required(list(String.t())) => layer}
   def layers(%{merge: merge, delete: delete}) do
@@ -105,11 +211,7 @@ defmodule Riptide.Mutation do
       merge = Map.get(value, :merge, %{})
       delete = Map.get(value, :delete, %{})
 
-      {path,
-       %{
-         merge: merge,
-         delete: delete
-       }}
+      {path, new(merge, delete)}
     end)
     |> Enum.into(%{})
   end
@@ -124,16 +226,15 @@ defmodule Riptide.Mutation do
     end)
   end
 
-  @doc ~S"""
-  Combines two mutations into one.
+  @doc """
+  Combines the right mutation into the left mutation and returns a singular mutation
 
-  ## Example
-
-    iex> Riptide.Mutation.combine(
-    ...>	%{delete: %{}, merge: %{"a" => true}},
-    ...>	%{delete: %{}, merge: %{"b" => false}}
-    ...> )
-    %{delete: %{}, merge: %{"a" => true, "b" => false}}
+  ## Examples
+      iex> Riptide.Mutation.combine(
+      ...>   %Riptide.Mutation{delete: %{}, merge: %{"a" => true}},
+      ...>   %Riptide.Mutation{delete: %{}, merge: %{"b" => false}}
+      ...> )
+      %Riptide.Mutation{delete: %{}, merge: %{"a" => true, "b" => false}}
   """
   @spec combine(t, t) :: t
   def combine(left, right) do
@@ -149,9 +250,20 @@ defmodule Riptide.Mutation do
     }
   end
 
+  @doc """
+  Takes a list or stream of Mutations and combines them in order to produce a single output mutation.
+
+  ## Examples
+      iex> 0..3
+      ...> |> Stream.map(fn index ->
+      ...>   Riptide.Mutation.put_merge(["todo:info", to_string(index)], index)
+      ...> end)
+      ...> |> Riptide.Mutation.combine()
+      %Riptide.Mutation{delete: %{}, merge: %{"todo:info" => %{"0" => 0, "1" => 1, "2" => 2, "3" => 3}}}
+  """
   @spec combine(Enum.t()) :: t
-  def combine(input) do
-    input
+  def combine(enumerable) do
+    enumerable
     |> Stream.filter(fn item -> item != nil end)
     |> Enum.reduce(new(), &combine(&2, &1))
   end
@@ -159,7 +271,7 @@ defmodule Riptide.Mutation do
   defp combine_delete(mut, next) do
     Enum.reduce(next, mut, fn
       {key, value}, collect when value == 1 ->
-        %{
+        %Riptide.Mutation{
           merge:
             cond do
               is_map(collect.merge) -> Map.delete(collect.merge, key)
@@ -176,7 +288,7 @@ defmodule Riptide.Mutation do
       {key, value}, collect when is_map(value) ->
         %{merge: merge, delete: delete} =
           combine_delete(
-            %{
+            %Riptide.Mutation{
               delete:
                 cond do
                   is_map(collect.delete) -> Map.get(collect.delete, key, %{})
@@ -191,7 +303,7 @@ defmodule Riptide.Mutation do
             value
           )
 
-        %{
+        %Riptide.Mutation{
           merge:
             case merge do
               result when result == %{} -> Map.delete(collect.merge, key)
@@ -207,31 +319,15 @@ defmodule Riptide.Mutation do
     end)
   end
 
-  @spec combine_legacy(t, t) :: t
-  def combine_legacy(left, right) do
-    %{
-      merge:
-        left.merge
-        |> Riptide.Mutation.apply(%{delete: right.delete, merge: %{}})
-        |> Riptide.Mutation.apply(%{delete: %{}, merge: right.merge}),
-      delete:
-        Dynamic.combine(
-          left.delete,
-          right.delete
-        )
-    }
-  end
-
   @doc ~S"""
   Applies the entire mutation to the input map.
 
   ## Example
-
-    iex> Riptide.Mutation.apply(
-    ...> 	%{"b" => false},
-    ...> 	%{delete: %{}, merge: %{"a" => true}}
-    ...> )
-    %{"a" => true, "b" => false}
+      iex> Riptide.Mutation.apply(
+      ...>  %{"b" => false},
+      ...>  %{delete: %{}, merge: %{"a" => true}}
+      ...> )
+      %{"a" => true, "b" => false}
   """
   @spec apply(map, t) :: map
   def apply(input, mutation) do
@@ -254,30 +350,29 @@ defmodule Riptide.Mutation do
   mutation nested at the given path.
 
   ## Example
-
-    iex> Riptide.Mutation.inflate(
-    ...>	["a", "b"],
-    ...>	%{
-    ...>		delete: %{},
-    ...>		merge: %{
-    ...>			"a" => 1
-    ...>		}
-    ...>	}
-    ...>)
-    %{
-      delete: %{
-        "a" => %{
-          "b" => %{}
-        }
-      },
-      merge: %{
-        "a" => %{
-          "b" => %{
-            "a" => 1
+      iex> Riptide.Mutation.inflate(
+      ...>   ["a", "b"],
+      ...>   %{
+      ...>     delete: %{},
+      ...>     merge: %{
+      ...>       "a" => 1
+      ...>     }
+      ...>   }
+      ...> )
+      %Riptide.Mutation{
+        delete: %{
+          "a" => %{
+            "b" => %{}
           }
-        }
+        },
+        merge: %{
+         "a" => %{
+           "b" => %{
+             "a" => 1
+           }
+         }
+       }
       }
-    }
   """
   @spec inflate(list(String.t()), t) :: t
   def inflate(path, mut) do
@@ -290,29 +385,102 @@ defmodule Riptide.Mutation do
   Takes two maps and returns a mutation that could be applied to turn the
   the first map into the second.
 
-  ## Example
-
-    iex> Riptide.Mutation.from_diff(
-    ...>	%{"a" => 1},
-    ...>	%{"b" => 2}
-    ...>)
-    %{delete: %{"a" => 1}, merge: %{"b" => 2}}
+  ## Examples
+      iex> Riptide.Mutation.diff(
+      ...>  %{"a" => 1},
+      ...>  %{"b" => 2}
+      ...> )
+      %Riptide.Mutation{delete: %{"a" => 1}, merge: %{"b" => 2}}
   """
-  def from_diff(old, new) do
+  def diff(old, new) do
     old
     |> Dynamic.flatten()
     |> Enum.reduce(new(new), fn {path, value}, collect ->
       case Dynamic.get(new, path) do
         ^value -> Dynamic.delete(collect, [:merge | path])
-        nil -> delete(collect, path)
-        next -> merge(collect, path, next)
+        nil -> put_delete(collect, path)
+        next -> put_merge(collect, path, next)
       end
     end)
   end
 
+  @doc """
+  Takes a stream of mutations, combines them in batches of size `count`. Useful when writing a lot of mutations that would be faster written as batches.
+
+  ## Examples
+      iex> 1..10
+      ...> |> Stream.map(fn index -> Riptide.Mutation.put_merge(["data", to_string(index)], index) end)
+      ...> |> Riptide.Mutation.chunk(5)
+      ...> |> Enum.to_list()
+      [
+        %Riptide.Mutation{
+          delete: %{},
+          merge: %{"data" => %{"1" => 1, "2" => 2, "3" => 3, "4" => 4, "5" => 5}}
+        },
+        %Riptide.Mutation{
+          delete: %{},
+          merge: %{"data" => %{"10" => 10, "6" => 6, "7" => 7, "8" => 8, "9" => 9}}
+        }
+      ]
+  """
   def chunk(stream, count) do
+    [
+      %Riptide.Mutation{
+        delete: %{},
+        merge: %{"data" => %{"1" => 1, "2" => 2, "3" => 3, "4" => 4, "5" => 5}}
+      },
+      %Riptide.Mutation{
+        delete: %{},
+        merge: %{"data" => %{"10" => 10, "6" => 6, "7" => 7, "8" => 8, "9" => 9}}
+      }
+    ]
+
     stream
     |> Stream.chunk_every(count)
     |> Stream.map(&Riptide.Mutation.combine/1)
+  end
+
+  @doc false
+  @impl Access
+  def fetch(struct, key), do: Map.fetch(struct, key)
+
+  @doc false
+  def put(struct, key, val) do
+    Map.put(struct, key, val)
+  end
+
+  @doc false
+  def delete(struct, key) do
+    Map.delete(struct, key)
+  end
+
+  @doc false
+  @impl Access
+  def get_and_update(struct, key, fun) when is_function(fun, 1) do
+    current = fetch(struct, key)
+
+    case fun.(current) do
+      {get, update} ->
+        {get, put(struct, key, update)}
+
+      :pop ->
+        {current, delete(struct, key)}
+
+      other ->
+        raise "the given function must return a two-element tuple or :pop, got: #{inspect(other)}"
+    end
+  end
+
+  @doc false
+  @impl Access
+  def pop(struct, key, default \\ nil) do
+    val =
+      case fetch(struct, key) do
+        {:ok, result} -> result
+        _ -> default
+      end
+
+    updated = delete(struct, key)
+    {val, updated}
   end
 end

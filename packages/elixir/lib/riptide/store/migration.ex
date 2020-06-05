@@ -33,7 +33,7 @@ defmodule Riptide.Migration do
         |> Stream.filter(fn mod -> Map.has_key?(migrations, Atom.to_string(mod)) == false end)
         |> Enum.each(fn mod ->
           Logger.info("Migration #{mod} running...")
-          record = Riptide.Mutation.merge([@root, Atom.to_string(mod)], now)
+          record = Riptide.Mutation.put_merge([@root, Atom.to_string(mod)], now)
 
           case mod.run() do
             mut = %{merge: _, delete: _} -> Stream.concat([mut], [record])

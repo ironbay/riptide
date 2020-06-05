@@ -8,7 +8,7 @@ defmodule Riptide.Test.Migration do
       @behaviour Riptide.Migration
 
       def run() do
-        Riptide.Mutation.merge(["a", "b"], 1)
+        Riptide.Mutation.put_merge(["a", "b"], 1)
       end
     end
 
@@ -22,7 +22,7 @@ defmodule Riptide.Test.Migration do
 
       def run() do
         0..99
-        |> Stream.map(fn index -> Riptide.Mutation.merge(["a", inspect(index)], index) end)
+        |> Stream.map(fn index -> Riptide.Mutation.put_merge(["a", inspect(index)], index) end)
       end
     end
 

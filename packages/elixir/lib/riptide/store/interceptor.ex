@@ -4,15 +4,12 @@ defmodule Riptide.Interceptor do
   Riptide Interceptors let you define simple rules using Elixir's pattern matching that trigger conditionally when data is written or read. Each one is defined as a module that can be added to your Riptide configuration for easy enabling/disabling.
 
   ```elixir
-
   config :riptide,
   interceptors: [
     TodoList.Permissions,
     TodoList.Todo.Created,
     TodoList.Todo.Alert
   ]
-
-
   ```
 
   Every Interceptor in this list is called in order for every Mutation and Query processed
@@ -221,12 +218,16 @@ defmodule Riptide.Interceptor do
   @doc """
     Trigger `mutation_before` callback on configured interceptors for given mutation
   """
+  @spec mutation_before(Riptide.Mutation.t(), any()) ::
+          {:ok, Riptide.Mutation.t()} | {:error, any()}
   def mutation_before(mutation, state),
     do: mutation_before(mutation, state, Riptide.Config.riptide_interceptors())
 
   @doc """
     Trigger `mutation_before` callback on interceptors for given mutation
   """
+  @spec mutation_before(Riptide.Mutation.t(), any(), [atom()]) ::
+          {:ok, Riptide.Mutation.t()} | {:error, any()}
   def mutation_before(mutation, state, interceptors) do
     mutation
     |> mutation_trigger(interceptors, :mutation_before, [

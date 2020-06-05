@@ -26,6 +26,7 @@ defmodule Riptide.Subscribe do
   end
 
   # TODO: This could have a better implementation
+  @spec broadcast_mutation(Riptide.Mutation.t()) :: :ok
   def broadcast_mutation(mut) do
     mut
     |> Riptide.Mutation.layers()
@@ -35,7 +36,7 @@ defmodule Riptide.Subscribe do
         value.delete
         |> Stream.filter(fn {_, value} -> value === 1 end)
         |> Stream.map(fn {key, _} ->
-          {path ++ [key], Riptide.Mutation.delete(path ++ [key])}
+          {path ++ [key], Riptide.Mutation.put_delete(path ++ [key])}
         end)
       ])
     end)

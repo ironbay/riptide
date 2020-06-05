@@ -43,6 +43,7 @@ defmodule Riptide.MixProject do
       {:websockex, "~> 0.4.2"},
       {:bridge_lmdb, "~> 0.1.1", optional: true},
       {:postgrex, "~> 0.15.3", optional: true},
+      {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
       {:credo, "~> 0.10.0", only: [:dev, :test], runtime: false}
     ]

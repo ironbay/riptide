@@ -1,5 +1,6 @@
 {
   "elixirLS.projectDir": "packages/elixir",
+  "elixirLS.suggestSpecs": false,
   // "elixirLS.dialyzerEnabled": false,
   "markdown.preview.breaks": true
 }
