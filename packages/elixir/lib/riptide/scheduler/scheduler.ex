@@ -15,7 +15,7 @@ defmodule Riptide.Scheduler do
   def schedule(timestamp, mod, fun, args, key \\ nil) do
     key = key || "SCH" <> Riptide.UUID.ascending()
 
-    Riptide.Mutation.merge([@root, key], %{
+    Riptide.Mutation.put_merge([@root, key], %{
       "key" => key,
       "timestamp" => timestamp,
       "mod" => mod,
@@ -26,7 +26,7 @@ defmodule Riptide.Scheduler do
   end
 
   def cancel(task) do
-    Riptide.Mutation.delete([@root, task])
+    Riptide.Mutation.put_delete([@root, task])
   end
 
   def start_link(_opts) do

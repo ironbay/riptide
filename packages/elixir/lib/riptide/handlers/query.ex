@@ -23,7 +23,7 @@ defmodule Riptide.Handler.Query do
          layers
          |> Enum.reduce(Riptide.Mutation.new(result), fn {path, opts}, collect ->
            case opts == %{} do
-             true -> Riptide.Mutation.delete(collect, path)
+             true -> Riptide.Mutation.put_delete(collect, path)
              false -> collect
            end
          end), state}

@@ -6,12 +6,12 @@ defmodule Riptide.Store.LMDB do
   def init(directory: directory) do
     {:ok, env} = Bridge.LMDB.open_env(directory)
 
-    Application.put_env(:riptide, {__MODULE__, directory}, env)
+    Application.put_env(:riptide, directory, env)
     :ok
   end
 
   def env(directory: directory) do
-    Application.get_env(:riptide, {__MODULE__, directory})
+    Application.get_env(:riptide, directory)
   end
 
   def mutation(merges, deletes, opts) do

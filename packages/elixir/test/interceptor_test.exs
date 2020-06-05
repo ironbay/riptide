@@ -4,7 +4,7 @@ defmodule Riptide.Test.Interceptor do
 
     def mutation_before(["creatures", key], %{merge: %{"key" => _}}, _mut, _state) do
       {:combine,
-       Riptide.Mutation.merge(["creatures", key, "created"], :os.system_time(:millisecond))}
+       Riptide.Mutation.put_merge(["creatures", key, "created"], :os.system_time(:millisecond))}
     end
 
     def mutation_after(["creatures", key], %{merge: %{"key" => _}}, _mut, _state) do
@@ -46,7 +46,7 @@ defmodule Riptide.Test.Interceptor do
       }
     } =
       Riptide.Interceptor.mutation_before(
-        Riptide.Mutation.merge(["creatures", key], creature),
+        Riptide.Mutation.put_merge(["creatures", key], creature),
         %{},
         [Example]
       )
@@ -57,7 +57,7 @@ defmodule Riptide.Test.Interceptor do
 
     :ok =
       Riptide.Interceptor.mutation_after(
-        Riptide.Mutation.merge(["creatures", key], creature),
+        Riptide.Mutation.put_merge(["creatures", key], creature),
         %{},
         [Example]
       )
@@ -74,7 +74,7 @@ defmodule Riptide.Test.Interceptor do
       }
     } =
       Riptide.Interceptor.mutation_effect(
-        Riptide.Mutation.merge(["creatures", key], creature),
+        Riptide.Mutation.put_merge(["creatures", key], creature),
         %{},
         [Example]
       )

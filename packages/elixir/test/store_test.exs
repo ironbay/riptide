@@ -70,7 +70,7 @@ defmodule Riptide.Test.Store do
 
     :ok =
       Riptide.Store.mutation(
-        Riptide.Mutation.merge(["todos"], %{
+        Riptide.Mutation.put_merge(["todos"], %{
           hh_key => hh,
           gw_key => gw
         }),
@@ -106,7 +106,7 @@ defmodule Riptide.Test.Store do
       |> Riptide.Store.stream(%{min: "002"}, store, opts)
       |> Enum.to_list()
 
-    Riptide.Store.mutation(Riptide.Mutation.delete(["todos", gw_key]), store, opts)
+    Riptide.Store.mutation(Riptide.Mutation.put_delete(["todos", gw_key]), store, opts)
 
     %{
       "todos" => %{

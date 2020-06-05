@@ -10,7 +10,7 @@ defmodule Riptide.Store.Benchmark do
     time("Write #{range_count} values", fn ->
       range
       |> Stream.map(fn item ->
-        Riptide.Mutation.merge(["large", inspect(item)], %{
+        Riptide.Mutation.put_merge(["large", inspect(item)], %{
           "key" => item,
           "created" => :os.system_time(:millisecond)
         })
