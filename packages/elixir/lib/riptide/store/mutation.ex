@@ -126,6 +126,7 @@ defmodule Riptide.Mutation do
   mutation, representing any deeper sub-mutations."
   @type layer :: {list(String.t()), t}
 
+  @derive Jason.Encoder
   defstruct merge: %{}, delete: %{}
 
   @doc ~S"""
