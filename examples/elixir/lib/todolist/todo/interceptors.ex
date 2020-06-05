@@ -19,7 +19,7 @@ defmodule TodoList.Todo.Created do
   def mutation_before(["todos", key], %{merge: %{"key" => _}}, _mut, _state) do
     {
       :combine,
-      Riptide.Mutation.merge(["todos", key, "created"], :os.system_time(:millisecond))
+      Riptide.Mutation.put_merge(["todos", key, "created"], :os.system_time(:millisecond))
     }
   end
 end
