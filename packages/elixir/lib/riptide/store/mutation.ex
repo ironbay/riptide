@@ -359,20 +359,20 @@ defmodule Riptide.Mutation do
       ...>     }
       ...>   }
       ...> )
-      ...> %Riptide.Mutation{
-      ...>   delete: %{
-      ...>     "a" => %{
-      ...>       "b" => %{}
-      ...>     }
-      ...>   },
-      ...>   merge: %{
-      ...>    "a" => %{
-      ...>      "b" => %{
-      ...>        "a" => 1
-      ...>      }
-      ...>    }
-      ...>  }
-      ...> }
+      %Riptide.Mutation{
+        delete: %{
+          "a" => %{
+            "b" => %{}
+          }
+        },
+        merge: %{
+         "a" => %{
+           "b" => %{
+             "a" => 1
+           }
+         }
+       }
+      }
   """
   @spec inflate(list(String.t()), t) :: t
   def inflate(path, mut) do
