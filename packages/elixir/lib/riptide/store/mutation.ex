@@ -145,6 +145,9 @@ defmodule Riptide.Mutation do
 
   @doc """
     Creates a new mutation and puts a value to be merged
+  ## Examples
+      iex> Riptide.Mutation.put_merge(["a", "b"], 1)
+      %Riptide.Mutation{delete: %{}, merge: %{"a" => %{"b" => 1}}}
   """
   @spec put_merge(list(String.t()), any) :: t
   def put_merge(path, value), do: new() |> put_merge(path, value)
@@ -382,15 +385,14 @@ defmodule Riptide.Mutation do
   Takes two maps and returns a mutation that could be applied to turn the
   the first map into the second.
 
-  ## Example
-
-    iex> Riptide.Mutation.from_diff(
-    ...>	%{"a" => 1},
-    ...>	%{"b" => 2}
-    ...>)
-    %Riptide.Mutation{delete: %{"a" => 1}, merge: %{"b" => 2}}
+  ## Examples
+      iex> Riptide.Mutation.diff(
+      ...>  %{"a" => 1},
+      ...>  %{"b" => 2}
+      ...> )
+      %Riptide.Mutation{delete: %{"a" => 1}, merge: %{"b" => 2}}
   """
-  def from_diff(old, new) do
+  def diff(old, new) do
     old
     |> Dynamic.flatten()
     |> Enum.reduce(new(new), fn {path, value}, collect ->
@@ -402,27 +404,57 @@ defmodule Riptide.Mutation do
     end)
   end
 
+  @doc """
+  Takes a stream of mutations, combines them in batches of size `count`. Useful when writing a lot of mutations that would be faster written as batches.
+
+  ## Examples
+      iex> 1..10
+      ...> |> Stream.map(fn index -> Riptide.Mutation.put_merge(["data", to_string(index)], index) end)
+      ...> |> Riptide.Mutation.chunk(5)
+      ...> |> Enum.to_list()
+      [
+        %Riptide.Mutation{
+          delete: %{},
+          merge: %{"data" => %{"1" => 1, "2" => 2, "3" => 3, "4" => 4, "5" => 5}}
+        },
+        %Riptide.Mutation{
+          delete: %{},
+          merge: %{"data" => %{"10" => 10, "6" => 6, "7" => 7, "8" => 8, "9" => 9}}
+        }
+      ]
+  """
   def chunk(stream, count) do
+    [
+      %Riptide.Mutation{
+        delete: %{},
+        merge: %{"data" => %{"1" => 1, "2" => 2, "3" => 3, "4" => 4, "5" => 5}}
+      },
+      %Riptide.Mutation{
+        delete: %{},
+        merge: %{"data" => %{"10" => 10, "6" => 6, "7" => 7, "8" => 8, "9" => 9}}
+      }
+    ]
+
     stream
     |> Stream.chunk_every(count)
     |> Stream.map(&Riptide.Mutation.combine/1)
   end
 
+  @doc false
   @impl Access
   def fetch(struct, key), do: Map.fetch(struct, key)
 
+  @doc false
   def put(struct, key, val) do
-    if Map.has_key?(struct, key) do
-      Map.put(struct, key, val)
-    else
-      struct
-    end
+    Map.put(struct, key, val)
   end
 
+  @doc false
   def delete(struct, key) do
-    put(struct, key, %__MODULE__{}[key])
+    Map.delete(struct, key)
   end
 
+  @doc false
   @impl Access
   def get_and_update(struct, key, fun) when is_function(fun, 1) do
     current = fetch(struct, key)
@@ -439,6 +471,7 @@ defmodule Riptide.Mutation do
     end
   end
 
+  @doc false
   @impl Access
   def pop(struct, key, default \\ nil) do
     val =
