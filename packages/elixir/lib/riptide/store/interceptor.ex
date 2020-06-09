@@ -1,7 +1,5 @@
 defmodule Riptide.Interceptor do
   @moduledoc """
-  # Interceptors
-
   Riptide Interceptors let you define simple rules using Elixir's pattern matching that trigger conditionally when data is written or read. Each one is defined as a module that can be added to your Riptide configuration for easy enabling/disabling.
 
   ```elixir
