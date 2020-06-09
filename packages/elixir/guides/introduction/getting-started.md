@@ -164,7 +164,7 @@ Here is another example of creating a todo and marking it done in one transactio
 todo_id = "TOD" <> Riptide.UUID.descending()
 user_id = "USRzXyccEPE3Mhg962H7lBS"
 Riptide.Mutation.combine([
-  Todo.create(user_id, todo_id, "My new todo!),
+  Todo.create(user_id, todo_id, "My new todo!"),
   Todo.set_done(user_id, todo_id, true),
 ])
 |> Riptide.mutation!()
