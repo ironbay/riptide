@@ -1,6 +1,6 @@
 defmodule Riptide do
   @moduledoc """
-  The primary Riptide module
+  Riptide is a data first framework for building realtime applications. Riptide makes building snappy, realtime applications a breeze by letting you think purely in terms of your data and functionally about what should happen when it changes.
   """
 
   @internal %{internal: true}

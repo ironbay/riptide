@@ -1,4 +1,5 @@
 defmodule Riptide.Handler.Store do
+  @moduledoc false
   use Riptide.Handler
 
   def handle_call("riptide.store.upgrade", token, state) do

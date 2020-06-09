@@ -73,6 +73,7 @@ defmodule Riptide.Websocket.Server do
 end
 
 defmodule Riptide.Websocket.OK do
+  @moduledoc false
   def init(req, state) do
     handle(req, state)
   end

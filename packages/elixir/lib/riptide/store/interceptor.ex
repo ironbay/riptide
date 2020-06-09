@@ -1,14 +1,15 @@
 defmodule Riptide.Interceptor do
   @moduledoc """
+  # Interceptors
 
   Riptide Interceptors let you define simple rules using Elixir's pattern matching that trigger conditionally when data is written or read. Each one is defined as a module that can be added to your Riptide configuration for easy enabling/disabling.
 
   ```elixir
   config :riptide,
   interceptors: [
-    TodoList.Permissions,
-    TodoList.Todo.Created,
-    TodoList.Todo.Alert
+  TodoList.Permissions,
+  TodoList.Todo.Created,
+  TodoList.Todo.Alert
   ]
   ```
 
@@ -32,14 +33,14 @@ defmodule Riptide.Interceptor do
   use Riptide.Interceptor
 
   def mutation_before(["todos", _key], %{ merge: %{ "complete" => true }}, state) do
-    {
-      :merge,
-      %{
-        "times" => %{
-            "completed" => :os.system_time(:millisecond)
-        }
+  {
+    :merge,
+    %{
+      "times" => %{
+          "completed" => :os.system_time(:millisecond)
       }
     }
+  }
   end
   end
   ```
@@ -61,14 +62,14 @@ defmodule Riptide.Interceptor do
   use Riptide.Interceptor
 
   def mutation_before(["todos", _key], %{ merge: %{ "complete" => true }}, state) do
-    {
-      :merge,
-      %{
-        "times" => %{
-            "completed" => :os.system_time(:millisecond)
-        }
+  {
+    :merge,
+    %{
+      "times" => %{
+          "completed" => :os.system_time(:millisecond)
       }
     }
+  }
   end
   end
   ```
@@ -96,10 +97,10 @@ defmodule Riptide.Interceptor do
   use Riptide.Interceptor
 
   def query_before(["secrets" | _rest], _opts, state) do
-    case state do
-        state.user === "bad-guy" -> {:error, :auth_error}
-        true -> :ok
-    end
+  case state do
+      state.user === "bad-guy" -> {:error, :auth_error}
+      true -> :ok
+  end
   end
   end
   ```
@@ -118,11 +119,11 @@ defmodule Riptide.Interceptor do
   use Riptide.Interceptor
 
   def query_resolve(["twilio", "numbers" | _rest], _opts, state) do
-    TwilioApi.numbers()
-    |> case do
-      {:ok, result} -> Kernel.get_in(result, rest)
-      {:error, err} -> {:error, err}
-    end
+  TwilioApi.numbers()
+  |> case do
+    {:ok, result} -> Kernel.get_in(result, rest)
+    {:error, err} -> {:error, err}
+  end
   end
   end
   ```

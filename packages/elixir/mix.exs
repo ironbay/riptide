@@ -1,11 +1,12 @@
 defmodule Riptide.MixProject do
   use Mix.Project
+  @version "0.4.0"
 
   def project do
     [
       app: :riptide,
-      version: "0.4.0",
-      description: "Framework for building realtime applications",
+      version: @version,
+      description: "A data first framework for building realtime applications",
       package: [
         maintainers: ["thdxr", "ironbay"],
         licenses: ["MIT"],
@@ -16,7 +17,8 @@ defmodule Riptide.MixProject do
       ],
       elixir: "~> 1.9",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      docs: docs()
     ]
   end
 
@@ -30,6 +32,27 @@ defmodule Riptide.MixProject do
     [
       extra_applications: [:logger],
       mod: {Riptide.Application, []}
+    ]
+  end
+
+  defp docs do
+    [
+      main: Riptide,
+      logo: "logo.svg",
+      canonical: "http://hexdocs.pm/riptide",
+      extra_section: "Pages",
+      source_url: "https://github.com/ironbay/riptide/tree/master/packages/elixir",
+      extras: [
+        "guides/introduction/overview.md",
+        "guides/introduction/getting-started.md"
+      ],
+      groups_for_extras: [
+        Introduction: ~r/guides\/introduction\/.?/,
+        "Core Concepts": ~r/guides\/core\/.?/
+      ],
+      groups_for_modules: [
+        Stores: []
+      ]
     ]
   end
 

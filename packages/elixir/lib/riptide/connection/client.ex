@@ -1,4 +1,5 @@
 defmodule Riptide.Websocket.Client do
+  @moduledoc false
   use WebSockex
 
   def start_link(opts, client_opts \\ []) do

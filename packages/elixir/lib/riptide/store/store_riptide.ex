@@ -1,4 +1,5 @@
 defmodule Riptide.Store.Riptide do
+  @moduledoc false
   @behaviour Riptide.Store
 
   def child_spec(opts) do
@@ -49,6 +50,7 @@ defmodule Riptide.Store.Riptide do
 end
 
 defmodule Riptide.Store.Riptide.Supervisor do
+  @moduledoc false
   use GenServer
   require Logger
 
