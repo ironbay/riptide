@@ -1,4 +1,4 @@
-defmodule TodoList.User do
+defmodule Todolist.User do
   def info(key), do: Riptide.query_path!(["user:info", key])
 
   def from_email(email) do

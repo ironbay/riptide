@@ -7,7 +7,8 @@ config :riptide,
     token: "abd"
   },
   interceptors: [
-    TodoList.Permissions,
-    TodoList.Todo.Created,
-    TodoList.Todo.Alert
+    Todolist.Todo.Permissions,
+    Todolist.Todo.Schema,
+    Todolist.Todo.Created,
+    Todolist.Todo.Alert
   ]

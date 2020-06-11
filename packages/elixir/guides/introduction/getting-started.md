@@ -7,9 +7,9 @@ This guide is an intro to [Riptide](Riptide.html), the data first framework for 
 To start off we'll generate a new Elixir application - skip this step if you already have one.
 
 ```bash
-mix new todos --sup
-mkdir ./todos/config
-echo "use Mix.Config" > ./todos/config/config.exs
+mix new todolist --sup
+mkdir ./todolist/config
+echo "use Mix.Config" > ./todolist/config/config.exs
 ```
 
 The `--sup` ensures the application has a root supervision tree which we'll need to initialize and manage Riptide. Riptide relies on configuration so we also create a `config.exs` file for your application.
@@ -30,7 +30,7 @@ Then install the dependency by running:
 mix deps.get
 ```
 
-Now that we have the dependency installed we can add it to our application. Go to your `lib/todos/application.ex` and `Riptide` within the application's supervision tree:
+Now that we have the dependency installed we can add it to our application. Go to your `lib/todolist/application.ex` and `Riptide` within the application's supervision tree:
 
 ```elixir
  def start(_type, _args) do
@@ -120,7 +120,7 @@ To update the tree, you must create a `Riptide.Mutation`. It contains paths and 
 Let's create a new `Todo` module that will contain helper functions to help us generate mutations.
 
 ```elixir
-defmodule Todo do
+defmodule Todolist.Todo do
   def create(user_id, todo_id, text) do
     Riptide.Mutation.put_merge(["user:todos", user_id, todo_id], %{
       "id" => todo_id,

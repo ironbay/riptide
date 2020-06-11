@@ -1,4 +1,4 @@
-defmodule TodoList.Auth do
+defmodule Todolist.Auth do
   def session_create(key, data) do
     Riptide.Mutation.merge(["auth:sessions", key], data)
   end

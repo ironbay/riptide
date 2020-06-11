@@ -1,16 +1,16 @@
-defmodule TodoList.Auth.Handler do
+defmodule Todolist.Auth.Handler do
   use Riptide.Handler
 
   def handle_call("todo.login", %{"email" => email, "password" => password}, state) do
     with {:ok, user} <-
            email
            |> String.downcase()
-           |> TodoList.User.from_email(),
-         true <- TodoList.User.password_valid?(user, password) do
+           |> Todolist.User.from_email(),
+         true <- Todolist.User.password_valid?(user, password) do
       session = Riptide.UUID.ascending()
 
       session
-      |> TodoList.Auth.session_create(%{"user" => user})
+      |> Todolist.Auth.session_create(%{"user" => user})
       |> Riptide.mutation!()
 
       {:reply, session, state}
@@ -20,7 +20,7 @@ defmodule TodoList.Auth.Handler do
   end
 
   def handle_call("todo.upgrade", session, state) do
-    case TodoList.Auth.session_info(session) do
+    case Todolist.Auth.session_info(session) do
       %{"user" => user} -> {:reply, user, %{user: user}}
       _ -> {:error, :auth_session_invalid, state}
     end

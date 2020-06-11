@@ -1,4 +1,4 @@
-defmodule TodoList.Permissions do
+defmodule Todolist.Permissions do
   use Riptide.Interceptor
 
   def mutation_before([], _layer, mut, %{internal: true}), do: :ok

@@ -1,2 +1,2 @@
-defmodule TodoList do
+defmodule Todolist do
 end
