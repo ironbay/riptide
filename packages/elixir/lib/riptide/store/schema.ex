@@ -143,31 +143,3 @@ defmodule Riptide.Schema.String do
     end
   end
 end
-
-defmodule Riptide.Schema.Example do
-  import Riptide.Schema
-
-  schema(%{
-    "name" => %{
-      "first" => {:string, min_length: 10},
-      "last" => :string
-    }
-  })
-
-  def test() do
-    %{
-      "name" => %{
-        "first" => "dax",
-        "butt" => "lol"
-      }
-    }
-    |> validate_format(Riptide.Schema.Example)
-    |> validate_required(%{
-      "name" => %{
-        "last" => true,
-        "first" => true
-      }
-    })
-    |> check()
-  end
-end
