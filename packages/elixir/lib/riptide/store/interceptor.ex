@@ -203,7 +203,7 @@ defmodule Riptide.Interceptor do
   def mutation_effect(mutation, state, interceptors) do
     mutation
     |> mutation_trigger(interceptors, :mutation_effect, [mutation, state])
-    |> Stream.map(fn {mod, result} ->
+    |> Stream.map(fn {mod, _path, result} ->
       case result do
         {fun, args} -> Riptide.Scheduler.schedule_in(0, mod, fun, args)
         {mod_other, fun, args} -> Riptide.Scheduler.schedule_in(0, mod_other, fun, args)
@@ -233,13 +233,21 @@ defmodule Riptide.Interceptor do
       mutation,
       state
     ])
-    |> Enum.reduce_while({:ok, mutation}, fn {mod, item}, {:ok, collect} ->
+    |> Enum.reduce_while({:ok, mutation}, fn {mod, path, item}, {:ok, collect} ->
       case item do
         nil ->
           {:cont, {:ok, collect}}
 
         :ok ->
           {:cont, {:ok, collect}}
+
+        {:delete, delete} ->
+          {:cont,
+           {:ok, Riptide.Mutation.combine(collect, Riptide.Mutation.put_delete(path, delete))}}
+
+        {:merge, merge} ->
+          {:cont,
+           {:ok, Riptide.Mutation.combine(collect, Riptide.Mutation.put_merge(path, merge))}}
 
         {:combine, next} ->
           {:cont, {:ok, Riptide.Mutation.combine(collect, next)}}
@@ -265,9 +273,9 @@ defmodule Riptide.Interceptor do
       state
     ])
     |> Enum.find(fn
-      {_mod, :ok} -> false
-      {_mod, nil} -> false
-      {_mod, {:error, _}} -> true
+      {_mod, _path, :ok} -> false
+      {_mod, _path, nil} -> false
+      {_mod, _path, {:error, _}} -> true
     end)
     |> case do
       nil -> :ok
@@ -286,7 +294,7 @@ defmodule Riptide.Interceptor do
         if logging?() and result != nil,
           do: Logger.info("#{mod} #{fun} #{inspect(path)} -> #{inspect(result)}")
 
-        {mod, result}
+        {mod, path, result}
       end)
     end)
   end
