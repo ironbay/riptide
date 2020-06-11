@@ -1,4 +1,4 @@
-defmodule Todo.MixProject do
+defmodule Todolist.MixProject do
   use Mix.Project
 
   def project do
@@ -15,7 +15,7 @@ defmodule Todo.MixProject do
   def application do
     [
       extra_applications: [:logger],
-      mod: {TodoList.Application, []}
+      mod: {Todolist.Application, []}
     ]
   end
 

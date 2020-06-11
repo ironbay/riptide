@@ -1,12 +1,12 @@
-defmodule TodoList.Test.Auth do
+defmodule Todolist.Test.Auth do
   use ExUnit.Case
-  doctest TodoList
+  doctest Todolist
 
   test "auth flow" do
     "jack"
-    |> TodoList.User.password_set("password")
+    |> Todolist.User.password_set("password")
     |> Riptide.mutation!()
 
-    TodoList
+    Todolist
   end
 end
