@@ -61,7 +61,9 @@ defmodule Riptide.Test.Store do
   end
 
   test Riptide.Store.Memory, do: test_store(Riptide.Store.Memory, [])
-  test Riptide.Store.Multi, do: test_store(Riptide.Store.Multi, [{Riptide.Store.Memory, []}])
+
+  test Riptide.Store.Multi,
+    do: test_store(Riptide.Store.Multi, writes: [{Riptide.Store.Memory, []}])
 
   defp test_store(store, opts) do
     :ok = store.init(opts)

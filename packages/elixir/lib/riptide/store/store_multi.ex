@@ -8,7 +8,7 @@ defmodule Riptide.Store.Multi do
   config :riptide,
     store: %{
       read: {Riptide.Store.Memory, []},
-      write: {Riptide.Store.Multi, stores: [
+      write: {Riptide.Store.Multi, writes: [
         {Riptide.Store.LMDB, directory: "data"},
         {Riptide.Store.Memory, []}
       ]}
@@ -43,7 +43,12 @@ defmodule Riptide.Store.Multi do
   end
 
   @impl true
-  def query(_paths, _opts) do
-    []
+  def query(paths, opts) do
+    {store, store_opts} =
+      opts
+      |> opts_writes()
+      |> Enum.at(0)
+
+    store.query(paths, store_opts)
   end
 end
