@@ -1,5 +1,7 @@
 defmodule Riptide.Store.Postgres do
-  @moduledoc false
+  @moduledoc """
+  """
+
   @behaviour Riptide.Store
   @delimiter "×"
 

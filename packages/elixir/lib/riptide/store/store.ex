@@ -1,9 +1,34 @@
 defmodule Riptide.Store do
-  @moduledoc false
+  @moduledoc """
+  Riptide stores are where data can be written to and read from. This module provides a behavior that can be implemented to integrate any data store with Riptide. Regardless of the underlying store, Riptide consistently provides [a tree data model](getting-started.html#the-tree-data-model)
+
+  The following stores are available out of the box. Visit their
+  - `Riptide.Store.Composite`
+  - `Riptide.Store.LMDB`
+  - `Riptide.Store.Memory`
+  - `Riptide.Store.Multi`
+  - `Riptide.Store.Postgres`
+  - `Riptide.Store.Riptide`
+
+  ## Configuration
+  Stores can be assigned via configuration. Riptide supports specifying different stores for reads and for writes although typically you will configure the same for both:
+
+  ```elixir
+  config :riptide,
+    store: %{
+      read: {Riptide.Store.MyStore, option1: "test"},
+      write: {Riptide.Store.MyStore, option1: "test"}
+    }
+  ```
+
+  """
   @callback init(opts :: any()) :: :ok | {:error, atom()}
   @callback mutation(merges :: any, deletes :: any(), opts :: any()) :: :ok | {:error, atom()}
   @callback query(paths :: any, opts :: any()) :: any
 
+  @doc """
+  Initialize all configured stores
+  """
   def init() do
     [
       Riptide.Config.riptide_store_read(),
@@ -16,6 +41,9 @@ defmodule Riptide.Store do
     end)
   end
 
+  @doc """
+  Apply mutation to configured write store. Does not trigger interceptors.
+  """
   def mutation(mut) do
     case Riptide.Config.riptide_store_write() do
       {store, opts} ->
@@ -26,17 +54,26 @@ defmodule Riptide.Store do
     end
   end
 
+  @doc """
+  Apply mutation to specified store with opts. Does not trigger interceptors.
+  """
   def mutation(mut, store, opts) do
     merges = Dynamic.flatten(mut.merge)
     deletes = Dynamic.flatten(mut.delete)
     :ok = store.mutation(merges, deletes, opts)
   end
 
+  @doc """
+  Processes query with configured read store. Does not trigger interceptors.
+  """
   def query(query) do
     {store, opts} = Riptide.Config.riptide_store_read()
     query(query, store, opts)
   end
 
+  @doc """
+  Processes query with specified store with opts. Does not trigger interceptors.
+  """
   def query(query, store, store_opts) do
     paths =
       query
@@ -62,11 +99,17 @@ defmodule Riptide.Store do
     # end)
   end
 
+  @doc """
+  Stream data from configured read store.
+  """
   def stream(path, opts \\ %{}) do
     {store, store_opts} = Riptide.Config.riptide_store_read()
     stream(path, opts, store, store_opts)
   end
 
+  @doc """
+  Stream data from specified read store with opts.
+  """
   def stream(path, opts, store, store_opts) do
     count = Enum.count(path)
 
@@ -99,7 +142,7 @@ defmodule Riptide.Store do
   #   end
   # end
 
-  def chunk(stream, count, opts) do
+  defp chunk(stream, count, opts) do
     chunked = Stream.chunk_by(stream, fn {path, _value} -> Enum.at(path, count) end)
 
     case opts[:limit] do
@@ -108,7 +151,7 @@ defmodule Riptide.Store do
     end
   end
 
-  def inflate(stream) do
+  defp inflate(stream) do
     stream
     |> Enum.reduce(%{}, fn
       {path, value}, collect when is_map(value) ->

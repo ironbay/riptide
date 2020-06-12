@@ -1,5 +1,4 @@
 defmodule Riptide.Store.Riptide do
-  @moduledoc false
   @behaviour Riptide.Store
 
   def child_spec(opts) do

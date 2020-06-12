@@ -1,7 +1,25 @@
 defmodule Riptide.Store.Memory do
-  @moduledoc false
+  @moduledoc """
+  This store persists all data into an ETS table. It will not survive restarts and is best used for local development or in conjunction with `Riptide.Store.Composite` to keep a portion of the tree in memory.
+
+  ## Options
+
+  - `:table` - Optional name for ETS table, defaults to `:riptide_table`
+
+  ## Configuration
+
+  ```elixir
+  config :riptide,
+    store: %{
+      read: {Riptide.Store.Memory, []},
+      write: {Riptide.Store.Memory, []},
+    }
+  ```
+  """
+
   @behaviour Riptide.Store
 
+  @impl true
   def init(opts) do
     opts
     |> opts_table()
@@ -16,8 +34,9 @@ defmodule Riptide.Store.Memory do
     :ok
   end
 
-  def opts_table(opts), do: Keyword.get(opts, :table, :riptide_table)
+  defp opts_table(opts), do: Keyword.get(opts, :table, :riptide_table)
 
+  @impl true
   def mutation(merges, deletes, opts) do
     table = opts_table(opts)
 
@@ -43,12 +62,13 @@ defmodule Riptide.Store.Memory do
     :ok
   end
 
+  @impl true
   def query(paths, opts) do
     table = opts_table(opts)
     Stream.map(paths, fn {path, opts} -> {path, query_path(table, path, opts)} end)
   end
 
-  def query_path(table, path, opts) do
+  defp query_path(table, path, opts) do
     {last, rest} = List.pop_at(path, -1)
     {min, max} = Riptide.Store.Prefix.range(last, opts)
     min = rest ++ min
@@ -62,7 +82,7 @@ defmodule Riptide.Store.Memory do
     |> Stream.map(fn {path, value} -> {path, Jason.decode!(value)} end)
   end
 
-  def iterate_keys(table, min, max) do
+  defp iterate_keys(table, min, max) do
     Stream.resource(
       fn -> :start end,
       fn

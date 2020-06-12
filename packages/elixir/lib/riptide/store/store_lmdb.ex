@@ -1,17 +1,19 @@
 defmodule Riptide.Store.LMDB do
-  @moduledoc false
+  @moduledoc """
+
+  """
   @behaviour Riptide.Store
   @delimiter "×"
 
   def init(directory: directory) do
     {:ok, env} = Bridge.LMDB.open_env(directory)
 
-    Application.put_env(:riptide, directory, env)
+    :persistent_term.put({:riptide, directory}, env)
     :ok
   end
 
   def env(directory: directory) do
-    Application.get_env(:riptide, directory)
+    :persistent_term.get({:riptide, directory})
   end
 
   def mutation(merges, deletes, opts) do

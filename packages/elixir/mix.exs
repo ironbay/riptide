@@ -41,7 +41,8 @@ defmodule Riptide.MixProject do
       logo: "logo.svg",
       canonical: "http://hexdocs.pm/riptide",
       extra_section: "Pages",
-      source_url: "https://github.com/ironbay/riptide/tree/master/packages/elixir",
+      source_url_pattern:
+        "https://github.com/ironbay/riptide/tree/master/packages/elixir/%{path}#L%{line}",
       extras: [
         "guides/introduction/overview.md",
         "guides/introduction/getting-started.md"
@@ -50,8 +51,16 @@ defmodule Riptide.MixProject do
         Introduction: ~r/guides\/introduction\/.?/,
         "Core Concepts": ~r/guides\/core\/.?/
       ],
+      nest_modules_by_prefix: [Riptide.Store],
       groups_for_modules: [
-        Stores: []
+        Stores: [
+          # Riptide.Store.Composite,
+          # Riptide.Store.LMDB,
+          # Riptide.Store.Memory,
+          # Riptide.Store.Multi,
+          # Riptide.Store.Postgres,
+          # Riptide.Store.Riptide
+        ]
       ]
     ]
   end
