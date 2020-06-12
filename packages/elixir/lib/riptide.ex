@@ -132,7 +132,8 @@ defmodule Riptide do
   5. Trigger `c:Riptide.Interceptor.mutation_after/4`
 
   ## Examples
-      iex> Riptide.mutation(Riptide.Mutation.put_merge(["foo", "bar"], "hello"))
+      iex> mut = Riptide.Mutation.put_merge(["foo", "bar"], "hello")
+      iex> Riptide.mutation(mut)
       {:ok, %{
         merge: %{
           "foo" => %{
@@ -157,7 +158,7 @@ defmodule Riptide do
   Convience method to apply a mutation that merges a single value
 
   ## Examples
-      iex> Riptide.put_merge(["foo", "bar"], "hello")
+      iex> Riptide.merge(["foo", "bar"], "hello")
       {:ok, %{
         merge: %{
           "foo" => %{
@@ -185,7 +186,7 @@ defmodule Riptide do
   Convience method to apply a mutation that deletes a single path
 
   ## Examples
-      iex> Riptide.put_delete(["foo", "bar"])
+      iex> Riptide.delete(["foo", "bar"])
       {:ok, %{
         delete: %{
           "foo" => %{

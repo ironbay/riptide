@@ -4,11 +4,11 @@ defmodule Riptide.Interceptor do
 
   ```elixir
   config :riptide,
-  interceptors: [
-  TodoList.Permissions,
-  TodoList.Todo.Created,
-  TodoList.Todo.Alert
-  ]
+    interceptors: [
+      TodoList.Permissions,
+      TodoList.Todo.Created,
+      TodoList.Todo.Alert
+    ]
   ```
 
   Every Interceptor in this list is called in order for every Mutation and Query processed
@@ -28,18 +28,18 @@ defmodule Riptide.Interceptor do
 
   ```elixir
   defmodule Todo.Created do
-  use Riptide.Interceptor
+    use Riptide.Interceptor
 
-  def mutation_before(["todos", _key], %{ merge: %{ "complete" => true }}, state) do
-  {
-    :merge,
-    %{
-      "times" => %{
-          "completed" => :os.system_time(:millisecond)
+    def mutation_before(["todos", _key], %{ merge: %{ "complete" => true }}, state) do
+      {
+        :merge,
+        %{
+          "times" => %{
+            "completed" => :os.system_time(:millisecond)
+          }
+        }
       }
-    }
-  }
-  end
+    end
   end
   ```
 
@@ -57,18 +57,18 @@ defmodule Riptide.Interceptor do
 
   ```elixir
   defmodule Todo.Created do
-  use Riptide.Interceptor
+    use Riptide.Interceptor
 
-  def mutation_before(["todos", _key], %{ merge: %{ "complete" => true }}, state) do
-  {
-    :merge,
-    %{
-      "times" => %{
-          "completed" => :os.system_time(:millisecond)
+    def mutation_before(["todos", _key], %{ merge: %{ "complete" => true }}, state) do
+      {
+        :merge,
+        %{
+          "times" => %{
+            "completed" => :os.system_time(:millisecond)
+          }
+        }
       }
-    }
-  }
-  end
+    end
   end
   ```
 
@@ -92,14 +92,14 @@ defmodule Riptide.Interceptor do
 
   ```elixir
   defmodule Todo.Permissions do
-  use Riptide.Interceptor
+    use Riptide.Interceptor
 
-  def query_before(["secrets" | _rest], _opts, state) do
-  case state do
-      state.user === "bad-guy" -> {:error, :auth_error}
-      true -> :ok
-  end
-  end
+    def query_before(["secrets" | _rest], _opts, state) do
+      case state do
+        state.user === "bad-guy" -> {:error, :auth_error}
+        true -> :ok
+      end
+    end
   end
   ```
 
@@ -114,15 +114,15 @@ defmodule Riptide.Interceptor do
 
   ```elixir
   defmodule Todo.Twilio do
-  use Riptide.Interceptor
+    use Riptide.Interceptor
 
-  def query_resolve(["twilio", "numbers" | _rest], _opts, state) do
-  TwilioApi.numbers()
-  |> case do
-    {:ok, result} -> Kernel.get_in(result, rest)
-    {:error, err} -> {:error, err}
-  end
-  end
+    def query_resolve(["twilio", "numbers" | _rest], _opts, state) do
+      TwilioApi.numbers()
+      |> case do
+        {:ok, result} -> Kernel.get_in(result, rest)
+        {:error, err} -> {:error, err}
+      end
+    end
   end
   ```
 
