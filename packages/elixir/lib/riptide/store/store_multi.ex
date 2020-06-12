@@ -1,22 +1,49 @@
 defmodule Riptide.Store.Multi do
   @moduledoc """
+  A proxy store that will write data to multiple stores.
+
+  ## Configuration
+
+  ```elixir
+  config :riptide,
+    store: %{
+      read: {Riptide.Store.Memory, []},
+      write: {Riptide.Store.Multi, stores: [
+        {Riptide.Store.LMDB, directory: "data"},
+        {Riptide.Store.Memory, []}
+      ]}
+    }
+
+  ```
+
+  ## Options
+  - `:stores` - list of stores to write data to (required)
   """
 
   @behaviour Riptide.Store
-  def init(stores) do
-    Enum.each(stores, fn {store, opts} ->
-      :ok = store.init(opts)
+
+  @impl true
+  def init(opts) do
+    opts
+    |> opts_writes()
+    |> Enum.each(fn {store, opts} -> :ok = store.init(opts) end)
+  end
+
+  defp opts_writes(opts) do
+    Keyword.get(opts, :writes, [])
+  end
+
+  @impl true
+  def mutation(merges, deletes, opts) do
+    opts
+    |> opts_writes()
+    |> Enum.each(fn {store, store_opts} ->
+      :ok = store.mutation(merges, deletes, store_opts)
     end)
   end
 
-  def mutation(merges, deletes, stores) do
-    Enum.each(stores, fn {store, opts} ->
-      :ok = store.mutation(merges, deletes, opts)
-    end)
-  end
-
-  def query(paths, stores) do
-    {store, opts} = Enum.at(stores, 0)
-    store.query(paths, opts)
+  @impl true
+  def query(_paths, _opts) do
+    []
   end
 end

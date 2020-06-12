@@ -1,10 +1,37 @@
 defmodule Riptide.Store.LMDB do
   @moduledoc """
+  This store persists data to [LMDB](https://symas.com/lmdb/) using a bridge built in Rust. LMDB is a is a fast, memory mapped key value store that is persisted to a single file. It's a great choice for many projects that need persistence but want to avoid the overhead of setting up a standalone database.
 
+  ## Configuration
+
+  This store has a dependency on the Rust toolchain which can be installed via [rustup](https://rustup.rs/). Once installed, add the `bridge_lmdb` dependency to your `mix.exs`.
+
+  ```elixir
+  defp deps do
+    [
+      {:riptide, "~> 0.4.0"},
+      {:bridge_lmdb, "~> 0.1.1"}
+    ]
+  end
+  ```
+
+  And then you can configure the store:
+  ```elixir
+  config :riptide,
+    store: %{
+      read: {Riptide.Store.LMDB, directory: "data"},
+      write: {Riptide.Store.LMDB, directory: "data"},
+    }
+  ```
+
+  ## Options
+
+    - `:directory` - directory where the database is stored (required)
   """
   @behaviour Riptide.Store
   @delimiter "×"
 
+  @impl true
   def init(directory: directory) do
     {:ok, env} = Bridge.LMDB.open_env(directory)
 
@@ -12,10 +39,11 @@ defmodule Riptide.Store.LMDB do
     :ok
   end
 
-  def env(directory: directory) do
+  defp env(directory: directory) do
     :persistent_term.get({:riptide, directory})
   end
 
+  @impl true
   def mutation(merges, deletes, opts) do
     env = env(opts)
 
@@ -32,6 +60,7 @@ defmodule Riptide.Store.LMDB do
     )
   end
 
+  @impl true
   def query(layers, opts) do
     env = env(opts)
 
@@ -46,7 +75,7 @@ defmodule Riptide.Store.LMDB do
     end)
   end
 
-  def iterate(env, path, opts) do
+  defp iterate(env, path, opts) do
     combined = Enum.join(path, @delimiter)
     {min, max} = Riptide.Store.Prefix.range(combined, opts)
     min = Enum.join(min, @delimiter)
@@ -70,11 +99,11 @@ defmodule Riptide.Store.LMDB do
     )
   end
 
-  def encode_path(path) do
+  defp encode_path(path) do
     Enum.join(path, @delimiter)
   end
 
-  def decode_path(input) do
+  defp decode_path(input) do
     String.split(input, @delimiter)
   end
 end

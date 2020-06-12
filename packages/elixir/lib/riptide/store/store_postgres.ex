@@ -1,14 +1,79 @@
 defmodule Riptide.Store.Postgres do
   @moduledoc """
+  This store persists data to a single Postgres table as materialized paths. It is best used in scenarios where your application will have multiple erlang nodes running that all need shared access to data. Note with this store Postgres is treated like a dumb key/value store and does not take advantage of any other Postgres capabilities.
+
+  ## Configuration
+
+  Add `postgrex` as a dependency to your `mix.exs`.
+
+  ```elixir
+  defp deps do
+    [
+      {:riptide, "~> 0.4.0"},
+      {:postgrex,  "~> 0.15.3"}
+    ]
+  end
+  ```
+
+  And then you can configure the store:
+  ```elixir
+  config :riptide,
+    store: %{
+      read: {Riptide.Store.Postgres, []},
+      write: {Riptide.Store.Postgres, []},
+    }
+  ```
+
+  You can start up a named `Postgrex` pool manually but this module provides a convenient way for you to do that. Add this to your `application.ex`:
+
+  ```elixir
+  children = [
+    {Riptide.Store.Postgres, [
+      hostname: "localhost",
+      database: "riptide",
+      username: "postgres",
+      password: "postgres",
+    ]},
+    Riptide,
+  ]
+  opts = [strategy: :one_for_one, name: Riptide.Supervisor]
+  Supervisor.start_link(children, opts)
+  ```
+
+  Note, make sure the Postgres pool starts up *before* Riptide.
+
+  ## Options
+  - `:table` - name of table defaults to `riptide` (optional)
+  - `:name` - name of Postgrex pool, defaults to `postgres` (optional)
+  - `:transaction_timeout` - duration for transaction timeout in milliseconds, defaults to 1 minute (optional)
   """
 
   @behaviour Riptide.Store
   @delimiter "×"
 
+  @doc """
+  Convenience implementation of `Supervisor.child_spec/1` to start up a `Postgrex` pool with name `:postgres`
+
+  ## Examples
+  ```elixir
+  children = [
+    {Riptide.Store.Postgres, [
+      hostname: "localhost",
+      database: "riptide",
+      username: "postgres",
+      password: "postgres",
+    ]},
+    Riptide,
+  ]
+  opts = [strategy: :one_for_one, name: Riptide.Supervisor]
+  Supervisor.start_link(children, opts)
+  ```
+  """
   def child_spec(opts) do
     Postgrex.child_spec(Keyword.merge([name: :postgres], opts))
   end
 
+  @impl true
   def init(opts) do
     Postgrex.query!(
       opts_name(opts),
@@ -25,12 +90,13 @@ defmodule Riptide.Store.Postgres do
     :ok
   end
 
-  def opts_table(opts), do: Keyword.get(opts, :table, "riptide")
-  def opts_name(opts), do: Keyword.get(opts, :name, :postgres)
+  defp opts_table(opts), do: Keyword.get(opts, :table, "riptide")
+  defp opts_name(opts), do: Keyword.get(opts, :name, :postgres)
 
-  def opts_transaction_timeout(opts),
-    do: Keyword.get(opts, :transaction_timeout, :timer.minutes(10))
+  defp opts_transaction_timeout(opts),
+    do: Keyword.get(opts, :transaction_timeout, :timer.minutes(1))
 
+  @impl true
   def mutation(merges, deletes, opts) do
     opts
     |> opts_name()
@@ -47,9 +113,9 @@ defmodule Riptide.Store.Postgres do
     end
   end
 
-  def merge([], _conn, _opts), do: :ok
+  defp merge([], _conn, _opts), do: :ok
 
-  def merge(merges, conn, opts) do
+  defp merge(merges, conn, opts) do
     merges
     |> Stream.chunk_every(30_000)
     |> Enum.map(fn layers ->
@@ -71,10 +137,9 @@ defmodule Riptide.Store.Postgres do
     end)
   end
 
-  @spec delete(any, any, any) :: :ok
-  def delete([], _conn, _opts), do: :ok
+  defp delete([], _conn, _opts), do: :ok
 
-  def delete(layers, conn, opts) do
+  defp delete(layers, conn, opts) do
     {arguments, statement} =
       layers
       |> Enum.with_index()
@@ -94,18 +159,19 @@ defmodule Riptide.Store.Postgres do
     :ok
   end
 
-  def encode_prefix(path) do
+  defp encode_prefix(path) do
     Enum.join(path, @delimiter)
   end
 
-  def encode_path(path) do
+  defp encode_path(path) do
     Enum.join(path, @delimiter) <> @delimiter
   end
 
-  def decode_path(input) do
+  defp decode_path(input) do
     String.split(input, @delimiter, trim: true)
   end
 
+  @impl true
   def query(paths, store_opts) do
     # {full, partial} = Enum.split_with(paths, fn {_path, opts} -> opts[:limit] == nil end)
 
@@ -129,16 +195,16 @@ defmodule Riptide.Store.Postgres do
     )
   end
 
-  def query_partial(paths, conn) do
+  defp query_partial(paths, conn) do
     paths
     |> Stream.map(fn {path, opts} ->
       {path, query_path(path, opts, conn)}
     end)
   end
 
-  def query_full([], _conn), do: []
+  defp query_full([], _conn), do: []
 
-  def query_full(paths, conn) do
+  defp query_full(paths, conn) do
     {values, args, _} =
       Enum.reduce(paths, {[], [], 0}, fn {path, opts}, {values, args, count} ->
         combined = encode_prefix(path)
@@ -174,7 +240,7 @@ defmodule Riptide.Store.Postgres do
     end)
   end
 
-  def query_path(path, opts, conn) do
+  defp query_path(path, opts, conn) do
     combined = encode_prefix(path)
     {min, max} = Riptide.Store.Prefix.range(combined, opts)
 
@@ -187,7 +253,7 @@ defmodule Riptide.Store.Postgres do
     |> Stream.map(fn [path, value] -> {decode_path(path), value} end)
   end
 
-  def txn_start(store_opts) do
+  defp txn_start(store_opts) do
     self = self()
 
     {:ok, child} =
@@ -213,7 +279,7 @@ defmodule Riptide.Store.Postgres do
     {child, conn}
   end
 
-  def txn_end(holder) do
+  defp txn_end(holder) do
     send(holder, {:conn, :done})
   end
 end

@@ -2,10 +2,6 @@ defmodule Riptide.Store.Memory do
   @moduledoc """
   This store persists all data into an ETS table. It will not survive restarts and is best used for local development or in conjunction with `Riptide.Store.Composite` to keep a portion of the tree in memory.
 
-  ## Options
-
-  - `:table` - Optional name for ETS table, defaults to `:riptide_table`
-
   ## Configuration
 
   ```elixir
@@ -15,6 +11,10 @@ defmodule Riptide.Store.Memory do
       write: {Riptide.Store.Memory, []},
     }
   ```
+
+  ## Options
+
+  - `:table` - name for ETS table, defaults to `:riptide_table` (optional)
   """
 
   @behaviour Riptide.Store

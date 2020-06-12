@@ -18,8 +18,8 @@ defmodule Riptide.Store.Composite do
       @shared,
     ]
 
-    # Any path starting with ["global"] is saved in a shared postgres instance
-    def which_path(["global" | _rest]), do: @global
+    # Any path starting with ["shared"] is saved in a shared postgres instance
+    def which_path(["shared" | _rest]), do: @shared
 
     # Any path starting with ["tmp"] is kept only in memory
     def which_path(["tmp" | _rest]), do: @memory
