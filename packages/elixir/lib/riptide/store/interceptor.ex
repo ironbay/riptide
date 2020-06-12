@@ -333,7 +333,7 @@ defmodule Riptide.Interceptor do
               layer :: Riptide.Mutation.t(),
               mut :: Riptide.Mutation.t(),
               state :: String.t()
-            ) :: :ok
+            ) :: :ok | nil
 
   @callback mutation_effect(
               path :: list(String.t()),

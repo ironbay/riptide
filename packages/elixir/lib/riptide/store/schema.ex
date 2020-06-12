@@ -1,4 +1,6 @@
 defmodule Riptide.Schema do
+  @moduledoc false
+
   defmacro schema(schema) do
     {map, _} = Code.eval_quoted(schema)
     flattened = Dynamic.flatten(map)
@@ -109,18 +111,21 @@ defmodule Riptide.Schema do
 end
 
 defmodule Riptide.Schema.Unknown do
+  @moduledoc false
   def valid?(_, _) do
     {:error, :unknown}
   end
 end
 
 defmodule Riptide.Schema.Number do
+  @moduledoc false
   def valid?(input, _opts) do
     input == nil or is_number(input)
   end
 end
 
 defmodule Riptide.Schema.String do
+  @moduledoc false
   def valid?(input, opts) do
     cond do
       input == nil ->
