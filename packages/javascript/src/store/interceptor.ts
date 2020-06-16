@@ -1,5 +1,5 @@
 import Dynamic from "@ironbay/dynamic"
-import { Mutation } from "../types"
+import { Mutation, Layer } from "../types"
 
 interface BeforeMutation {
   path: string[]
@@ -27,7 +27,7 @@ export default class Interceptor {
     return mut
   }
 
-  static pattern(mut: Mutation, path: string[]): Dynamic.Layer<Mutation>[] {
+  static pattern(mut: Mutation, path: string[]): Layer<Mutation>[] {
     const layers = {} as { [key: string]: Mutation }
 
     Dynamic.get_pattern(mut.merge, path).reduce((collect, item) => {

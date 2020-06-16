@@ -34,3 +34,8 @@ export interface Message {
 export interface Syncable {
   mutation(mut: Mutation): Promise<void>
 }
+
+export type Layer<T> = {
+  path: Array<string>
+  value: T
+}
