@@ -3,9 +3,10 @@ import Dispatcher from "../dispatcher"
 import * as Connection from "../connection"
 import Mutator from "./mutator"
 import mixin from "./mixin"
+import { Transport, Format, Mutation, Query } from "../types"
 
-class Remote<T extends Riptide.Transport, F extends Riptide.Format> {
-  public readonly onChange = new Dispatcher<Riptide.Mutation>()
+class Remote<T extends Transport, F extends Format> {
+  public readonly onChange = new Dispatcher<Mutation>()
   private conn: Connection.Client<T, F>
 
   constructor(client: Connection.Client<T, F>) {
@@ -16,36 +17,35 @@ class Remote<T extends Riptide.Transport, F extends Riptide.Format> {
     })
   }
 
-  public async mutation(mut: Riptide.Mutation) {
+  public async mutation(mut: Mutation) {
     await this.conn.call("riptide.mutation", mut)
   }
 
-  public async query(q: Riptide.Query) {
-    const result = await this.conn.call<Riptide.Mutation>("riptide.query", q)
+  public async query(q: Query) {
+    const result = await this.conn.call<Mutation>("riptide.query", q)
     this.onChange.trigger(result)
     return result.merge
   }
 
-  public async query_path<T>(path: string[], opts: Riptide.Query.Opts = {}) {
+  public async query_path<T>(path: string[], opts: Query.Opts = {}) {
     return Dynamic.get<T>(
-      await this.query(Dynamic.put({}, path, opts) as Riptide.Query),
+      await this.query(Dynamic.put({}, path, opts) as Query),
       path
     )
   }
 
-  public async query_values<T>(path: string[], opts: Riptide.Query.Opts = {}) {
+  public async query_values<T>(path: string[], opts: Query.Opts = {}) {
     return Object.values<T>(
       (await this.query_path<{ [key: string]: T }>(path, opts)) || {}
     )
   }
 
-  public async query_keys(path: string[], opts: Riptide.Query.Opts = {}) {
+  public async query_keys(path: string[], opts: Query.Opts = {}) {
     return Object.keys((await this.query_path(path, opts)) || {})
   }
 }
 
-interface Remote<T extends Riptide.Transport, F extends Riptide.Format>
-  extends Mutator {}
+interface Remote<T extends Transport, F extends Format> extends Mutator {}
 mixin(Remote, [Mutator])
 
 export default Remote

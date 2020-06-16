@@ -1,12 +1,9 @@
 import Dynamic from "@ironbay/dynamic"
+import { Mutation } from "../types"
 
 interface BeforeMutation {
   path: string[]
-  callback: (
-    mut: Riptide.Mutation,
-    path: string[],
-    full: Riptide.Mutation
-  ) => Promise<void>
+  callback: (mut: Mutation, path: string[], full: Mutation) => Promise<void>
 }
 
 export default class Interceptor {
@@ -19,7 +16,7 @@ export default class Interceptor {
     })
   }
 
-  public async trigger_before(mut: Riptide.Mutation) {
+  public async trigger_before(mut: Mutation) {
     for (let interceptor of this.before) {
       const promises = Interceptor.pattern(mut, interceptor.path).map(
         async pattern =>
@@ -30,11 +27,8 @@ export default class Interceptor {
     return mut
   }
 
-  static pattern(
-    mut: Riptide.Mutation,
-    path: string[]
-  ): Dynamic.Layer<Riptide.Mutation>[] {
-    const layers = {} as { [key: string]: Riptide.Mutation }
+  static pattern(mut: Mutation, path: string[]): Dynamic.Layer<Mutation>[] {
+    const layers = {} as { [key: string]: Mutation }
 
     Dynamic.get_pattern(mut.merge, path).reduce((collect, item) => {
       return Dynamic.put(collect, [item.path, "merge"], item.value)

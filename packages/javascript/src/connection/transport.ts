@@ -1,8 +1,9 @@
 import * as WebSocket from "universal-websocket-client"
 import sleep from "../sleep"
 import Dispatcher from "../dispatcher"
+import { Transport } from "../types"
 
-export abstract class Base implements Riptide.Transport {
+export abstract class Base implements Transport {
   abstract write(data: string): void
   protected dispatcher_data = new Dispatcher<string>()
   handle_data(cb: (data: string) => void) {

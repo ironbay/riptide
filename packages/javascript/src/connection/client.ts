@@ -1,19 +1,17 @@
 import Dispatcher from "../dispatcher"
 import sleep from "../sleep"
+import { Transport, Format, Message } from "../types"
 
-export default class Client<
-  T extends Riptide.Transport,
-  F extends Riptide.Format
-> {
+export default class Client<T extends Transport, F extends Format> {
   public transport: T
   public format: F
   public counter: number = 0
-  public on_cast = new Dispatcher<Riptide.Message>()
+  public on_cast = new Dispatcher<Message>()
   private pending = new Map<number, { resolve: any; reject: any }>()
 
   constructor(transport: { new (): T } = null, format: { new (): F } = null) {
     this.transport = new transport()
-    this.transport.handle_data(data => this.handle_data(data))
+    this.transport.handle_data((data) => this.handle_data(data))
     this.format = new format()
   }
 
@@ -26,7 +24,7 @@ export default class Client<
       key: this.counter,
       action,
       body,
-      type: "call"
+      type: "call",
     })
     return promise
   }
@@ -35,11 +33,11 @@ export default class Client<
     await this.write({
       action,
       body,
-      type: "cast"
+      type: "cast",
     })
   }
 
-  private async write(msg: Riptide.Message) {
+  private async write(msg: Message) {
     const encoded = this.format.encode(msg)
     try {
       this.transport.write(encoded)
@@ -50,7 +48,7 @@ export default class Client<
   }
 
   private handle_data(data: string) {
-    const msg = this.format.decode<Riptide.Message>(data)
+    const msg = this.format.decode<Message>(data)
     const match = this.pending.get(msg.key)
     switch (msg.type) {
       case "reply":
