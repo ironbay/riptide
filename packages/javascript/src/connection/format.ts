@@ -1,4 +1,6 @@
-export class Json implements Riptide.Format {
+import { Format } from "../types"
+
+export class Json implements Format {
   encode(input) {
     return JSON.stringify(input)
   }
