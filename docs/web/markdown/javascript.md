@@ -80,10 +80,10 @@ That's it! Our remote store is connected to the back-end. Later in this guide we
 const merged = await remote.merge(['todos', 'todos_01'])
 const deleted = await remote.delete(['todos'])
 
-this.remote.onChange.add(mut =>
+this.remote.onChange.add(mut => {
     console.dir('*** New Mutation ***')
     console.dir(mut)
-)
+})
 ```
 
 Whenever we interact with data using our remote store, we're going over a network, and therefore these functions (here `query_path` and `delete`) return `Promises`. Next we'll create a local store that replicates data locally so that you can access it without waiting on a `Promises`.
@@ -137,7 +137,7 @@ sync.merge(["todos", "todo_01"]);
 sync.delete(["todos", "todo_01"]);
 ```
 
-The `merge` and `delete` function look eerily similar to the `merge` and `delete` functions we saw on the local and remote stores: is sync its own store? The sync object provides an interface for interacing with both stores simultaneously.
+The `merge` and `delete` function look eerily similar to the `merge` and `delete` functions we saw on the local and remote stores: is sync its own store? The sync object provides an interface for interacting with both stores simultaneously.
 
 We use the sync object to perform [optimistic updates](https://stackoverflow.com/questions/33009657/what-is-optimistic-updates-in-front-end-development). If we want to have our UI update instantly (rather than waiting for the back-end to confirm that a user action was successful), we call `sync.merge` or `sync.delete` and both stores get written to.
 
@@ -185,7 +185,7 @@ await remote.query({
 This is telling our back-end two things:
 
 - Query for all the todos and return them
-- Notify our remote store of and updates happening under the todos path
+- Notify our remote store of any updates happening under the todos path
 
 So far we've used the word "notify" to describe when parts of our system are speaking to each other. `Riptide` uses the concept of mutations to speak across components. Mutations are a simple description of how our data is being transformed in the form of an object, for example:
 
@@ -304,7 +304,7 @@ Hmm, this seems a little cumbersome. The `onChange.add` was a good option for lo
 
 `Riptide` uses an interceptor system for this exact purpose. Interceptors listen for incoming mutations, under a certain path, and allow us take an action according to the incoming mutation. In this case, we want to inspect the incoming connection status, and only query the back-end with our remote store if the connection has a ready status.
 
-We saw earier how we're saving the connection status under the `['connection', 'status']` path in our local store. So for our interceptor, we'll pass in this path and a callback function that checks the connection status, and either returns immediately or carries out our remote query and subscription based on the connection status.
+We saw earlier how we're saving the connection status under the `['connection', 'status']` path in our local store. So for our interceptor, we'll pass in this path and a callback function that checks the connection status, and either returns immediately or carries out our remote query and subscription based on the connection status.
 
 That was a lot of talking, but the implementation is simple and straightforward:
 
@@ -360,7 +360,7 @@ That's it! No we simply wait for an incoming mutation to our local store where `
 
 ### Export
 
-Now we have several tools are our disposal, ready to interact and display data in our application. We'll export the `connection`, `remote`, `local`, and `sync` objects. This way, any module in our front-end can import whatever parts our our our `Riptide` setup they need, for example:
+Now we have several tools at our disposal, ready to interact and display data in our application. We'll export the `connection`, `remote`, `local`, and `sync` objects. This way, any module in our front-end can import whatever parts our our our `Riptide` setup they need, for example:
 
 ```javascript
 // app.js
