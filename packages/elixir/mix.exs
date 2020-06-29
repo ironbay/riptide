@@ -73,7 +73,7 @@ defmodule Riptide.MixProject do
       {:dynamic, "~> 0.1.2"},
       {:brine, "~> 0.2.2"},
       {:websockex, "~> 0.4.2"},
-      {:bridge_lmdb, "~> 0.1.1", optional: true},
+      {:bridge_lmdb, "~> 0.1.4", optional: true},
       {:postgrex, "~> 0.15.3", optional: true},
       {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
