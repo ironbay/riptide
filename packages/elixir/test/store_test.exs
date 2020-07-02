@@ -60,7 +60,26 @@ defmodule Riptide.Test.Store do
     File.rm_rf("lmdb")
   end
 
-  test Riptide.Store.Memory, do: test_store(Riptide.Store.Memory, [])
+  test Riptide.Store.Memory do
+    test_store(Riptide.Store.Memory, [])
+    :ets.delete(:riptide_table)
+
+    opts = [snapshot: "data.json"]
+    :ok = Riptide.Store.Memory.init(opts)
+
+    :ok =
+      Riptide.Store.mutation(
+        Riptide.Mutation.put_merge(["a", "b"], 1),
+        Riptide.Store.Memory,
+        opts
+      )
+
+    :ets.delete(:riptide_table)
+    :ok = Riptide.Store.Memory.init(opts)
+    assert %{"a" => %{"b" => 1}} === Riptide.Store.query(%{}, Riptide.Store.Memory, opts)
+    File.rm_rf!("data.json")
+    :ets.delete(:riptide_table)
+  end
 
   test Riptide.Store.Multi,
     do: test_store(Riptide.Store.Multi, writes: [{Riptide.Store.Memory, []}])
