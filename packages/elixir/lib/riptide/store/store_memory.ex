@@ -31,10 +31,37 @@ defmodule Riptide.Store.Memory do
       write_concurrency: true
     ])
 
+    :ok = snapshot_load(opts)
+
     :ok
   end
 
   defp opts_table(opts), do: Keyword.get(opts, :table, :riptide_table)
+  defp opts_snapshot(opts), do: Keyword.get(opts, :snapshot, nil)
+
+  def snapshot_write(opts) do
+    case opts_snapshot(opts) do
+      nil ->
+        :ok
+
+      result ->
+        data = Riptide.Store.query(%{}, __MODULE__, opts)
+        json = Jason.encode!(data)
+        File.write!(result, json)
+        :ok
+    end
+  end
+
+  def snapshot_load(opts) do
+    with path when path != nil <- opts_snapshot(opts),
+         {:ok, data} <- File.read(path),
+         {:ok, json} <- Jason.decode(data),
+         :ok = mutation(Dynamic.flatten(json), [], opts) do
+      :ok
+    else
+      _ -> :ok
+    end
+  end
 
   @impl true
   def mutation(merges, deletes, opts) do
@@ -59,6 +86,7 @@ defmodule Riptide.Store.Memory do
       |> Enum.to_list()
     )
 
+    :ok = snapshot_write(opts)
     :ok
   end
 
