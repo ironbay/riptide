@@ -147,9 +147,9 @@ defmodule Riptide.Interceptor do
     query
     |> query_trigger(interceptors, :query_before, [state])
     |> Enum.find_value(fn
-      {_mod, nil} -> nil
-      {_mod, :ok} -> nil
-      {_, result} -> result
+      {_mod, _, nil} -> nil
+      {_mod, _, :ok} -> nil
+      {_, _, result} -> result
     end)
     |> case do
       nil -> :ok
@@ -169,10 +169,11 @@ defmodule Riptide.Interceptor do
   def query_resolve(query, state, interceptors) do
     query
     |> query_trigger(interceptors, :query_resolve, [state])
-    |> Enum.find_value(fn
-      {_mod, nil} -> nil
-      {_, result} -> result
+    |> Stream.filter(fn
+      {_mod, _path, nil} -> false
+      _ -> true
     end)
+    |> Enum.map(fn {_mod, path, value} -> {path, value} end)
   end
 
   defp query_trigger(query, interceptors, fun, args) do
@@ -186,7 +187,7 @@ defmodule Riptide.Interceptor do
         if logging?() and result != nil,
           do: Logger.info("#{mod} #{fun} #{inspect(path)} -> #{inspect(result)}")
 
-        {mod, result}
+        {mod, path, result}
       end)
     end)
   end

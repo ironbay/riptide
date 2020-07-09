@@ -61,10 +61,25 @@ defmodule Riptide do
   """
   def query(query, state \\ @internal) do
     with :ok <- Riptide.Interceptor.query_before(query, state) do
-      case Riptide.Interceptor.query_resolve(query, state) do
-        nil -> {:ok, Riptide.Store.query(query)}
-        result -> {:ok, result}
-      end
+      resolved = Riptide.Interceptor.query_resolve(query, state)
+
+      store =
+        resolved
+        |> Enum.reduce(query, fn {path, _value}, collect ->
+          Dynamic.delete(collect, path)
+        end)
+        |> case do
+          result when result === %{} ->
+            %{}
+
+          remaining ->
+            Riptide.Store.query(remaining)
+        end
+
+      {:ok,
+       Enum.reduce(resolved, store, fn {path, value}, collect ->
+         Dynamic.put(collect, path, value)
+       end)}
     end
   end
 
