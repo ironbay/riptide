@@ -23,6 +23,8 @@ import Memory from "./memory"
       })
       expect(store.query({})).toEqual({ todos: { todo_01: "hammerhead" } })
 
+      expect(store.query_path(["deep", "nonexistent"])).toBeUndefined()
+
       await store.mutation({
         delete: {
           todos: {
