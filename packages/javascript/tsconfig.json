@@ -6,7 +6,8 @@
     "moduleResolution": "Node",
     "noImplicitAny": false,
     "outDir": "./dist",
-    "target": "es2015"
+    "target": "es2015",
+    "allowSyntheticDefaultImports": true
   },
   "include": ["./src/**/*"]
 }

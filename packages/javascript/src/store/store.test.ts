@@ -3,6 +3,7 @@ import Memory from "./memory"
   describe(mod.name, () => {
     it("implementation", async () => {
       const store = new mod()
+      expect(store.query_path(["deep", "nonexistent"])).toBeUndefined()
 
       await store.mutation({
         merge: {
@@ -21,9 +22,8 @@ import Memory from "./memory"
         },
         delete: {}
       })
-      expect(store.query({})).toEqual({ todos: { todo_01: "hammerhead" } })
 
-      expect(store.query_path(["deep", "nonexistent"])).toBeUndefined()
+      expect(store.query({})).toEqual({ todos: { todo_01: "hammerhead" } })
 
       await store.mutation({
         delete: {

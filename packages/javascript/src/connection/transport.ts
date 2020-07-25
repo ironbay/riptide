@@ -1,4 +1,3 @@
-import * as WebSocket from "universal-websocket-client"
 import sleep from "../sleep"
 import Dispatcher from "../dispatcher"
 import { Transport } from "../types"
