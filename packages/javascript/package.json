@@ -1,6 +1,6 @@
 {
   "name": "@ironbay/riptide",
-  "version": "0.2.19",
+  "version": "0.2.20",
   "description": "",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
@@ -18,6 +18,6 @@
     "typescript": "^3.8.3"
   },
   "dependencies": {
-    "@ironbay/dynamic": "^1.0.10"
+    "@ironbay/dynamic": "^2.0.0"
   }
 }
