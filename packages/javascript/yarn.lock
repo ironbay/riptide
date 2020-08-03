@@ -797,10 +797,10 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
-"@ironbay/dynamic@^1.0.10":
-  version "1.0.10"
-  resolved "https://registry.yarnpkg.com/@ironbay/dynamic/-/dynamic-1.0.10.tgz#57c28ea8dd6fd8a75c7f64952c8f57c6a67bd1a2"
-  integrity sha512-XkLmDFXEmqkynFytl3SvvQlW1FJGNU0EPdg6N8UF2uJmOnJSnjaEaFht7dS6qb8gpssyVMa8FlzUEBonN1A30A==
+"@ironbay/dynamic@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@ironbay/dynamic/-/dynamic-2.0.0.tgz#7f863e0356c07575464d9b918a751b79be1dc504"
+  integrity sha512-Klvfq1ADX/x0GrVJV0ZEiQCc8jL6PDsaYiTpw5wOq0Xn50Fyr+8PmaHYrR7sHQNA1+RtZVW0FFOKZCGLMvh1Ig==
 
 "@jest/console@^24.7.1", "@jest/console@^24.9.0":
   version "24.9.0"
@@ -3278,11 +3278,6 @@ isobject@^3.0.0, isobject@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/isobject/-/isobject-3.0.1.tgz#4e431e92b11a9731636aa1f9c8d1ccbcfdab78df"
   integrity sha1-TkMekrEalzFjaqH5yNHMvP2reN8=
-
-isomorphic-ws@^4.0.1:
-  version "4.0.1"
-  resolved "https://registry.yarnpkg.com/isomorphic-ws/-/isomorphic-ws-4.0.1.tgz#55fd4cd6c5e6491e76dc125938dd863f5cd4f2dc"
-  integrity sha512-BhBvN2MBpWTaSHdWRb/bwdZJ1WaehQ2L1KngkCkfLUGF0mAWAT1sQUQacEmQ0jXkFw/czDXPNQSL5u2/Krsz1w==
 
 isstream@~0.1.2:
   version "0.1.2"

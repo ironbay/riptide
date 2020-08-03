@@ -1,4 +1,4 @@
-import Dynamic from "@ironbay/dynamic"
+import { get_pattern, put } from "@ironbay/dynamic"
 import { Mutation, Layer } from "../types"
 
 interface BeforeMutation {
@@ -30,12 +30,12 @@ export default class Interceptor {
   static pattern(mut: Mutation, path: string[]): Layer<Mutation>[] {
     const layers = {} as { [key: string]: Mutation }
 
-    Dynamic.get_pattern(mut.merge, path).reduce((collect, item) => {
-      return Dynamic.put(collect, [item.path, "merge"], item.value)
+    get_pattern(mut.merge, path).reduce((collect, item) => {
+      return put(collect, [item.path, "merge"], item.value)
     }, layers)
 
-    Dynamic.get_pattern(mut.delete, path).reduce((collect, item) => {
-      return Dynamic.put(collect, [item.path, "delete"], item.value)
+    get_pattern(mut.delete, path).reduce((collect, item) => {
+      return put(collect, [item.path, "delete"], item.value)
     }, layers)
 
     return Object.entries(layers).map(([path, obj]) => {

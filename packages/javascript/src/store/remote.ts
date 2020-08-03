@@ -1,9 +1,9 @@
-import Dynamic from "@ironbay/dynamic"
 import Dispatcher from "../dispatcher"
 import * as Connection from "../connection"
 import Mutator from "./mutator"
 import mixin from "./mixin"
 import { Transport, Format, Mutation, Query } from "../types"
+import { get, put } from "@ironbay/dynamic"
 
 class Remote<T extends Transport, F extends Format> {
   public readonly onChange = new Dispatcher<Mutation>()
@@ -28,10 +28,7 @@ class Remote<T extends Transport, F extends Format> {
   }
 
   public async query_path<T>(path: string[], opts: Query.Opts = {}) {
-    return Dynamic.get<T>(
-      await this.query(Dynamic.put({}, path, opts) as Query),
-      path
-    )
+    return get<T>(await this.query(put({}, path, opts) as Query), path)
   }
 
   public async query_values<T>(path: string[], opts: Query.Opts = {}) {

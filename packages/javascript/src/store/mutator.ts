@@ -1,4 +1,4 @@
-import Dynamic from "@ironbay/dynamic"
+import { put } from "@ironbay/dynamic"
 import { Mutation } from "../types"
 
 export default abstract class Mutator {
@@ -6,14 +6,14 @@ export default abstract class Mutator {
 
   public async merge(path: string[], value: any) {
     await this.mutation({
-      merge: Dynamic.put({}, path, value),
+      merge: put({}, path, value),
       delete: {}
     })
   }
 
   public async delete(path: string[]) {
     await this.mutation({
-      delete: Dynamic.put({}, path, 1) as Mutation["delete"],
+      delete: put({}, path, 1) as Mutation["delete"],
       merge: {}
     })
   }

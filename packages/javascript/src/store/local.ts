@@ -1,4 +1,4 @@
-import Dynamic from "@ironbay/dynamic"
+import { get, put } from "@ironbay/dynamic"
 import Dispatcher from "../dispatcher"
 import Interceptor from "./interceptor"
 import mixin from "./mixin"
@@ -28,10 +28,8 @@ abstract class Local {
   }
 
   public query_path<T>(path: string[], opts: Query.Opts = {}) {
-    return Dynamic.get<T>(
-      this.query(
-        path.length === 0 ? {} : (Dynamic.put({}, path, opts) as Query)
-      ),
+    return get<T>(
+      this.query(path.length === 0 ? {} : (put({}, path, opts) as Query)),
       path
     )
   }
