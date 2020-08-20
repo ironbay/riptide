@@ -3,6 +3,7 @@ export default class Dispatcher<T> {
 
   public add(cb: Callback<T>) {
     this.callbacks.push(cb)
+    return cb
   }
 
   public remove(cb: Callback<T>) {
