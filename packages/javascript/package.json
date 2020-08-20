@@ -1,12 +1,13 @@
 {
   "name": "@ironbay/riptide",
-  "version": "0.2.23",
+  "version": "0.2.25",
   "description": "",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
   "scripts": {
     "build": "rollup -c",
-    "test": "tsdx test"
+    "test": "tsdx test",
+    "distribute": "yarn build && yarn publish"
   },
   "author": "",
   "license": "ISC",
