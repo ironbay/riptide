@@ -184,7 +184,7 @@ defmodule Riptide.Store.Postgres do
       fn
         {holder, conn} ->
           {Stream.concat([
-             query_partial(paths, conn)
+             query_partial(paths, conn, store_opts)
              #  query_full(full, conn)
            ]), holder}
 
@@ -195,10 +195,10 @@ defmodule Riptide.Store.Postgres do
     )
   end
 
-  defp query_partial(paths, conn) do
+  defp query_partial(paths, conn, store_opts) do
     paths
     |> Stream.map(fn {path, opts} ->
-      {path, query_path(path, opts, conn)}
+      {path, query_path(path, opts, conn, store_opts)}
     end)
   end
 
@@ -240,13 +240,13 @@ defmodule Riptide.Store.Postgres do
     end)
   end
 
-  defp query_path(path, opts, conn) do
+  defp query_path(path, opts, conn, store_opts) do
     combined = encode_prefix(path)
     {min, max} = Riptide.Store.Prefix.range(combined, opts)
 
     conn
     |> Postgrex.stream(
-      "SELECT path, value FROM riptide WHERE path >= $1 AND path < $2 ORDER BY path ASC",
+      "SELECT path, value FROM \"#{opts_table(store_opts)}\" WHERE path >= $1 AND path < $2 ORDER BY path ASC",
       [encode_path(min), encode_path(max)]
     )
     |> Stream.flat_map(fn item -> item.rows end)
