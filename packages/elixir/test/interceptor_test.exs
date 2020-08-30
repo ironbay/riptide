@@ -83,7 +83,7 @@ defmodule Riptide.Test.Interceptor do
   test "query_resolve" do
     {_key, creature} = Riptide.Test.Data.pet_hammerhead()
 
-    ^creature =
+    [{["resolved"], ^creature}] =
       Riptide.Interceptor.query_resolve(
         %{
           "resolved" => %{}
