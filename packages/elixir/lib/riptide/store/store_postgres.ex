@@ -102,8 +102,8 @@ defmodule Riptide.Store.Postgres do
     |> opts_name()
     |> Postgrex.transaction(
       fn conn ->
-        delete(deletes, conn, opts)
-        merge(merges, conn, opts)
+        :ok = delete(deletes, conn, opts)
+        :ok = merge(merges, conn, opts)
       end,
       timeout: :timer.hours(1)
     )
@@ -135,6 +135,8 @@ defmodule Riptide.Store.Postgres do
         params
       )
     end)
+
+    :ok
   end
 
   defp delete([], _conn, _opts), do: :ok
