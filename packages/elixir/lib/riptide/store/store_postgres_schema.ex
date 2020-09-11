@@ -4,7 +4,9 @@ defmodule Riptide.Store.PostgresStructured do
 
   @impl true
   def init(opts) do
-    Riptide.Store.Structure.Example.all()
+    opts
+    |> opts_structure()
+    |> apply(:all, [])
     |> Stream.map(fn structure ->
       keys =
         structure.columns
@@ -49,10 +51,12 @@ defmodule Riptide.Store.PostgresStructured do
 
   def delete([], _conn, _opts), do: :ok
 
-  def delete(deletes, conn, _store_opts) do
+  def delete(deletes, conn, store_opts) do
+    structure_mod = opts_structure(store_opts)
+
     deletes
     |> Stream.map(fn {path, _opts} ->
-      structure = Riptide.Store.Structure.Example.for_path(path)
+      structure = structure_mod.for_path(path)
       {columns, _extra_columns, extra_path} = zip(structure.columns, path)
 
       cond do
@@ -110,10 +114,12 @@ defmodule Riptide.Store.PostgresStructured do
 
   def merge([], _conn, _opts), do: :ok
 
-  def merge(merges, conn, _store_opts) do
+  def merge(merges, conn, store_opts) do
+    structure_mod = opts_structure(store_opts)
+
     merges
     |> Stream.map(fn {path, val} ->
-      structure = Riptide.Store.Structure.Example.for_path(path)
+      structure = structure_mod.for_path(path)
       {columns, [], extra_path} = zip(structure.columns, path)
       {structure.table, columns, extra_path, val}
     end)
@@ -182,18 +188,13 @@ defmodule Riptide.Store.PostgresStructured do
     |> Stream.run()
   end
 
-  def sample() do
-    Riptide.Mutation.put_merge(["business:info", "test"], %{"key" => "test", "name" => "Test"})
-    |> Riptide.Mutation.put_merge(["other:info", "test"], %{"foo" => "baz"})
-    |> Riptide.Mutation.put_merge(["flat:info", "test"], "flat")
-    |> Riptide.Store.mutation(__MODULE__, [])
-  end
-
   @impl true
   def query(layers, store_opts) do
+    structure_mod = opts_structure(store_opts)
+
     layers
     |> Stream.map(fn {path, _opts} ->
-      structure = Riptide.Store.Structure.Example.for_path(path)
+      structure = structure_mod.for_path(path)
       {columns, extra_columns, extra_path} = zip(structure.columns, path)
 
       cond do
@@ -242,6 +243,7 @@ defmodule Riptide.Store.PostgresStructured do
   end
 
   defp opts_name(opts), do: Keyword.get(opts, :name, :postgres)
+  defp opts_structure(opts), do: Keyword.get(opts, :structure, Riptide.Store.Structure.Default)
 
   defp opts_transaction_timeout(opts),
     do: Keyword.get(opts, :transaction_timeout, :timer.minutes(1))
@@ -277,33 +279,22 @@ end
 
 defmodule Riptide.Store.Structure do
   defstruct [:table, :columns]
+  @callback all() :: list(%Riptide.Store.Structure{})
+  @callback for_path(list(String.t())) :: %Riptide.Store.Structure{}
 end
 
-defmodule Riptide.Store.Structure.Example do
-  @business_info %Riptide.Store.Structure{
-    table: "business_info",
-    columns: [:_, :business_key]
-  }
-
-  @business_building_info %Riptide.Store.Structure{
-    table: "business_building_info",
-    columns: [:_, :business_key, :building_key]
-  }
+defmodule Riptide.Store.Structure.Default do
+  @behaviour Riptide.Store.Structure
 
   @extra %Riptide.Store.Structure{
     table: "extra",
     columns: [:_, :key]
   }
 
-  def all() do
-    [
-      @business_info,
-      @business_building_info,
+  def all(),
+    do: [
       @extra
     ]
-  end
 
-  def for_path(["business:info" | _]), do: @business_info
-  def for_path(["business:building:info" | _]), do: @business_building_info
   def for_path(_), do: @extra
 end
