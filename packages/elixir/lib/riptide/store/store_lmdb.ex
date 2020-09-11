@@ -75,7 +75,7 @@ defmodule Riptide.Store.LMDB do
     end)
   end
 
-  defp iterate(env, path, opts) do
+  def iterate(env, path, opts) do
     combined = Enum.join(path, @delimiter)
     {min, max} = Riptide.Store.Prefix.range(combined, opts)
     min = Enum.join(min, @delimiter)
