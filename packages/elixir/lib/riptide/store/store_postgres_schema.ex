@@ -10,7 +10,7 @@ defmodule Riptide.Store.PostgresStructured do
     |> Stream.map(fn structure ->
       keys =
         structure.columns
-        |> Stream.filter(fn item -> item !== :table end)
+        |> Stream.filter(fn item -> item !== :_ end)
         |> Stream.map(&Atom.to_string/1)
 
       Postgrex.query!(
@@ -135,6 +135,7 @@ defmodule Riptide.Store.PostgresStructured do
       {sql, params} =
         table
         |> select()
+        |> columns(["data"])
         |> where(columns)
         |> to_sql()
 

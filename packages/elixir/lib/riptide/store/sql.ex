@@ -68,7 +68,7 @@ defmodule Riptide.Store.SQL do
             |> Stream.map(fn {key, index} ->
               "#{key} = $#{index + 1}"
             end)
-            |> Enum.to_list()
+            |> Enum.join(",")
           ]
         end,
         if list != [] do
@@ -81,7 +81,7 @@ defmodule Riptide.Store.SQL do
             |> Stream.map(fn {column, index} ->
               column <> " = $#{index + 1 + Enum.count(query.set)}"
             end)
-            |> Enum.to_list()
+            |> Enum.join(" AND\n")
           ]
         end
       ]
