@@ -90,6 +90,5 @@ defmodule Riptide.Store.SQL do
       |> Enum.join("\n"),
       Keyword.values(query.set) ++ Keyword.values(list)
     }
-    |> IO.inspect()
   end
 end
