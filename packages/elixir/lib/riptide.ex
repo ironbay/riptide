@@ -28,13 +28,16 @@ defmodule Riptide do
 
     Supervisor.init(
       [
-        {Riptide.Scheduler, []},
+        if Riptide.Config.riptide_scheduler() do
+          {Riptide.Scheduler, []}
+        end,
         {Riptide.Websocket.Server,
          Keyword.merge(
            [handlers: Riptide.Config.riptide_handlers()],
            opts
          )}
-      ],
+      ]
+      |> Enum.filter(& &1),
       strategy: :one_for_one
     )
   end
