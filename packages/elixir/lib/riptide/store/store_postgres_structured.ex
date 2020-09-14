@@ -278,24 +278,8 @@ defmodule Riptide.Store.PostgresStructured do
   end
 end
 
-defmodule Riptide.Store.Structure do
-  defstruct [:table, :columns]
-  @callback all() :: list(%Riptide.Store.Structure{})
-  @callback for_path(list(String.t())) :: %Riptide.Store.Structure{}
-end
-
 defmodule Riptide.Store.Structure.Default do
-  @behaviour Riptide.Store.Structure
+  use Riptide.Store.Structure
 
-  @extra %Riptide.Store.Structure{
-    table: "extra",
-    columns: [:_, :key]
-  }
-
-  def all(),
-    do: [
-      @extra
-    ]
-
-  def for_path(_), do: @extra
+  structure("dynamic", [], [:root, :key])
 end
