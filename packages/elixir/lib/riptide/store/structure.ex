@@ -30,14 +30,10 @@ defmodule Riptide.Store.Structure do
     prefix =
       case prefix do
         [] ->
-          quote do
-            _
-          end
+          quote do: _
 
         _ ->
-          quote do
-            [unquote_splicing(prefix) | rest]
-          end
+          quote do: [unquote_splicing(prefix) | rest]
       end
 
     quote do
