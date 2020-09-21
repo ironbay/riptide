@@ -105,9 +105,14 @@ defmodule Riptide.Schema do
   def check({_input, []}), do: :ok
   def check({_input, errors}), do: {:error, errors}
 
-  defp validator_alias(:string), do: Riptide.Schema.String
-  defp validator_alias(:number), do: Riptide.Schema.Number
-  defp validator_alias(result), do: result
+  def validator_alias(:string), do: Riptide.Schema.String
+  def validator_alias(:number), do: Riptide.Schema.Number
+  def validator_alias(:any), do: Riptide.Schema.Any
+  def validator_alias(result), do: result
+end
+
+defmodule Riptide.Schema.Any do
+  def valid?(_, _), do: true
 end
 
 defmodule Riptide.Schema.Unknown do
@@ -115,6 +120,36 @@ defmodule Riptide.Schema.Unknown do
   def valid?(_, _) do
     {:error, :unknown}
   end
+end
+
+defmodule Riptide.Schema.List do
+  @moduledoc false
+  def valid?(input, opts) when is_list(input) do
+    case Keyword.get(opts, :type) do
+      nil ->
+        true
+
+      result ->
+        {type, opts} =
+          case result do
+            {_type, _opts} -> result
+            type -> {type, []}
+          end
+
+        validator = Riptide.Schema.validator_alias(type)
+
+        input
+        |> Enum.find_value(fn item ->
+          validator.valid?(item, opts)
+        end)
+        |> case do
+          nil -> true
+          result -> result
+        end
+    end
+  end
+
+  def valid?(_input, _opts), do: {:error, :list_invalid}
 end
 
 defmodule Riptide.Schema.Number do
