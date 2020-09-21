@@ -112,7 +112,7 @@ defmodule Riptide.Schema do
 end
 
 defmodule Riptide.Schema.Any do
-  def valid?(_, _), do: true
+  def valid?(_, _), do: :ok
 end
 
 defmodule Riptide.Schema.Unknown do
@@ -127,7 +127,7 @@ defmodule Riptide.Schema.List do
   def valid?(input, opts) when is_list(input) do
     case Keyword.get(opts, :type) do
       nil ->
-        true
+        :ok
 
       result ->
         {type, opts} =
@@ -143,7 +143,7 @@ defmodule Riptide.Schema.List do
           validator.valid?(item, opts)
         end)
         |> case do
-          nil -> true
+          nil -> :ok
           result -> result
         end
     end
@@ -155,7 +155,11 @@ end
 defmodule Riptide.Schema.Number do
   @moduledoc false
   def valid?(input, _opts) do
-    input == nil or is_number(input)
+    cond do
+      input == nil -> :ok
+      is_number(input) -> :ok
+      true -> {:error, :number_invalid}
+    end
   end
 end
 
@@ -164,7 +168,7 @@ defmodule Riptide.Schema.String do
   def valid?(input, opts) do
     cond do
       input == nil ->
-        true
+        :ok
 
       is_binary(input) ->
         cond do
