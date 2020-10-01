@@ -7,11 +7,11 @@ export default class Dispatcher<T> {
   }
 
   public remove(cb: Callback<T>) {
-    this.callbacks = this.callbacks.filter(item => item === cb)
+    this.callbacks = this.callbacks.filter((item) => item === cb)
   }
 
   public trigger(msg: T) {
-    this.callbacks.forEach(cb => cb(msg))
+    return this.callbacks.map((cb) => cb(msg))
   }
 }
-export type Callback<T> = (msg: T) => void
+export type Callback<T> = (msg: T) => void | Promise<void>
