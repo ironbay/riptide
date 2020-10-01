@@ -21,7 +21,7 @@ export interface Format {
 
 export interface Transport {
   write(data: string): void
-  handle_data(cb: (data: string) => void): void
+  handle_data(cb: (data: string) => Promise<void>): void
 }
 
 export interface Message {

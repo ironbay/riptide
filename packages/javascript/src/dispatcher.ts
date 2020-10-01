@@ -10,8 +10,10 @@ export default class Dispatcher<T> {
     this.callbacks = this.callbacks.filter((item) => item === cb)
   }
 
-  public trigger(msg: T) {
-    return this.callbacks.map((cb) => cb(msg))
+  public async trigger(msg: T) {
+    for (let cb of this.callbacks) {
+      await cb(msg)
+    }
   }
 }
-export type Callback<T> = (msg: T) => void | Promise<void>
+export type Callback<T> = (msg: T) => Promise<void>

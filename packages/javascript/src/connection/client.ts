@@ -11,7 +11,7 @@ export default class Client<T extends Transport, F extends Format> {
 
   constructor(transport: { new (): T } = null, format: { new (): F } = null) {
     this.transport = new transport()
-    this.transport.handle_data((data) => this.handle_data(data))
+    this.transport.handle_data(data => this.handle_data(data))
     this.format = new format()
   }
 
@@ -24,7 +24,7 @@ export default class Client<T extends Transport, F extends Format> {
       key: this.counter,
       action,
       body,
-      type: "call",
+      type: "call"
     })
     return promise
   }
@@ -33,7 +33,7 @@ export default class Client<T extends Transport, F extends Format> {
     await this.write({
       action,
       body,
-      type: "cast",
+      type: "cast"
     })
   }
 
@@ -47,7 +47,7 @@ export default class Client<T extends Transport, F extends Format> {
     }
   }
 
-  private handle_data(data: string) {
+  private async handle_data(data: string) {
     const msg = this.format.decode<Message>(data)
     const match = this.pending.get(msg.key)
     switch (msg.type) {

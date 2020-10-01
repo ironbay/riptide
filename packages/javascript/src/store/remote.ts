@@ -11,7 +11,7 @@ class Remote<T extends Transport, F extends Format> {
 
   constructor(client: Connection.Client<T, F>) {
     this.conn = client
-    client.on_cast.add((msg) => {
+    client.on_cast.add(async (msg) => {
       if (msg.action !== "riptide.mutation") return
       this.onChange.trigger(msg.body)
     })
@@ -23,7 +23,7 @@ class Remote<T extends Transport, F extends Format> {
 
   public async query(q: Query) {
     const result = await this.conn.call<Mutation>("riptide.query", q)
-    await Promise.all(this.onChange.trigger(result))
+    await this.onChange.trigger(result)
     return result.merge
   }
 

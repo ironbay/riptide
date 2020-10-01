@@ -5,7 +5,7 @@ import { Transport } from "../types"
 export abstract class Base implements Transport {
   abstract write(data: string): void
   protected dispatcher_data = new Dispatcher<string>()
-  handle_data(cb: (data: string) => void) {
+  handle_data(cb: (data: string) => Promise<void>) {
     this.dispatcher_data.add(cb)
   }
 }
