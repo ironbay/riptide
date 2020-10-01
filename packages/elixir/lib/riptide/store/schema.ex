@@ -1,4 +1,4 @@
-defmodule Riptide.Schema do
+defmodule Riptide.Legacy.Schema do
   @moduledoc false
 
   defmacro schema(schema) do
