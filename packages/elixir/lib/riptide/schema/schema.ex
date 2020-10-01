@@ -6,13 +6,7 @@ defmodule Riptide.Schema do
       schema
       |> Dynamic.flatten()
       |> Enum.map(fn {path, value} ->
-        {mod, opts} =
-          case value do
-            {mod, opts} -> {mod, opts}
-            mod -> {mod, []}
-          end
-
-        mod = from_alias(mod)
+        {mod, opts} = mod_opts(value)
 
         quote do
           path = unquote(path)
@@ -33,12 +27,14 @@ defmodule Riptide.Schema do
       @doc false
       def validate(input, _opts) do
         unquote(steps)
-        |> Enum.flat_map(& &1)
+        |> List.flatten()
         |> IO.inspect()
-        |> Enum.to_list()
         |> case do
-          [] -> :ok
-          result -> {:error, result}
+          [] ->
+            :ok
+
+          result ->
+            {:error, Enum.map(result, fn {_, val} -> val end)}
         end
       end
     end
@@ -48,7 +44,7 @@ defmodule Riptide.Schema do
     case mod.validate(value, opts) do
       {:error, result} when is_list(result) ->
         Enum.map(result, fn {sub_path, error} ->
-          {:error, {path ++ sub_path, error}}
+          {path ++ sub_path, error}
         end)
 
       {:error, result} ->
@@ -58,6 +54,9 @@ defmodule Riptide.Schema do
         []
     end
   end
+
+  def mod_opts({mod, opts}), do: {from_alias(mod), opts}
+  def mod_opts(mod), do: {from_alias(mod), []}
 
   alias Riptide.Schema.Type
 

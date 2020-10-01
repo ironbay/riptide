@@ -18,7 +18,7 @@ defmodule Riptide.Schema.Type.Map do
       end
 
     Enum.map(item, fn {path, value} ->
-      Riptide.Schema.validate_child(path, value, mod, sub_opts)
+      Riptide.Schema.validate_child([path], value, mod, sub_opts)
     end)
   end
 
