@@ -10,24 +10,38 @@ defmodule Riptide.Test.Schema do
         "created" => :number,
         "updated" => :number
       },
+      "tags" => {:list, type: :string},
       "key" => :string,
       "depends_on" => {:map, type: Riptide.Test.Schema.Todo}
     }
   end
 
-  test "schema" do
-    assert :ok = Todo.validate(%{})
+  test "getter" do
+    assert nil == Todo.get_times_created(%{})
+  end
 
-    assert :ok =
+  test "empty" do
+    assert :ok = Todo.validate(%{})
+  end
+
+  test "nested" do
+    assert {:error,
+            [
+              {["depends_on", "test", "key"], :not_string}
+            ]} =
              Todo.validate(%{
-               "times" => %{
-                 "created" => 1234
-               },
                "depends_on" => %{
                  "test" => %{
                    "key" => 1234
                  }
                }
              })
+  end
+
+  test "list" do
+    assert {:error,
+            [
+              {["tags", 1], :not_string}
+            ]} = Todo.validate(%{"tags" => ["tag1", 0]})
   end
 end
