@@ -1,22 +1,26 @@
-defmodule Riptide.Store.PostgresStructured do
+defmodule Riptide.Store.TreePostgres do
   @behaviour Riptide.Store
   import Riptide.Store.SQL
 
   @impl true
   def init(opts) do
-    opts
-    |> opts_structure()
-    |> apply(:all, [])
-    |> Stream.map(fn structure ->
+    tree = opts_tree(opts)
+
+    if tree == nil do
+      raise ":tree is not defined"
+    end
+
+    tree.all()
+    |> Stream.map(fn branch ->
       keys =
-        structure.columns
+        branch.columns
         |> Stream.filter(fn item -> item !== :_ end)
         |> Stream.map(&Atom.to_string/1)
 
       Postgrex.query!(
         opts_name(opts),
         """
-        CREATE TABLE IF NOT EXISTS "#{structure.table}" (
+        CREATE TABLE IF NOT EXISTS "#{branch.name}" (
         data jsonb,
         #{keys |> Stream.map(fn key -> key <> " text COLLATE \"C\"" end) |> Enum.join(", ")},
         PRIMARY KEY (#{Enum.join(keys, ", ")})
@@ -52,17 +56,17 @@ defmodule Riptide.Store.PostgresStructured do
   def delete([], _conn, _opts), do: :ok
 
   def delete(deletes, conn, store_opts) do
-    structure_mod = opts_structure(store_opts)
+    tree = opts_tree(store_opts)
 
     deletes
     |> Stream.map(fn {path, _opts} ->
-      structure = structure_mod.for_path(path)
-      {columns, _extra_columns, extra_path} = zip(structure.columns, path)
+      branch = tree.for_path(path)
+      {columns, _extra_columns, extra_path} = zip(branch.columns, path)
 
       cond do
         extra_path == [] ->
           {sql, params} =
-            structure.table
+            branch.name
             |> delete()
             |> where(columns)
             |> to_sql()
@@ -75,7 +79,7 @@ defmodule Riptide.Store.PostgresStructured do
 
         extra_path != [] ->
           {sql, params} =
-            structure.table
+            branch.name
             |> select()
             |> columns(["data"])
             |> where(columns)
@@ -93,13 +97,13 @@ defmodule Riptide.Store.PostgresStructured do
             |> Dynamic.delete(extra_path)
             |> case do
               next when next == %{} ->
-                structure.table
+                branch.name
                 |> delete()
                 |> where(columns)
                 |> to_sql()
 
               next ->
-                structure.table
+                branch.name
                 |> update()
                 |> set(data: next)
                 |> where(columns)
@@ -115,25 +119,25 @@ defmodule Riptide.Store.PostgresStructured do
   def merge([], _conn, _opts), do: :ok
 
   def merge(merges, conn, store_opts) do
-    structure_mod = opts_structure(store_opts)
+    tree = opts_tree(store_opts)
 
     merges
     |> Stream.map(fn {path, val} ->
-      structure = structure_mod.for_path(path)
-      {columns, [], extra_path} = zip(structure.columns, path)
-      {structure.table, columns, extra_path, val}
+      branch = tree.for_path(path)
+      {columns, [], extra_path} = zip(branch.columns, path)
+      {branch.name, columns, extra_path, val}
     end)
     |> Enum.group_by(
-      fn {table, columns, _path, _val} ->
-        {table, columns}
+      fn {name, columns, _path, _val} ->
+        {name, columns}
       end,
-      fn {_table, _keys, path, val} ->
+      fn {__name, _keys, path, val} ->
         {path, val}
       end
     )
-    |> Stream.map(fn {{table, columns}, values} ->
+    |> Stream.map(fn {{name, columns}, values} ->
       {sql, params} =
-        table
+        name
         |> select()
         |> columns(["data"])
         |> where(columns)
@@ -176,7 +180,7 @@ defmodule Riptide.Store.PostgresStructured do
       Postgrex.query!(
         conn,
         """
-        INSERT INTO #{table}
+        INSERT INTO #{name}
         (#{Enum.join(inserts, ", ")})
         VALUES
         (#{Enum.join(values, ", ")})
@@ -191,17 +195,17 @@ defmodule Riptide.Store.PostgresStructured do
 
   @impl true
   def query(layers, store_opts) do
-    structure_mod = opts_structure(store_opts)
+    tree = opts_tree(store_opts)
 
     layers
     |> Stream.map(fn {path, _opts} ->
-      structure = structure_mod.for_path(path)
-      {columns, extra_columns, extra_path} = zip(structure.columns, path)
+      branch = tree.for_path(path)
+      {columns, extra_columns, extra_path} = zip(branch.columns, path)
 
       cond do
         extra_columns == [] ->
           {sql, params} =
-            structure.table
+            branch.name
             |> select()
             |> columns(["data"])
             |> where(columns)
@@ -221,7 +225,7 @@ defmodule Riptide.Store.PostgresStructured do
 
         extra_columns != [] ->
           {sql, params} =
-            structure.table
+            branch.name
             |> select()
             |> columns(extra_columns)
             |> columns(["data"])
@@ -244,7 +248,7 @@ defmodule Riptide.Store.PostgresStructured do
   end
 
   defp opts_name(opts), do: Keyword.get(opts, :name, :postgres)
-  defp opts_structure(opts), do: Keyword.get(opts, :structure, Riptide.Store.Structure.Default)
+  defp opts_tree(opts), do: Keyword.get(opts, :tree)
 
   defp opts_transaction_timeout(opts),
     do: Keyword.get(opts, :transaction_timeout, :timer.minutes(1))
@@ -276,10 +280,4 @@ defmodule Riptide.Store.PostgresStructured do
        {lh, rh} | zipped
      ], left, right}
   end
-end
-
-defmodule Riptide.Store.Structure.Default do
-  use Riptide.Store.Structure
-
-  structure("dynamic", [], [:root, :key])
 end

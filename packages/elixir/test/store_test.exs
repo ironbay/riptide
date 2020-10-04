@@ -15,19 +15,25 @@ defmodule Riptide.Test.Store do
   #   test_store(Riptide.Store.Postgres, name: pid)
   # end
 
-  # test Riptide.Store.PostgresStructured do
-  #   Application.ensure_all_started(:postgrex)
+  test Riptide.Store.TreePostgres do
+    Application.ensure_all_started(:postgrex)
 
-  #   {:ok, pid} =
-  #     Postgrex.start_link(
-  #       username: "postgres",
-  #       hostname: "localhost",
-  #       password: "password",
-  #       database: "postgres"
-  #     )
+    {:ok, pid} =
+      Postgrex.start_link(
+        username: "postgres",
+        hostname: "localhost",
+        password: "password",
+        database: "postgres"
+      )
 
-  #   test_store(Riptide.Store.PostgresStructured, name: pid)
-  # end
+    defmodule Tree do
+      use Riptide.Tree
+
+      branch [:root, :key], name: "extra"
+    end
+
+    test_store(Riptide.Store.TreePostgres, name: pid, tree: Tree)
+  end
 
   test Riptide.Store.Composite do
     defmodule Store do
