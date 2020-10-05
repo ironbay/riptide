@@ -48,6 +48,11 @@ defmodule Riptide.Schema.Type.Enum do
   end
 end
 
+defmodule Riptide.Schema.Type.Boolean do
+  def validate(item, _opts) when is_boolean(item), do: :ok
+  def validate(_item, _opts), do: {:error, :not_boolean}
+end
+
 defmodule Riptide.Schema.Type.List do
   def validate(item, opts) do
     {mod, sub_opts} =
