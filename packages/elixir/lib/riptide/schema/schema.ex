@@ -80,6 +80,7 @@ defmodule Riptide.Schema do
 
   def from_alias(:number), do: Type.Number
   def from_alias(:string), do: Type.String
+  def from_alias(:list), do: Type.List
   def from_alias(:map), do: Type.Map
   def from_alias(:any), do: Type.Any
   def from_alias(:enum), do: Type.Enum
