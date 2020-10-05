@@ -78,9 +78,11 @@ defmodule Riptide.Schema do
 
   alias Riptide.Schema.Type
 
-  def from_alias(:string), do: Type.String
   def from_alias(:number), do: Type.Number
+  def from_alias(:string), do: Type.String
   def from_alias(:map), do: Type.Map
-  def from_alias(:list), do: Type.List
+  def from_alias(:any), do: Type.Any
+  def from_alias(:enum), do: Type.Enum
+  def from_alias(:boolean), do: Type.Boolean
   def from_alias(mod), do: mod
 end
