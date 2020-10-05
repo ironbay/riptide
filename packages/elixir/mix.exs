@@ -1,6 +1,6 @@
 defmodule Riptide.MixProject do
   use Mix.Project
-  @version "0.5.0-beta"
+  @version "0.5.0-beta2"
 
   def project do
     [
