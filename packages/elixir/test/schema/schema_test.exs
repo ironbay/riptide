@@ -44,4 +44,8 @@ defmodule Riptide.Test.Schema do
               {["tags", 1], :not_string}
             ]} = Todo.validate(%{"tags" => ["tag1", 0]})
   end
+
+  test "schema" do
+    assert %{} = Todo.schema()
+  end
 end

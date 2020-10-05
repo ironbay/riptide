@@ -46,6 +46,10 @@ defmodule Riptide.Schema do
     quote do
       unquote(getters)
 
+      def schema() do
+        unquote(body)
+      end
+
       def validate(input, _opts \\ []) do
         unquote(validate_steps)
         |> List.flatten()
