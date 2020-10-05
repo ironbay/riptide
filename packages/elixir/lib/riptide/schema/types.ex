@@ -36,6 +36,23 @@ defmodule Riptide.Schema.Type.Any do
   def validate(_item, _opts), do: :ok
 end
 
+defmodule Riptide.Schema.Type.Enum do
+  def validate(item, opts) do
+    opts
+    |> Keyword.get(:values, [])
+    |> Enum.member?(item)
+    |> case do
+      true -> :ok
+      false -> {:error, :invalid_value}
+    end
+  end
+end
+
+defmodule Riptide.Schema.Type.Boolean do
+  def validate(item, _opts) when is_boolean(item), do: :ok
+  def validate(_item, _opts), do: {:error, :not_boolean}
+end
+
 defmodule Riptide.Schema.Type.List do
   def validate(item, opts) do
     {mod, sub_opts} =
