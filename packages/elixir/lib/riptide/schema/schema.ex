@@ -64,6 +64,22 @@ defmodule Riptide.Schema do
     end
   end
 
+  def validate_required(schema, input) do
+    schema
+    |> Dynamic.flatten()
+    |> Enum.filter(fn
+      {path, true} -> Dynamic.get(input, path) == nil
+      _ -> false
+    end)
+    |> case do
+      [] ->
+        :ok
+
+      layers ->
+        {:error, {:missing, Enum.map(layers, fn {path, _} -> path end)}}
+    end
+  end
+
   def validate_child(path, value, mod, opts) do
     case mod.validate(value, opts) do
       :ok ->

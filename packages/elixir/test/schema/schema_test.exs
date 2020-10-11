@@ -48,4 +48,12 @@ defmodule Riptide.Test.Schema do
   test "schema" do
     assert %{} = Todo.schema()
   end
+
+  test "required" do
+    assert {:error,
+            {:missing,
+             [
+               ["key"]
+             ]}} = Riptide.Schema.validate_required(%{"key" => true}, %{})
+  end
 end
