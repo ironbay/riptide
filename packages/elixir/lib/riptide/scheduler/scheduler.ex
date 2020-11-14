@@ -119,7 +119,8 @@ defmodule Riptide.Scheduler do
   def retry_module() do
     case Riptide.Config.riptide_retry() do
       nil -> Riptide.Retry.Basic
-      match -> String.to_atom(match)
+      match when is_binary(match) -> String.to_atom(match)
+      match -> match
     end
   end
 
