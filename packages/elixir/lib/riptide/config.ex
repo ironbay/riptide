@@ -13,6 +13,7 @@ defmodule Riptide.Config do
       # write: nil,
       # read: nil
     },
+    retry: nil,
     interceptors: []
   }
 end

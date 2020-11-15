@@ -116,6 +116,14 @@ defmodule Riptide.Scheduler do
     :rpc.call(Enum.random(pool()), __MODULE__, :execute_local, [task])
   end
 
+  def retry_module() do
+    case Riptide.Config.riptide_retry() do
+      nil -> Riptide.Retry.Basic
+      match when is_binary(match) -> String.to_atom(match)
+      match -> match
+    end
+  end
+
   def execute_local(task) do
     Logger.metadata(scheduler_task: task)
 
@@ -155,7 +163,7 @@ defmodule Riptide.Scheduler do
             count = (info["count"] || 0) + 1
             Riptide.merge!([@root, task, "count"], count)
 
-            Riptide.Retry.Basic
+            retry_module()
             |> apply(:retry, [task, count])
             |> case do
               {:delay, amount} ->
