@@ -1,39 +1,39 @@
 defmodule Riptide.Test.Store do
   use ExUnit.Case
 
-  # test Riptide.Store.Postgres do
-  #   Application.ensure_all_started(:postgrex)
+  test Riptide.Store.Postgres do
+    Application.ensure_all_started(:postgrex)
 
-  #   {:ok, pid} =
-  #     Postgrex.start_link(
-  #       username: "postgres",
-  #       hostname: "localhost",
-  #       password: "password",
-  #       database: "postgres"
-  #     )
+    {:ok, pid} =
+      Postgrex.start_link(
+        username: "postgres",
+        hostname: "localhost",
+        password: "password",
+        database: "postgres"
+      )
 
-  #   test_store(Riptide.Store.Postgres, name: pid)
-  # end
+    test_store(Riptide.Store.Postgres, name: pid)
+  end
 
-  # test Riptide.Store.TreePostgres do
-  #   Application.ensure_all_started(:postgrex)
+  test Riptide.Store.TreePostgres do
+    Application.ensure_all_started(:postgrex)
 
-  #   {:ok, pid} =
-  #     Postgrex.start_link(
-  #       username: "postgres",
-  #       hostname: "localhost",
-  #       password: "password",
-  #       database: "postgres"
-  #     )
+    {:ok, pid} =
+      Postgrex.start_link(
+        username: "postgres",
+        hostname: "localhost",
+        password: "password",
+        database: "postgres"
+      )
 
-  #   defmodule Tree do
-  #     use Riptide.Tree
+    defmodule Tree do
+      use Riptide.Tree
 
-  #     branch [:root, :key], name: "extra"
-  #   end
+      branch [:root, :key], name: "extra"
+    end
 
-  #   test_store(Riptide.Store.TreePostgres, name: pid, tree: Tree)
-  # end
+    test_store(Riptide.Store.TreePostgres, name: pid, tree: Tree)
+  end
 
   test Riptide.Store.Composite do
     defmodule Store do
@@ -50,29 +50,29 @@ defmodule Riptide.Test.Store do
     test_store(Store, [])
   end
 
-  # test Riptide.Store.Riptide do
-  #   {:ok, pid} = Riptide.start_link()
+  test Riptide.Store.Riptide do
+    {:ok, pid} = Riptide.start_link()
 
-  #   Application.put_env(
-  #     :riptide,
-  #     :store,
-  #     %{
-  #       write: {Riptide.Store.Memory, []},
-  #       read: {Riptide.Store.Memory, []},
-  #       token: "abd"
-  #     }
-  #   )
+    Application.put_env(
+      :riptide,
+      :store,
+      %{
+        write: {Riptide.Store.Memory, []},
+        read: {Riptide.Store.Memory, []},
+        token: "abd"
+      }
+    )
 
-  #   Riptide.Store.Riptide.Supervisor.start_link(
-  #     url: "http://localhost:12000/socket",
-  #     name: :riptide,
-  #     token: "abd"
-  #   )
+    Riptide.Store.Riptide.Supervisor.start_link(
+      url: "http://localhost:12000/socket",
+      name: :riptide,
+      token: "abd"
+    )
 
-  #   test_store(Riptide.Store.Riptide, [])
-  #   :ets.delete(:riptide_table)
-  #   Process.exit(pid, :kill)
-  # end
+    test_store(Riptide.Store.Riptide, [])
+    :ets.delete(:riptide_table)
+    Process.exit(pid, :kill)
+  end
 
   test Riptide.Store.LMDB do
     File.rm_rf("lmdb")
@@ -121,6 +121,9 @@ defmodule Riptide.Test.Store do
 
     assert %{"todos" => %{^hh_key => ^hh}} =
              Riptide.Store.query(%{"todos" => %{hh_key => %{}}}, store, opts)
+
+    assert %{"todos" => %{hh_key => %{"times" => hh["times"]}}} ==
+             Riptide.Store.query(%{"todos" => %{hh_key => %{"times" => %{}}}}, store, opts)
 
     assert 2 =
              ["todos"]
