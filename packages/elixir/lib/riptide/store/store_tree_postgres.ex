@@ -197,54 +197,91 @@ defmodule Riptide.Store.TreePostgres do
   def query(layers, store_opts) do
     tree = opts_tree(store_opts)
 
-    layers
-    |> Stream.map(fn {path, _opts} ->
-      branch = tree.for_path(path)
-      {columns, extra_columns, extra_path} = zip(branch.columns, path)
+    Stream.resource(
+      fn -> txn_start(store_opts) end,
+      fn
+        {holder, conn} ->
+          {Stream.map(layers, fn {path, opts} ->
+             {path, query_layer(conn, tree, path, opts)}
+           end), holder}
 
-      cond do
-        extra_columns == [] ->
-          {sql, params} =
-            branch.name
-            |> select()
-            |> columns(["data"])
-            |> where(columns)
-            |> to_sql()
+        holder ->
+          {:halt, holder}
+      end,
+      fn holder -> txn_end(holder) end
+    )
+  end
 
-          Postgrex.query!(
-            opts_name(store_opts),
-            sql,
-            params
-          )
-          |> Map.get(:rows, [])
-          |> Enum.at(0, [])
-          |> Enum.at(0)
-          |> case do
-            result -> {path, [{path, Dynamic.get(result, extra_path)}]}
+  defp query_layer(conn, tree, path, opts) do
+    alias Riptide.Store.Next.SQL
+
+    branch = tree.for_path(path)
+    {columns, extra_columns, extra_path} = zip(branch.columns, path)
+
+    query =
+      branch.name
+      |> SQL.select(extra_columns)
+      |> SQL.select(["data"])
+      |> SQL.where(columns)
+
+    query =
+      if extra_columns != [] do
+        range = List.last(extra_columns)
+
+        query =
+          case opts do
+            %{min: min} -> SQL.where(query, :gte, [{range, min}])
+            _ -> query
           end
 
-        extra_columns != [] ->
-          {sql, params} =
-            branch.name
-            |> select()
-            |> columns(extra_columns)
-            |> columns(["data"])
-            |> where(columns)
-            |> to_sql()
+        query =
+          case opts do
+            %{max: max} -> SQL.where(query, :lt, [{range, max}])
+            _ -> query
+          end
 
-          {path,
-           Postgrex.query!(
-             opts_name(store_opts),
-             sql,
-             params
-           )
-           |> Map.get(:rows, [])
-           |> Enum.map(fn row ->
-             {prefix, [data]} = Enum.split(row, Enum.count(extra_columns))
-             {path ++ prefix, data}
-           end)}
-      end
+        query
+      end || query
+
+    {sql, params} = SQL.to_sql(query)
+
+    conn
+    |> Postgrex.stream(sql, params)
+    |> Stream.flat_map(fn item -> item.rows end)
+    |> Stream.map(fn row ->
+      {prefix, [data]} = Enum.split(row, Enum.count(extra_columns))
+      {path ++ prefix, Dynamic.get(data, extra_path)}
     end)
+  end
+
+  defp txn_start(store_opts) do
+    self = self()
+
+    {:ok, child} =
+      Task.start_link(fn ->
+        Postgrex.transaction(
+          opts_name(store_opts),
+          fn conn ->
+            send(self, {:conn, conn})
+
+            receive do
+              {:conn, :done} -> :ok
+            end
+          end,
+          timeout: opts_transaction_timeout(store_opts)
+        )
+      end)
+
+    conn =
+      receive do
+        {:conn, conn} -> conn
+      end
+
+    {child, conn}
+  end
+
+  defp txn_end(holder) do
+    send(holder, {:conn, :done})
   end
 
   defp opts_name(opts), do: Keyword.get(opts, :name, :postgres)
