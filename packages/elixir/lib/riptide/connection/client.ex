@@ -15,6 +15,7 @@ defmodule Riptide.Websocket.Client do
 
   def handle_connect(_conn, state) do
     send(self(), :connect)
+    :timer.send_interval(:timer.seconds(5), self(), :gc)
     :timer.send_interval(:timer.seconds(30), self(), :ping)
     {:ok, Riptide.Processor.init(state)}
   end
@@ -31,6 +32,11 @@ defmodule Riptide.Websocket.Client do
   end
 
   def handle_disconnect(_conn, state) do
+    {:ok, state}
+  end
+
+  def handle_info(:gc, state) do
+    :erlang.garbage_collect(self())
     {:ok, state}
   end
 
