@@ -36,6 +36,11 @@ defmodule Riptide.Websocket.Server do
     }
   end
 
+  def websocket_init(state) do
+    :timer.send_interval(:timer.seconds(10), self(), :gc)
+    {:ok, state}
+  end
+
   def websocket_handle({:text, msg}, state) do
     case Riptide.Processor.process_data(msg, state) do
       {:reply, val, next} -> {:reply, {:text, val}, next}
@@ -55,6 +60,11 @@ defmodule Riptide.Websocket.Server do
   def handle_info({:riptide_cast, action, body}, state) do
     {:reply, data, next} = Riptide.Processor.send_cast(action, body, state)
     {:reply, {:text, data}, next}
+  end
+
+  def websocket_info(:gc, state) do
+    :erlang.garbage_collect(self())
+    {:ok, state}
   end
 
   def websocket_info(msg, state) do
