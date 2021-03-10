@@ -46,6 +46,12 @@ defmodule Riptide.Scheduler do
 
         scheduled =
           Riptide.Scheduler.stream()
+          |> Stream.filter(fn
+            # Temporary: ensure that task is correctly formatted
+            # in rare cases, an orphaned task with only a count is being executed
+            {_task, %{"timestamp" => _}} -> true
+            _ -> false
+          end)
           |> Stream.map(fn {task, info} ->
             now = :os.system_time(:millisecond)
             diff = max(info["timestamp"] - now, 0)
