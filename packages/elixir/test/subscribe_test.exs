@@ -13,4 +13,33 @@ defmodule Riptide.Test.Subscribe do
         result -> result
       end
   end
+
+  test "delete watched path" do
+    Riptide.Subscribe.watch(["root", "child"])
+
+    delete = Riptide.Mutation.put_delete(["root", "child"])
+
+    mut = %Riptide.Mutation{
+      delete: %{
+        "root" => %{
+          "child" => 1
+        }
+      },
+      merge: %{
+        "root" => %{
+          "child" => %{
+            "a" => 1,
+            "b" => 1
+          }
+        }
+      }
+    }
+
+    Riptide.Subscribe.broadcast_mutation(mut)
+
+    {:mutation, ^mut} =
+      receive do
+        result -> result
+      end
+  end
 end

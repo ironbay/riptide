@@ -40,6 +40,8 @@ defmodule Riptide.Subscribe do
         end)
       ])
     end)
+    |> Enum.group_by(fn {path, _mut} -> path end, fn {_, mut} -> mut end)
+    |> Enum.map(fn {path, muts} -> {path, Riptide.Mutation.combine(muts)} end)
     |> Enum.each(fn {path, value} ->
       path
       |> group()

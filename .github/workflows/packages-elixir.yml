@@ -38,11 +38,11 @@ jobs:
         with:
           fetch-depth: 0
       - name: Setup elixir
-        uses: actions/setup-elixir@v1
+        uses: erlef/setup-elixir@v1
         with:
-          elixir-version: 1.9.4 # Define the elixir version [required]
-          otp-version: 22.2 # Define the OTP version [required]
-
+          experimental-otp: true
+          elixir-version: 1.11.x # Define the elixir version [required]
+          otp-version: 22.x # Define the OTP version [required]
       - name: Cache deps
         uses: actions/cache@v1
         with:
