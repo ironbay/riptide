@@ -22,7 +22,24 @@ defmodule Riptide.Tree do
     end
   end
 
-  defmacro branch(path, opts \\ []) do
+  defmacro branch(path_or_module, opts \\ []) do
+    cond do
+      is_list(path_or_module) ->
+        do_branch(path_or_module, opts)
+
+      true ->
+        {module, []} = Code.eval_quoted(path_or_module)
+
+        module.branch()
+        |> Enum.map(fn
+          item when is_atom(item) -> {item, [], nil}
+          item -> item
+        end)
+        |> do_branch(opts)
+    end
+  end
+
+  defp do_branch(path, opts \\ []) do
     {prefix, _rest} = Enum.split_while(path, &is_binary/1)
 
     name =
@@ -43,7 +60,7 @@ defmodule Riptide.Tree do
       end)
 
     branch =
-      Macro.escape(%Riptide.Tree.Branch{
+      Macro.escape(%Riptide.Branch{
         name: name,
         columns: columns,
         schema:

@@ -8,12 +8,12 @@ defmodule Riptide.Test.Tree do
     branch ["business:info", business_key], name: "businesses"
   end
 
-  @todo_info %Riptide.Tree.Branch{
+  @todo_info %Riptide.Branch{
     columns: [:_, :todo_key],
     name: "todo_info"
   }
 
-  @business_info %Riptide.Tree.Branch{
+  @business_info %Riptide.Branch{
     columns: [:_, :business_key],
     name: "businesses"
   }
