@@ -25,10 +25,13 @@ defmodule Riptide.Websocket.Server do
   end
 
   def init(req, state) do
+    state = Riptide.Processor.init(state)
+    {:noreply, state} = Riptide.Processor.process_info({:connect, req}, state)
+
     {
       :cowboy_websocket,
       req,
-      Riptide.Processor.init(state),
+      state,
       %{
         compress: true,
         idle_timeout: :timer.hours(24)
